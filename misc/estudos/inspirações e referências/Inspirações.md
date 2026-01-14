@@ -2,19 +2,9 @@ Aqui estão algumas imagens de robotrace japoneses para servir de inspiração p
 
 <div style="text-align: center;">
     <img src="../media/img/line_follower.gif" height="300"> <br>
-</div>
-<div style="text-align: center;">
     <img src="../media/img/insp_1.png" height="300"> <br>
-</div>
-<div style="text-align: center;">
     <img src="../media/img/insp_2.jpeg" height="300"> <br>
-</div>
-<div style="text-align: center;">
     <img src="../media/img/insp_3.png" height="300"> <br>
-</div>
-<div style="text-align: center;">
     <img src="../media/img/insp_4.png" height="300"> <br>
-</div>
-<div style="text-align: center;">
     <img src="../media/img/insp_5.png" height="300"> <br>
 </div>
