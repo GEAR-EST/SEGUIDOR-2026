@@ -4,7 +4,7 @@ Aqui estará listadas outras fontes de informação e referências para o desenv
 	- Raijin, da Equipe Raiju - https://raiju.team/projects/raijin
 	- Tracer, da Equipe ThundeRatz - https://thunderatz.org/projects/robots/tracer
 	- Apollon, de Shachiku Hakase (campeão japonês) - http://ak-rcroom.com/sakuhin/robotrace/robotrace_2024/
-	- Ártemis e Nêmesis, da Equipe Trincabotz - [[Follow_Trincabotz.pdf]]
+	- Ártemis e Nêmesis, da Equipe Trincabotz - [Follow_Trincabotz.pdf](../media/pdf/Follow_Trincabotz.pdf)
 	- Fujitora, da Equipe OPRobot (campeão espanhol) https://github.com/OPRobots/FujitoraBot
 
 - Vídeos:
