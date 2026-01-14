@@ -10,7 +10,7 @@ Aqui estará listadas outras fontes de informação e referências para o desenv
 - Vídeos:
 	- Aulão com dicas importantes - https://drive.google.com/drive/folders/1ZtTLXdNQbpcHHgfRA_H44VTmFx3YXYoj
 	- Visão geral de Micromouse - https://www.youtube.com/watch?v=gsc4eETwRCs
-	- Canal de Shachiku Hakase (campeão japones) - youtube.com/@ShachikuHakase
+	- Canal de Shachiku Hakase (campeão japones) - https://www.youtube.com/@ShachikuHakase
 	- Detecção de cruzamentos - https://www.youtube.com/watch?v=Suel9Q8h0Bg
 	
 - GitHub:
