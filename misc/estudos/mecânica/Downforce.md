@@ -6,3 +6,5 @@ O sistema de downforce serve para aumentar a força normal do robô e, assim, au
 Abaixo está um exemplo de turbina que é usada:
 
 <img src="../media/img/turbina.jpeg" height="300">
+
+Aqui está o link para um vídeo que mostra o funcionamento dele: [video_succao.mp4](../media/img/video_succao.mp4)
