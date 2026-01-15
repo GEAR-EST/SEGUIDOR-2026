@@ -1,7 +1,15 @@
-Lista de componentes essenciais:
+Aqui estará destacado os componentes eletrônicos do robô e uma breve descrição de como ele será usado:
 
-- ESP32 - Microcontrolador principal
-- TB6612FNG - Driver Ponte H para controle dos motores
-- QTR-8RC - Sensores de linha principais, que ficam na parte frontal
-- Bateria LiPo (2S ou 3S) - Baterias para alimentação do circuito
-- IRFZ44N - MOSFET para a turbina, compatível com a ESP32
+| Componente             | Descrição                                                                                                                                                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ESP32                  | É o microcontrolador principal, ele será usado pois tem rápido processamento, é de baixo custo, possui conectividade bluetooth e (principalmente) possui 2 núcleos para provessamento em paralelo.                                                              |
+| TB6612FNG              | Ponte H para controle dos dois motores N20. Ela tem uma boa precisão dos comando PWM, uma corrente nominal copatível com os motores que estão sendo usados, boa integração com a ESP32 e também é de baixo custo.                                               |
+| QTR-8RC                | É o sensor principal do projeto, ele é um array (conjunto) de 8 sensores de refletância infravermelho de alta precisão ideal para seguidores de linha. Além disso, já possui uma biblioteca própria, o que facilita o desenvolvimento do algoritmo de controle. |
+| Sensor de Refletância  | Para identificar as linhas laterais e de início e fim de percurso é necessário apenas um sensor de refletância simples em cada lado, ao invés de um array de sensores.                                                                                          |
+| Bateria LiPo           | Baterias de LiPo são ótimas para sempre conseguir entregar a corrente que o circuito pede. O ideal é que tenha uma bateria para testes (geralmente maior que 500mAh) e outra para a competição (menor que 500mAh).                                              |
+| IRLZ44N                | Transistor de efeito de campo (MOSFET) para controle da turbina de sucção. Ela já possui boa integração com a ESP32 e com o motor Coreless.                                                                                                                     |
+| 1N4007                 | Diodo de Flyback essencial para proteger o MOSFET contra picos de tensão reversos. Deve ser colocado em paralelo com o motor da turbina.                                                                                                                        |
+| N20 3000RPM            | Motor principal de locomoção. É um micro motor com alto RPM e relativo alto torque, ideal para a locomoção do seguidor.                                                                                                                                         |
+| Coreless (> 10000 RPM) | Motor para o sistema de sucção. É o mesmo tipo de motor usado em drones, eles são sem núcleo (coreless), assim conseguem atingir maiores RPM sem muitas dificuldades. É possível aplicar a técnica de overvoltage para aumentar ainda mais o RPM.               |
+
+***OBS**: neste arquivo você pode complementar com mais informações técnicas acerca das características dos componentes, como corrente máxima, instruções de como usar no circuito e etc.* 
