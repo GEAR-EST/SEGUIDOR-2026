@@ -1,0 +1,3 @@
+A eletrônica do seguidor de linha é uma das partes fundamentais para a evolução do projeto, dependendo da abordagem ela pode se tornar mais simples ou (muito) mais complexa.
+
+Neste estudo estará sendo destacado os [Componentes](./Componentes.md) que serão usados no robô; uma descrição dos pinos dos componentes em [Pinout](./Pinout.md) e, por fim, uma discussão acerca das vantagens e desafios de fazer uma [PCB](./PCB.md) profissional. 

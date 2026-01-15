@@ -1,0 +1,3 @@
+O controle do seguidor de linha é a parte mais importante para seu funcionamento autônomo. Ele tem como base o [Controle PID](./Controle%20PID), que é um algoritmo de controle muito usado em projetos de automação.
+
+A ideia é utilizar os principais recursos da ESP32, como o Bluetooth para a [Interface](./Interface) e seus dois núcleos (Dual-core), com o uso do sistema operacional [FreeRTOS](./FreeRTOS).

@@ -1,0 +1,3 @@
+Existem várias estratégias de mapeamento de pista, porém a maioria usa um Encoder no motor para saber o tempo, a posição e a velocidade do motor em dado trecho do circuito. Porém, vamos adotar uma abordagem que não precisa de Encoder, facilitando assim a lógica de mapeamento.
+
+A lógica consiste em contar a quantidade de pulsos do sensor laterial de indicador de curva e, com base nisso, definir a velocidade e aceleração em determinado trecho da pista. Mais sobre esse modelo de mapeamento pode ser visto em: [Apresentação_Phoenix.pdf](estudos/media/pdf/Apresentação_Phoenix.pdf) 

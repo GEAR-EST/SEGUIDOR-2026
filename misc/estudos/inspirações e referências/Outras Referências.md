@@ -1,6 +1,7 @@
 Aqui estará listadas outras fontes de informação e referências para o desenvolvimento do Seguidor de Linha.
 
 - Projetos de Seguidor:
+	- Zé do ZigZag, da Equipe GEAR - https://github.com/GEAR-projects/SEGUIDOR_PRO_2025/
 	- Raijin, da Equipe Raiju - https://raiju.team/projects/raijin
 	- Tracer, da Equipe ThundeRatz - https://thunderatz.org/projects/robots/tracer
 	- Apollon, de Shachiku Hakase (campeão japonês) - http://ak-rcroom.com/sakuhin/robotrace/robotrace_2024/
