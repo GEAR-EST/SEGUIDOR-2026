@@ -24,6 +24,6 @@ O design do projeto a ser desenvolvido está bastante ligado com os robôs de co
 - **Sensores Auxiliares:** Sensores laterais para ler marcas de cruzamento/início de curva (necessário para a lógica de aceleração) e parada.
 - **Alimentação:** Bateria LiPo (2S ou 3S - dimensionada para N20, Coreless e ESP).
 ### [Lógica de controle](./lógica%20de%20controle/Lógica%20de%20controle.md)
-- **Controle:** PID Clássico Reativo.
+- **Controle:** PID Clássico Discreto.
 - **Navegação:** Mapeamento simplificado (contagem de marcadores laterais para saber em qual reta/curva está a aplicar a lógica de aceleração em trechos retos)
 - **IHC:** Usar o app Serial Bluetooth Terminal para alterar parâmetros (PID, Velocidade Máxima), trocar estados da FSM (Parado, Calibração, Corrida) e alterar estratégias de corrida pré estabelecidas (Conservador, Arriscado).
