@@ -20,6 +20,29 @@ A téncica vista no vídeo consiste o seguinte, temos uma trilha externa (Top) n
 links úteis: 
 - https://youtu.be/B2n9fwoOa6U?si=KViPhgb7k_YMhNGQ
 
+#  Malhas de aterramento para dissipação térmica
+
+A malha que criamos no zone mode é chamado de plano de aterramento (ground plane) onde ao invés de ligarmos cada componente ao GND de trilhas finas a gente cria uma área grande de cobre e definimos que essa área pertence à net GND e assim todos os pads GND que estiverem dentro dessa área se conectam automaticamente, asssim reduzindo o número de trilhas. Com isso podemos ter algumas vantagens, como: menor resistência, menor ruído elétrico, melhor dissipação térmica e um layout mais limpo.
+
+## Organização das Camadas da PCB
+
+Em placas de duas camadas, que imagino que se fomos mandar fazer faríamos de duas camadas, a malha de GND é colocada no bottom copper (camada inferior da placa) e essa organização é bastante comum pois o plano GND no bottom consegue atribuir algumas vantagens que foram apresentadas anteriomente. 
+
+## Criação da Malha de GND no software EDA
+
+Para criarmos essa malha, utilizamos o chamado zone mode no software EDA escolhido, no caso no vídeo que eu vi ele ensinava a fazer isso no Proteus, assim desenhamos um retângulo contornando praticamente toda a placa. Em seguida, define-se que a zona pertence à camada Bottom Copper e que sua net é GND. A partir desse momento, toda a área interna desse polígno passsa a ser preenchida automaticamente com cobre conectado ao GND. Quando a net da zona é definida como GND, o software entende que qualquer pad de componente que também esteja na net GND deve se conectar eletricamente a essa área de cobre. Essa conexão geralmente é feita por meio de thermal reliefs ( pequenas "abas" de cobre), que facilita a soldagem e controlam a dissepação térmica.
+
+## Remoção de Trilhas Individuais de GND
+
+Após o processo anterior, temos que muitas das trilhas de aterramento que supondo um esquema de circuito onde havi vários GNDS conectados a componentes individuais deixam de ser necessária. Isto vai ocorrer porque os pinos do GND dos componentes já estão conectados diretamente ao plano de aterramento no caso só o fato de ela está dentro da zona que fizemos ela ja vai ter seu GND preenchido. Assim, é possível a gente remover essas trilhas individuais desde que a gente confirme no próprio EDA que todos os pads estão realmente conectados à malha.
+
+## Uso de Vias na Malha de GND
+
+Algo bem interessante que vi em vídeo sobre esse assunto é introduzir vias nas malhas que são pequenos furos metalizados que atravessam a PCB e permite a conexão elétrica entre camadas e assim ela passa a fazer parte do plano de aterramento. Com essas vias temos um ponto de GND acessível e qualquer coisa conectada a essa via estará em GND. Uma outra coisa interessante é que se fizermos várias vias espalhadas pela malha isso acaba ajudando a diminuir a impedância do GND, melhorar o caminho de retorno da corrente e reduzir o ruído elétrico, e essa técnica recebe o nome de via stitching (costura de vias), ou seja, acaba virando um dissipador. Uma observação importante é que para tudo funcione corretamente, a via precisa estar associada à net correta (GND). Se não, a propria malha de GND irá isolar a via, impedindo a conexão elétrica.
+
+links úteis:
+- https://youtu.be/0cQZHUqz0dk?si=qvPWJWFBskB12dSh
+
 
 
 
