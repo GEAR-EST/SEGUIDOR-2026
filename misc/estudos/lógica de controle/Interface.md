@@ -7,3 +7,21 @@ A interface humano computador deve:
 - Alterar a FSM: parado, correndo, calibrando, etc
 - Alterar os parâmetros PID: kp, ki e kd
 - Alterar a estratégia de corrida (conservador, arriscado, etc
+
+# Máquina de Estados Finita (FSM)
+
+O robô precisa seguir determinada sequência de comandos e ações para o devido funcionamento, nesse aspecto, podemos representar isso por meio de uma máquina de Estados Finita. Cada estado define uma situação relevante do sistema, sendo possível avançar, recuar ou permanecer no estado conforme o fluxo da máquina. Consegue-se implementar uma FSM na linguagem de programação C, via `switch-case`, em que há uma variável de controle para armazenar o estado atual e cada ``case`` determina cada estado diferente. As principais informações foram retiradas desse site: [Máquinas de Estado - Embarcados](https://embarcados.com.br/maquina-de-estado/).
+
+Foi feito o diagrama de Máquina de Estados Finita (FSM) no draw.io baseado, principalmente, nos projetos de robô seguidor de linha e perseguidor de linha da [equipe Raiju](https://raiju.team/projects/raijin) da USP e o projeto de 2025 do [G.E.A.R](https://github.com/GEAR-projects/SEGUIDOR_PRO_2025/).
+
+![FSM_Seguidor_e_Perseguidor_de_Linha](<images/FSM-Seguidor e Perseguidor de Linha.drawio.png>)
+- *Desligado* - estado inicial e final, em que o robô está inativo eletronicamente.
+- *Parado Ocioso* - estado ao ligar, parado esperado o próximo comando humano, sendo possível mudar parâmetros.
+- *Parado Calibrado* - estado após a calibração feita.
+- *Seguidor de Linha e Perseguidor* - Estados que representam os dois modos do robô.
+- *Conservado e Arriscado* - Estados que definem a estratégia escolhida para o futuro momento do funcionamento do robô, que possuem paramêtros diferentes.
+- *Corrida* - Estado do robô em movimento durante a volta.
+- *Parado Concluído* - Termino da volta, seja por detecção da faixa de parada ou comando de parada.
+
+O esqueleto do código da FSM pode ser encontrado [aqui](codes/FSM(Switch-case).cpp).
+
