@@ -64,7 +64,7 @@ xTaskCreatePinnedToCore(
 
 # Código teste com FreeRTOS
 
-Realizei uma simulação no simulador online *Wowki* para testar um código usando FreeRTOS para rodar tarefas independentes nos dois núcleos do ESP32. Baseei-me no [seguinte vídeo](https://youtu.be/V-RGB5yem-Q?si=ChZkxIBFHI3l-eHI), para realizar a simulação do BLINK de dois LEDs, cada um num dos núcleos. O código do teste está [aqui](codes/Blink_Dual_Core_ESP32.cpp).
+Realizei uma simulação no simulador online *Wowki* para testar um código usando FreeRTOS para rodar tarefas independentes nos dois núcleos do ESP32. Baseei-me no [seguinte vídeo](https://youtu.be/V-RGB5yem-Q?si=ChZkxIBFHI3l-eHI), para realizar a simulação do BLINK de dois LEDs, cada um num dos núcleos. O código do teste está [aqui](codes/Blink_Dual_Core_ESP32.cpp). A simulação no Wowki está [aqui](https://wokwi.com/projects/454621177912524801).
 
 ![GIF_BLINK_DUAL_CORE](<images/FreeRTOS Dual-core Programming-1.gif>)
 
