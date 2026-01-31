@@ -25,3 +25,21 @@ Foi feito o diagrama de Máquina de Estados Finita (FSM) no draw.io baseado, pri
 
 O esqueleto do código da FSM pode ser encontrado [aqui](codes/FSM(Switch-case).cpp).
 
+# Bluetooth no ESP32
+O Bluetooth é um tecnologia robusta, de baixo consumo e custom, que opera de forma sem fio (wireless) para troca de dados em curtas distâncias. O Esp32 é Bluetooth dual-mode, podendo operar tanto na categoria Bluetooth Clássico e Bluetooth Low Energy (BLE). 
+
+O Bluetooth Clássico foi projeto para conexões contínuas e fluxos de dados pesados, por exemplo, áudio e arquivos grandes. Já o BLE foi projetado para ser duradouro de consumo baixissimo, enviando pequenos pacotes de dados.
+
+Baseado nas informações dessa
+[versão da ESP32](https://www.robocore.net/wifi/esp32-wifi-bluetooth?srsltid=AfmBOop8iqMsq-R0HSUzLCX_tMgmTOFL_HXxRb80_gBCo7PlyySzLXxj) vendida pela Robocore, com Wifi + Bluethooth.
+
+- UART HCI Interface: até 4 Mbps
+
+    Comunicação rápida entre o núcleo que opera o Bluetooth e o rádio, quase instantânea.
+
+- Segue a versão 4.2 do padrão Bluetooth.
+
+Arquivos utéis:
+- [GEAR: Capacitação Embarcados - ESP32 ](files/esp32_datasheet_en.pdf)
+- [Datasheet ESP32](files/esp32_datasheet_en.pdf)
+# Serial Bluetooth Monitor

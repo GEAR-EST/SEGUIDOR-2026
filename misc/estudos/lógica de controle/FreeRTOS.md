@@ -12,10 +12,10 @@ Os sistemas operacionais focam na interação humana, sendo assim, prioriza as t
 
 Se, por um lado, o super loop comum do arduino (tarefas executadas de forma cíclica, dentro de loop infinito no `void loop()`, depois da execução de configurações do setup) economiza ciclos de CPU e memória e permite uma depuração mais fácil, por outro, as tarefas são sequenciais, então atrasos podem ser tornar comuns. Por isso, precisa-se de outras estratégias para rodar tarefas de precisão abaixo de 1ms.
 
-Informações retiradas do seguinte vídeo.
+Informações retiradas do seguinte [vídeo](https://youtu.be/F321087yYy4?si=1BhxUmMYeGpbhGLA).
 
 # Por que usar RTOS?
-O RTOS permite o gerenciamento de tarefas "simultaneas", como ler sensores e processar esses dados ao mesmo tempo, lida muito bem com wi-fi/bluetooth que exigem muito processamento e respostas rápidas e, por último, possibilita a prioridade de tarefas. Em outras palavras, ideial quando se precisa de simultaneidade e precisão de tempo. O RTOS mais popular para IoT é o FreeRTOS.
+O RTOS permite o gerenciamento de tarefas "simultâneas", como ler sensores e processar esses dados ao mesmo tempo, lida muito bem com wi-fi/bluetooth que exigem muito processamento e respostas rápidas e, por último, possibilita a prioridade de tarefas. Em outras palavras, ideial quando se precisa de simultaneidade e precisão de tempo. O RTOS mais popular para IoT é o FreeRTOS.
 
 # Programação Dual-Core no FreeRTOS
 
