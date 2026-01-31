@@ -40,6 +40,6 @@ Baseado nas informações dessa
 - Segue a versão 4.2 do padrão Bluetooth.
 
 Arquivos utéis:
-- [GEAR: Capacitação Embarcados - ESP32 ](files/esp32_datasheet_en.pdf)
+- [GEAR: Capacitação Embarcados - ESP32](<files/Capacitação Embarcados - ESP32.docx.pdf>)
 - [Datasheet ESP32](files/esp32_datasheet_en.pdf)
 # Serial Bluetooth Monitor
