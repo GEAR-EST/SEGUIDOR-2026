@@ -1,18 +1,13 @@
-# *Insira aqui o nome do repositório. Ex: ARTBOT-2026*
-
-*Este diretório tem como objetivo toda a documentação especificamente **técnica** do robô. Ou seja, como ele funciona por completo e com informações detalhadas da programação, eletrônica e mecânica*
+# SEGUIDOR-2026
 
 ## Introdução
 
-O projeto se trata de um robô *(categoria do robô)* de alto desempenho utilizado para a competição *(nome da competição)*. *Aqui você pode adicionar mais informações sobre o robô se achar relevante, mas não ultrapassar a marca de 100 palavras*
+O projeto se trata de um robô Seguidor de Linha de alto desempenho utilizado para a competição Robocore Experience. *Adicionar mais informações sobre o robô. Não ultrapassar 100 palavras.*
 
-*Adicionar aqui uma foto real do robô, para ver a sintaxe em Markdown de como colocar imagem, veja o comentário ao editar esse aquivo*
 <!-- ![Nome do robô](img/nome_do_arquivo.png)  -->
 <!-- **Figura 1:** *(nome do robô)* -->
 
 ## 1. Bill of Materials (BOM)
-
-*Adicione aqui a lista de todos os materiais usados no robô. A seguir tem apenas um exemplo, adicionar coisas como motor, microcontrolador, pneu, etc, que sua equipe usou no desenvolvimento do robô*
 
 Na tabela a seguir será possível observar a lista com todos os componentes utilizados para a construção do robô:
 
