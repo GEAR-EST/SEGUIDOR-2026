@@ -131,3 +131,7 @@ void loop() {
 ```
 
 Upe o código no ESP32 físico e ajuste para baud rate de 115200 no Monitor Serial do computador. Liga bluetooth no aparelho android. Após isso, encontrar em devices (dispositivos) o nome do bluetooth do ESP32 pra se conectar, nesse exemplo, ESP32-BT-Slave. Depois de se conectar, o terminal do aplicativo e o monitor serial podem se comunicar.
+
+# Aplicativo com Kotlin 
+## Informações utéis
+- [Conectividade Bluetooth](https://developer.android.com/develop/connectivity/bluetooth?hl=pt-br)
