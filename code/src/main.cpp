@@ -1,9 +1,32 @@
-#include <Arduino.h>
+#include <BluetoothSerial.h>
 
 void setup() {
-  // O seu código de inicialização vai aqui, para ser executado uma vez:
+  Serial.begin(115200);
+
+
+  xTaskCreatePinnedToCore(
+    ControlsTask,
+    "Task_PID",
+    4096,
+    NULL,
+    3,
+    &Task1,
+    1
+  );
+
+  xTaskCreatePinnedToCore(
+    CommunicationTask,
+    "Task_BT",
+    4096,
+    NULL,
+    1,
+    &Task2,
+    0
+  );
+  
 }
 
-void loop() {
-  // O seu código principal vai aqui, para ser executado repetidamente:
+void loop() 
+{
+  vTaskDelete(NULL);
 }
