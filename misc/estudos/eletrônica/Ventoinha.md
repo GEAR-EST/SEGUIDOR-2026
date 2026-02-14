@@ -35,5 +35,23 @@ Basicamente ele é o intermediador entre a esp32 e o motor e também o responsá
 
 # Diodo de flyback (proteção do mosfet e do circuito)
 
-Primero, os motores não são cargas normais onde dentre deles existem bobinas, campo magnético e energia armazenada. Quando o motor fica ligado a corrente passa pela bobina e cria um campo magnético e quando você desliga ele o campo magnético colapsa e com isso a bobina tenta manter a corrente, porém ao fazer isso é gerado uma tensão reversa muito alta o que pode acabar queimando o mosfet, travar a esp32, gera ruído no circuito (nosso arqui inimigo) e reduzir a vida útil dos componentes e isso acontece toda vez que o motor desliga principalmente com PWM.
+Primero, os motores não são cargas normais onde dentro deles existem bobinas, campo magnético e energia armazenada. Quando o motor fica ligado a corrente passa pela bobina e cria um campo magnético e quando você desliga ele o campo magnético colapsa e com isso a bobina tenta manter a corrente, porém ao fazer isso é gerado uma tensão reversa muito alta o que pode acabar queimando o mosfet, travar a esp32, gera ruído no circuito (nosso arqui inimigo) e reduzir a vida útil dos componentes e isso acontece toda vez que o motor desliga principalmente com PWM. Chamamos isso de pico de tensão reverso (back EMF)
 
+## Onde que entra o diodo Flyback nessa jogada?
+
+Esse diodo funcionará como um caminho seguro para essa energia passar e quando o motor desliga a tensão tenta voltar pelo circuito, porém o diodo entra em condução fazendo assim que a energia circule apenas pelo próprio motor e assim o pico é dissipado. Consequentemente fazendo isso conseguimos manter nosso MOSFET seguro, ter um circuito estável e menos ruído.
+
+O diodo deve ser ligado em em paralelo com o motor com a ligação correta sendo:
+
+- Catodo --> no lado positivo do motor
+- Anodo --> no lado que vai para o mosfet (Drain)
+
+OBS: Tomar muito cuidado para não ligar o diodo invertido, pois se ele for ligado errado pode gerar um curto circuito nele e o motor não funcionar
+
+Então resumindo o diodo flyback é algo crucial em nosso circuito pois sem ele o circuito fica instável e os componentes podem ser danificados, já com ele o sistema fica mais robusto e dar maior vida útil aos nossos componentes
+
+## Qual diodo usar?
+
+Atualmente, estamos usando o diodo 1N4007
+
+Outras opções também boas podem ser o Schottky (SS14, SS34), FR107 e UF4007.
