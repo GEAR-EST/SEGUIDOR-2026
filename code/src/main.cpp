@@ -1,4 +1,7 @@
+#include <Arduino.h>
 #include <BluetoothSerial.h>
+#include "controls.h"
+#include "communication.h"
 
 void setup() {
   Serial.begin(115200);
@@ -10,7 +13,7 @@ void setup() {
     4096,
     NULL,
     3,
-    &Task1,
+    NULL,
     1
   );
 
@@ -20,7 +23,7 @@ void setup() {
     4096,
     NULL,
     1,
-    &Task2,
+    NULL,
     0
   );
   
