@@ -1,4 +1,5 @@
 #include <QTRSensors.h>
+#include <Preferences.h>
 #define RightSensor 9
 #define LeftSensor 8
 
