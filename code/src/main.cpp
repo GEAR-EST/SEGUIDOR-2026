@@ -6,16 +6,7 @@
 void setup() {
   Serial.begin(115200);
 
-
-  xTaskCreatePinnedToCore(
-    ControlsTask,
-    "Task_PID",
-    4096,
-    NULL,
-    3,
-    NULL,
-    1
-  );
+  xTaskCreatePinnedToCore(ControlsTask, "Task_PID", 4096, NULL, 3, NULL, 1);
 
   xTaskCreatePinnedToCore(
     CommunicationTask,
@@ -29,7 +20,6 @@ void setup() {
   
 }
 
-void loop() 
-{
-  vTaskDelete(NULL);
+void loop() {
+  
 }
