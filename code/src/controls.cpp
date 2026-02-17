@@ -1,4 +1,5 @@
 #include "controls.h"
+#include "motordriver.h"
 
 uint16_t readRight;
 uint16_t readLeft;
@@ -88,6 +89,13 @@ void _setup() {
     //configuração dos sensores laterais
     pinMode(RightSensor, INPUT);
     pinMode(LeftSensor, INPUT);
+
+    //motor driver pin mode
+
+    pinMode(PWMA, OUTPUT); pinMode(PWMB, OUTPUT);
+    pinMode(A11, OUTPUT); pinMode(A12, OUTPUT);
+    pinMode(B11, OUTPUT); pinMode(B12, OUTPUT);
+    pinMode(STBY, OUTPUT);
 
 }
 
