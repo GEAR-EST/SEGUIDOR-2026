@@ -11,7 +11,7 @@ uint16_t readLeft;
 
 QTRSensors qtr;
 const uint8_t SensorCount = 8;
-uint16_t sensorValues[SensorCount]
+uint16_t sensorValues[SensorCount];
 
 Preferences preferences
 
