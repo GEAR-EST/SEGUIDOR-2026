@@ -1,6 +1,8 @@
 #ifndef MOTORDRIVER_H
 #define MOTORDRIVER_H
 
+#include <Arduino.h>
+
 //pin connections
 
 #define PWMA 21
@@ -13,5 +15,9 @@
 #define B12 19
 
 #define STBY 5
+
+extern int VELOCIDADE;
+
+void controlMotors(int left, int right);
 
 #endif

@@ -1,10 +1,13 @@
 #include "controls.h"
 #include "motordriver.h"
 #include "sensors.h"
+#include "pid.h"
 
 uint16_t readRight;
 uint16_t readLeft;
 uint16_t sensorValues[SensorCount];
+
+PID pid;
 
 void _setup() {
 
@@ -36,6 +39,10 @@ void _setup() {
 void _loop() {
 
     uint16_t pos = qtr.readLineBlack(sensorValues);
+
+    float output = pid.somatory(3500, pos);
+
+    
 
     //0 = máxima reflectância e 1000 = mínima reflectância
     for (uint8_t i = 0; i < SensorCount; i++){
