@@ -5,8 +5,10 @@
 
 void setup() {
   Serial.begin(115200);
+  delay(1500);
+  Serial.println("Sistema Iniciando...");
 
-
+/*
   xTaskCreatePinnedToCore(
     ControlsTask,
     "Task_PID",
@@ -16,11 +18,11 @@ void setup() {
     NULL,
     1
   );
-
+*/
   xTaskCreatePinnedToCore(
     CommunicationTask,
     "Task_BT",
-    4096,
+    8192,
     NULL,
     1,
     NULL,
@@ -31,5 +33,5 @@ void setup() {
 
 void loop() 
 {
-  vTaskDelete(NULL);
+  delay(1000);
 }

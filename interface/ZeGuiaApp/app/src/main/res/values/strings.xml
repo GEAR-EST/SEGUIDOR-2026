@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ZeGuiaApp</string>
+    <string name="button_name">Ligar Bluetooth</string>
+    <string name="switch_name">LED</string>
+</resources>
