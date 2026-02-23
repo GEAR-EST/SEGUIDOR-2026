@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ZeGuiaApp</string>
-    <string name="button_name">Ligar Bluetooth</string>
+    <string name="button_name">Bluetooth</string>
     <string name="switch_name">LED</string>
+    <string name="bt_k_name">Calibrar</string>
+    <string name="bt_r_name">Começar Corrida</string>
+    <string name="bt_f_name">Finalizar Corrida</string>
 </resources>

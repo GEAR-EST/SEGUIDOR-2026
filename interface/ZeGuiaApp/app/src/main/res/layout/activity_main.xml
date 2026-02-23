@@ -7,35 +7,58 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#1B5E20"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zé Guia - APP"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_gravity="center" />
+
+    </androidx.appcompat.widget.Toolbar>
+
     <Button
-        android:id="@+id/bluetooth"
-        android:layout_width="228dp"
-        android:layout_height="162dp"
-        android:layout_marginTop="150dp"
-        android:text="@string/button_name"
-        android:textSize="32sp"
+        android:id="@+id/stop"
+        android:layout_width="154dp"
+        android:layout_height="87dp"
+        android:backgroundTint="#8E1212"
+        android:text="@string/bt_f_name"
+        android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.859"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.515" />
 
     <LinearLayout
-        android:layout_width="207dp"
-        android:layout_height="161dp"
+        android:layout_width="139dp"
+        android:layout_height="110dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.812"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.607">
+        app:layout_constraintVertical_bias="0.162">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="@string/switch_name"
-            android:textSize="32sp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.SwitchCompat
@@ -43,8 +66,92 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleX="2.0"
-            android:scaleY="2.0"
-            />
+            android:scaleY="2.0" />
 
     </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="139dp"
+        android:layout_height="110dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.194"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.162">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/button_name"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/bluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX="2.0"
+            android:scaleY="2.0" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/run"
+        android:layout_width="154dp"
+        android:layout_height="87dp"
+        android:backgroundTint="#306F33"
+        android:text="@string/bt_r_name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.147"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.526" />
+
+    <Button
+        android:id="@+id/calibrate"
+        android:layout_width="154dp"
+        android:layout_height="87dp"
+        android:backgroundTint="#DB6441"
+        android:text="@string/bt_k_name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.363"
+        app:rippleColor="#874646" />
+
+    <ScrollView
+        android:id="@+id/scrollMonitor"
+        android:layout_width="355dp"
+        android:layout_height="163dp"
+        android:layout_alignParentBottom="true"
+        android:background="#333232"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.845">
+
+        <TextView
+            android:id="@+id/txtSerial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:text="Aguardando dados..."
+            android:textColor="#00FF00"
+            android:textSize="12sp" />
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
