@@ -7,12 +7,10 @@ enum RobotCommand
     CMD_LED_OFF,
     CMD_NONE,
     CMD_CALIBRATE,
-    CMD_MODE,
-    CMD_STRATEGY,
-    CMD_RISK,
-    CMD_CONSERVATIVE,
-    CMD_RUN,
-    CMD_END,
+    CMD_SET_MODE,
+    CMD_SET_STRATEGY,
+    CMD_START,
+    CMD_STOP,
     CMD_INFORMATION
 };
 

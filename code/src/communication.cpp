@@ -1,5 +1,6 @@
 #include "communication.h"
 #include "commands.h"
+#include "robot_state.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -8,8 +9,11 @@ String bt_device = "Ze-Guia_BT";
 
 void BluetoothConnection();
 void SerialMonitorChecked(RobotCommand cmd);
+void SerialMonitorCheckedMode(RobotMode md);
+void SerialMonitorCheckedStg(RobotStrategy stg);
 
-void CommunicationTask(void* pvParameters) {
+void CommunicationTask(void* pvParameters) 
+{
     pinMode(2, OUTPUT);
 
     BluetoothConnection();
@@ -22,6 +26,9 @@ void CommunicationTask(void* pvParameters) {
             Serial.println(msg);
 
             RobotCommand cmd = CMD_NONE;
+            RobotMode md = MODE_NONE;
+            RobotStrategy stg = S_NONE;
+            
             
             switch(msg)
             {
@@ -40,16 +47,46 @@ void CommunicationTask(void* pvParameters) {
                     SerialMonitorChecked(cmd);
                     break;
                 case 'R': //começar corrida
-                    cmd = CMD_RUN;
+                    cmd = CMD_START;
                     SerialMonitorChecked(cmd);
                     break;
                 case 'F': //finalizar corrida
-                    cmd = CMD_END;
+                    cmd = CMD_STOP;
                     SerialMonitorChecked(cmd);
                     break;
-                
+                case 'M': //escolher o modo
+                     cmd = CMD_SET_MODE;
+                     SerialMonitorChecked(cmd);
+                     break;
+                case 'S': // modo seguidor
+                     md = MODE_FOLLOWER;
+                     SerialMonitorCheckedMode(md);
+                     break;
+                case 'P': // modo perseguidor
+                     md = MODE_CHASE; 
+                     SerialMonitorCheckedMode(md);
+                     break;
+                case 'E': //escolher estrategia
+                     cmd = CMD_SET_STRATEGY;
+                     SerialMonitorChecked(cmd);
+                     break;
+                case 'C': // estrategia conservador
+                     stg = S_CONSERVATIVE;
+                     SerialMonitorCheckedStg(stg);
+                     break;
+                case 'A': //estrategia arriscado
+                     stg = S_RISK;
+                     SerialMonitorCheckedStg(stg);
+                     break;
+                case 'I': //mostrar informacao 
+                     cmd = CMD_INFORMATION;
+                     SerialMonitorChecked(cmd);
+                     break;
+
                 default:
                     cmd = CMD_NONE;
+                    md = MODE_NONE;
+                    stg = S_NONE;
                     break;
                 
             }
@@ -108,14 +145,52 @@ void SerialMonitorChecked(RobotCommand cmd)
             SerialBT.println("Robo calibrando");
             break;
 
-        case CMD_RUN:
+        case CMD_START:
             Serial.println("Robo comecando a corrida");
             SerialBT.println("Robo comecando a corrida");
             break;
 
-        case CMD_END:
+        case CMD_STOP:
             Serial.println("Robo finalizou a corrida");
             SerialBT.println("Robo finalizou a corrida");
+            break;
+
+        default:
+            break;
+    }
+}
+
+void SerialMonitorCheckedMode(RobotMode md)
+{
+    switch(md)
+    {
+        case MODE_FOLLOWER:
+            Serial.println("Modo selecionado: SEGUIDOR");
+            SerialBT.println("Modo selecionado: SEGUIDOR");
+            break;
+
+        case MODE_CHASE:
+            Serial.println("Modo selecionado: PERSEGUIDOR");
+            SerialBT.println("Modo selecionado: PERSEGUIDOR");
+            break;
+
+        default:
+            break;
+    }
+}
+
+void SerialMonitorCheckedStg(RobotStrategy stg)
+{
+    switch(stg)
+    {
+        case S_CONSERVATIVE:
+            Serial.println("Estrategia selecionada: CONSERVADOR");
+            SerialBT.println("Estrategia selecionada: CONSERVADOR");
+            break;
+
+        case S_RISK:
+            Serial.println("Estrategia selecionada: ARRISCADO");
+            SerialBT.println("Estrategia selecionada: ARRISCADO");
             break;
 
         default:
