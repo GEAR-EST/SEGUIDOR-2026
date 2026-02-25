@@ -14,7 +14,7 @@ O robô precisa seguir determinada sequência de comandos e ações para o devid
 
 Foi feito o diagrama de Máquina de Estados Finita (FSM) no draw.io baseado, principalmente, nos projetos de robô seguidor de linha e perseguidor de linha da [equipe Raiju](https://raiju.team/projects/raijin) da USP e o projeto de 2025 do [G.E.A.R](https://github.com/GEAR-projects/SEGUIDOR_PRO_2025/).
 
-![FSM_Seguidor_e_Perseguidor_de_Linha (v.2)](<images/FSM-Seguidor e Perseguidor de Linha (v2).jpg>)
+![FSM_Seguidor_e_Perseguidor_de_Linha (v.2)](<images/FSM-Seguidor ePerseguidordeLinha(v3).jpg>)
 - *Desligado* - estado inicial e final, em que o robô está inativo eletronicamente.
 - *Parado* - estado ao ligar, parado esperado o próximo comando humano.
 - *Parado Calibrado* - estado após a calibração feita.
