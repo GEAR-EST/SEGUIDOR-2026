@@ -14,14 +14,17 @@ O robô precisa seguir determinada sequência de comandos e ações para o devid
 
 Foi feito o diagrama de Máquina de Estados Finita (FSM) no draw.io baseado, principalmente, nos projetos de robô seguidor de linha e perseguidor de linha da [equipe Raiju](https://raiju.team/projects/raijin) da USP e o projeto de 2025 do [G.E.A.R](https://github.com/GEAR-projects/SEGUIDOR_PRO_2025/).
 
-![FSM_Seguidor_e_Perseguidor_de_Linha](<images/FSM-Seguidor e Perseguidor de Linha.drawio.png>)
+![FSM_Seguidor_e_Perseguidor_de_Linha (v.2)](<images/FSM-Seguidor e Perseguidor de Linha (v2).jpg>)
 - *Desligado* - estado inicial e final, em que o robô está inativo eletronicamente.
-- *Parado Ocioso* - estado ao ligar, parado esperado o próximo comando humano, sendo possível mudar parâmetros.
+- *Parado* - estado ao ligar, parado esperado o próximo comando humano.
 - *Parado Calibrado* - estado após a calibração feita.
-- *Seguidor de Linha e Perseguidor* - Estados que representam os dois modos do robô.
-- *Conservado e Arriscado* - Estados que definem a estratégia escolhida para o futuro momento do funcionamento do robô, que possuem paramêtros diferentes.
+- *Com Modo (Seguidor ou Perseguidor)* - Estado que representa a escolha entre os dois modos do robô.
+- *Com Estratégia (Conservador e Arriscado)* - Estado que  define a estratégia escolhida para o futuro momento do funcionamento do robô, que possuem paramêtros diferentes.
 - *Corrida* - Estado do robô em movimento durante a volta.
 - *Parado Concluído* - Termino da volta, seja por detecção da faixa de parada ou comando de parada.
+- *Recalibrado* - Possibilidade de recalibração após parar.
+
+O diagrama de FSM pode ser encontrado no draw.io, [aqui](https://drive.google.com/file/d/1oaSej4jX4JBlGdejw2AE11unm4lenKVx/view?usp=sharing).
 
 O esqueleto do código da FSM pode ser encontrado [aqui](codes/FSM(Switch-case).cpp).
 
