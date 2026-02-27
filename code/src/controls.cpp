@@ -30,26 +30,19 @@ void _setup() {
     //motor driver pin mode
 
     pinMode(PWMA, OUTPUT); pinMode(PWMB, OUTPUT);
-    pinMode(A11, OUTPUT); pinMode(A12, OUTPUT);
-    pinMode(B11, OUTPUT); pinMode(B12, OUTPUT);
+    pinMode(AI1, OUTPUT); pinMode(AI2, OUTPUT);
+    pinMode(BI1, OUTPUT); pinMode(BI2, OUTPUT);
     pinMode(STBY, OUTPUT);
 
 }
 
 void _loop() {
 
-    uint16_t pos = qtr.readLineBlack(sensorValues);
-
-    float output = pid.somatory(3500, pos);
-
-    
-
     //0 = máxima reflectância e 1000 = mínima reflectância
     for (uint8_t i = 0; i < SensorCount; i++){
         Serial.print(sensorValues[i]);
         Serial.print('\t');
     }
-    Serial.println(pos);
 
     //Sensores laterais
     readRight = digitalRead(RightSensor);

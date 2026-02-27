@@ -2,21 +2,30 @@
 #define MOTORDRIVER_H
 
 #include <Arduino.h>
+#include <L298NX2.h>
 
 //pin connections
 
 #define PWMA 21
 #define PWMB 15
 
-#define A11 4
-#define A12 2
+#define AI1 4
+#define AI2 2
 
-#define B11 18
-#define B12 19
+#define BI1 18
+#define BI2 19
 
 #define STBY 5
 
-extern int VELOCIDADE;
+// pid controller informations
+
+#define SETPOINT 3500
+
+extern int VEL_MAX;
+extern int VEL_MIN; 
+
+void lineBlack();
+void lineWhite();
 
 void controlMotors(int left, int right);
 
