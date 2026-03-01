@@ -98,10 +98,23 @@ void CommunicationTask(void* pvParameters)
     }
 }
 
+void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
+    if (event == ESP_SPP_SRV_OPEN_EVT) {
+        Serial.println(">>> Celular CONECTADO!");
+        SerialBT.println("Conexão Estabelecida com Zé-Guia");
+    }
+
+    if (event == ESP_SPP_CLOSE_EVT) {
+        Serial.println(">>> Celular DESCONECTADO!");
+    }
+}
+
 void BluetoothConnection()
 {
     Serial.println("Passo 1: Iniciando Bluetooth...");
      SerialBT.println("Passo 1: Iniciando Bluetooth...");
+
+    SerialBT.register_callback(callback);
    
     if (SerialBT.begin(bt_device)) 
     {
@@ -121,6 +134,8 @@ void BluetoothConnection()
     Serial.println(SerialBT.getBtAddressString());
 
 }
+
+
 
 void SerialMonitorChecked(RobotCommand cmd)
 {
@@ -150,6 +165,18 @@ void SerialMonitorChecked(RobotCommand cmd)
             Serial.println("Robo finalizou a corrida");
             SerialBT.println("Robo finalizou a corrida");
             break;
+
+        case CMD_SET_MODE:
+            Serial.println("Escolhendo um modo...");
+            SerialBT.println("Escolhendo um modo...");
+            break;
+        
+        case CMD_SET_STRATEGY:
+            Serial.println("Escolhendo uma estratégia...");
+            SerialBT.println("Escolhendo uma estratégia...");
+            break;
+
+
 
         default:
             break;
