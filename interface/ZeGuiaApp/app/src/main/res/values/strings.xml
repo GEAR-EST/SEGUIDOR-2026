@@ -5,4 +5,7 @@
     <string name="bt_k_name">Calibrar</string>
     <string name="bt_r_name">Começar Corrida</string>
     <string name="bt_f_name">Finalizar Corrida</string>
+    <string name="bt_m_name">Escolher Modo</string>
+
+
 </resources>

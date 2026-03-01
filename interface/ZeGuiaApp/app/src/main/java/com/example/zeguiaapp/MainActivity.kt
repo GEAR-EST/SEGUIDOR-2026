@@ -4,19 +4,15 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothSocket
 import android.os.Bundle
 import androidx.appcompat.widget.SwitchCompat
-import android.widget.Switch
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import java.io.IOException
 import java.util.UUID
-import kotlin.io.outputStream
 import android.Manifest
 import android.os.Build
 import android.content.Context
-import android.bluetooth.BluetoothManager
+import android.content.res.ColorStateList
+import androidx.core.content.ContextCompat
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val address: String = "CC:DB:A7:62:8D:96" // MAC da sua ESP32
     private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -37,21 +34,31 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN), 1)
         }
 
-        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
         btAdapter = bluetoothManager.adapter
 
         val swBluetooth = findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.bluetooth)
         val swLED = findViewById<androidx.appcompat.widget.SwitchCompat>(R.id.LED)
+
+        val txtStatusBluetooth = findViewById<android.widget.TextView>(R.id.txtStatusBluetooth)
+        val txtStatusLED = findViewById<android.widget.TextView>(R.id.txtStatusLED)
+
+        atualizarCoresSwitch(swBluetooth, txtStatusBluetooth, swBluetooth.isChecked, "CONECTADO")
+        atualizarCoresSwitch(swLED, txtStatusLED, swLED.isChecked, "LIGADO")
+
         val btnCalibrar = findViewById<android.widget.Button>(R.id.calibrate)
         val btnStartRun = findViewById<android.widget.Button>(R.id.run)
         val btnStopRun = findViewById<android.widget.Button>(R.id.stop)
+        val btnChooseMode = findViewById<android.widget.Button>(R.id.mode)
+        val btnModeFollower = findViewById<android.widget.Button>(R.id.follower)
+        val btnModeChase = findViewById<android.widget.Button>(R.id.chase)
+        val btnChooseStrategy = findViewById<android.widget.Button>(R.id.strategy)
+        val btnStrategyConservative = findViewById<android.widget.Button>(R.id.conservative)
+        val btnStrategyRisk = findViewById<android.widget.Button>(R.id.risk)
 
 
         swBluetooth.setOnCheckedChangeListener { _, isChecked ->
+            atualizarCoresSwitch(swBluetooth, txtStatusBluetooth, isChecked, "CONECTADO")
             if (isChecked) {
                 conectarBluetooth()
 
@@ -62,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         swLED.setOnCheckedChangeListener { _, isChecked ->
+            atualizarCoresSwitch(swLED, txtStatusLED, isChecked, "LIGADO")
             if (isChecked) {
                 enviarComando("1")
             } else {
@@ -81,9 +89,52 @@ class MainActivity : AppCompatActivity() {
             enviarComando("F")
         }
 
+        btnChooseMode.setOnClickListener {
+            enviarComando("M")
+        }
+
+        btnModeFollower.setOnClickListener {
+            enviarComando("S")
+        }
+
+        btnModeChase.setOnClickListener {
+            enviarComando("P")
+        }
+
+        btnChooseStrategy.setOnClickListener {
+            enviarComando("E")
+        }
+
+        btnStrategyConservative.setOnClickListener {
+            enviarComando("C")
+        }
+
+        btnStrategyRisk.setOnClickListener {
+            enviarComando("A")
+        }
 
     }
+
+    private fun permissaoBluetooth(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            androidx.core.content.ContextCompat.checkSelfPermission(
+                this, Manifest.permission.BLUETOOTH_CONNECT
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
     private fun conectarBluetooth() {
+
+        if (!permissaoBluetooth()) {
+            runOnUiThread {
+                Toast.makeText(this, "Permissão de Bluetooth necessária!", Toast.LENGTH_SHORT).show()
+                findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
+            }
+            return
+        }
+
 
         if (!btAdapter.isEnabled) {
             Toast.makeText(this, "Ative o Bluetooth!", Toast.LENGTH_SHORT).show()
@@ -96,7 +147,6 @@ class MainActivity : AppCompatActivity() {
                 val dispositivo = btAdapter.getRemoteDevice(address)
                 btSocket = dispositivo.createRfcommSocketToServiceRecord(MY_UUID)
 
-                btAdapter.cancelDiscovery()
                 btSocket?.connect()
 
                 continuarEscutando = true
@@ -104,6 +154,7 @@ class MainActivity : AppCompatActivity() {
 
                 runOnUiThread {
                     Toast.makeText(this, "Conectado ao ZeGuia!", Toast.LENGTH_SHORT).show()
+
                 }
 
             } catch (e: IOException) {
@@ -128,6 +179,21 @@ class MainActivity : AppCompatActivity() {
 
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+    }
+
+    private fun atualizarCoresSwitch(switchCompat: androidx.appcompat.widget.SwitchCompat, textView: android.widget.TextView, isChecked: Boolean, textoLigado: String) {
+        if (isChecked) {
+            textView.text = textoLigado
+            textView.setTextColor(android.graphics.Color.parseColor("#00FF66"))
+            switchCompat.thumbTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFFFFF"))
+            switchCompat.trackTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A066FF"))
+        } else {
+            // DESLIGADO (Roxo escuro)
+            textView.text = "DESLIGADO"
+            textView.setTextColor(android.graphics.Color.parseColor("#3D285B"))
+            switchCompat.thumbTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#A09DA5"))
+            switchCompat.trackTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#2E1A47"))
         }
     }
     private fun receberDados() {

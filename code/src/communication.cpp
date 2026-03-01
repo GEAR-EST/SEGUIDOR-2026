@@ -78,10 +78,6 @@ void CommunicationTask(void* pvParameters)
                      stg = S_RISK;
                      SerialMonitorCheckedStg(stg);
                      break;
-                case 'I': //mostrar informacao 
-                     cmd = CMD_INFORMATION;
-                     SerialMonitorChecked(cmd);
-                     break;
 
                 default:
                     cmd = CMD_NONE;

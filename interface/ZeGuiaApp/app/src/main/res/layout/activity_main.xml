@@ -1,157 +1,428 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="#0A0410">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#1B5E20"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    <View
+        android:id="@+id/headerBackground"
+        android:layout_width="0dp"
+        android:layout_height="73dp"
+        android:background="@drawable/topbar_gradient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/titleApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ZÉ-GUIA"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:letterSpacing="0.1"
+        android:fontFamily="@font/orbitron"
+        app:layout_constraintTop_toTopOf="@id/headerBackground"
+        app:layout_constraintBottom_toBottomOf="@id/headerBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <LinearLayout
+        android:id="@+id/statusContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        android:paddingHorizontal="16dp"
+        android:baselineAligned="false"
+        app:layout_constraintTop_toBottomOf="@id/headerBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Zé Guia - APP"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="#130822"
+            app:strokeColor="#2E1A47"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingVertical="20dp"
+                android:paddingHorizontal="12dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    app:srcCompat="@drawable/ic_bluetooth"
+                    app:tint="#A066FF"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BLUETOOTH"
+                    android:fontFamily="@font/orbitron"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/bluetooth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/txtStatusBluetooth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DESLIGADO"
+                    android:fontFamily="@font/orbitron"
+                    android:textColor="#3D285B"
+                    android:textSize="10sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            app:cardBackgroundColor="#130822"
+            app:strokeColor="#2E1A47"
+            app:strokeWidth="1dp"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingVertical="20dp"
+                android:paddingHorizontal="12dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    app:srcCompat="@drawable/ic_led"
+                    app:tint="#A066FF"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LED"
+                    android:fontFamily="@font/orbitron"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/LED"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/txtStatusLED"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DESLIGADO"
+                    android:fontFamily="@font/orbitron"
+                    android:textColor="#3D285B"
+                    android:textSize="10sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/labelControles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CONTROLES"
+        android:fontFamily="@font/orbitron"
+        android:textColor="#A09DA5"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/statusContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="20dp"/>
+
+    <LinearLayout
+        android:id="@+id/controlsContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="12dp"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@id/labelControles"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/calibrate"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="CALIBRAR"
+            android:fontFamily="@font/orbitron"
+            android:textColor="#F39200"
+            app:icon="@drawable/ic_calibrar"
+            app:iconTint="#F39200"
+            app:iconGravity="textStart"
+            app:strokeColor="#F39200"
+            app:strokeWidth="1dp"
+            app:backgroundTint="#1F1200"
+            app:cornerRadius="12dp"
             android:textStyle="bold"
-            android:layout_gravity="center" />
+            android:textSize="14sp"
+            app:rippleColor="#F39200"/>
 
-    </androidx.appcompat.widget.Toolbar>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mode"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:text="SELECIONAR MODO"
+            android:fontFamily="@font/orbitron"
+            android:textColor="#00E5FF"
+            app:strokeColor="#00E5FF"
+            app:strokeWidth="1dp"
+            app:backgroundTint="#00161A"
+            app:cornerRadius="12dp"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            app:rippleColor="#00E5FF"/>
 
-    <Button
-        android:id="@+id/stop"
-        android:layout_width="154dp"
-        android:layout_height="87dp"
-        android:backgroundTint="#8E1212"
-        android:text="@string/bt_f_name"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.859"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.515" />
-
-    <LinearLayout
-        android:layout_width="139dp"
-        android:layout_height="110dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.812"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.162">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/switch_name"
-            android:textSize="25sp"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/LED"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleX="2.0"
-            android:scaleY="2.0" />
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="139dp"
-        android:layout_height="110dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.194"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.162">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/button_name"
-            android:textSize="25sp"
-            android:textStyle="bold" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/bluetooth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleX="2.0"
-            android:scaleY="2.0" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/run"
-        android:layout_width="154dp"
-        android:layout_height="87dp"
-        android:backgroundTint="#306F33"
-        android:text="@string/bt_r_name"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.147"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.526" />
-
-    <Button
-        android:id="@+id/calibrate"
-        android:layout_width="154dp"
-        android:layout_height="87dp"
-        android:backgroundTint="#DB6441"
-        android:text="@string/bt_k_name"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.363"
-        app:rippleColor="#874646" />
-
-    <ScrollView
-        android:id="@+id/scrollMonitor"
-        android:layout_width="355dp"
-        android:layout_height="163dp"
-        android:layout_alignParentBottom="true"
-        android:background="#333232"
-        android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.845">
-
-        <TextView
-            android:id="@+id/txtSerial"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="Aguardando dados..."
-            android:textColor="#00FF00"
-            android:textSize="12sp" />
-    </ScrollView>
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/follower"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="SEGUIDOR"
+                android:fontFamily="@font/orbitron"
+                android:textColor="#00BFFF"
+                app:strokeColor="#00BFFF"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#00111A"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"
+                android:textSize="11sp"
+                app:rippleColor="#00BFFF"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chase"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="PERSEGUIDOR"
+                android:fontFamily="@font/orbitron"
+                android:textColor="#00BFFF"
+                app:strokeColor="#00BFFF"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#00111A"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"
+                android:textSize="11sp"
+                app:rippleColor="#00BFFF"/>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/strategy"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:text="SELECIONAR ESTRATÉGIA"
+            android:fontFamily="@font/orbitron"
+            android:textColor="#E020FF"
+            app:strokeColor="#E020FF"
+            app:strokeWidth="1dp"
+            app:backgroundTint="#16021A"
+            app:cornerRadius="12dp"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            app:rippleColor="#E020FF"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/conservative"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="CONSERVADOR"
+                android:fontFamily="@font/orbitron"
+                android:textColor="#C040FF"
+                app:strokeColor="#C040FF"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#0C0411"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                app:rippleColor="#C040FF"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/risk"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="55dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="ARRISCADO"
+                android:fontFamily="@font/orbitron"
+                android:textColor="#C040FF"
+                app:strokeColor="#C040FF"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#0C0411"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"
+                android:textSize="11sp"
+                app:rippleColor="#C040FF"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/run"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="COMEÇAR\nCORRIDA"
+                android:fontFamily="@font/orbitron"
+                android:textColor="#00FF66"
+                app:icon="@drawable/ic_play"
+                app:iconTint="#00FF66"
+                app:iconGravity="textStart"
+                app:strokeColor="#00FF66"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#00210E"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"
+                android:textSize="11sp"
+                app:rippleColor="#00FF66"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stop"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="FINALIZAR\nCORRIDA"
+                android:fontFamily="@font/orbitron"
+                android:textColor="#FF2A55"
+                app:icon="@drawable/ic_stop"
+                app:iconTint="#FF2A55"
+                app:iconGravity="textStart"
+                app:strokeColor="#FF2A55"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#24000B"
+                app:cornerRadius="12dp"
+                android:textStyle="bold"
+                android:textSize="11sp"
+                app:rippleColor="#FF2A55"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/terminalLabelContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintTop_toBottomOf="@id/controlsContainer"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_dot"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TERMINAL"
+            android:fontFamily="@font/orbitron"
+            android:textColor="#A09DA5"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="#0A0410"
+        app:strokeColor="#2E1A47"
+        app:strokeWidth="1dp"
+        app:cardCornerRadius="12dp"
+        app:layout_constraintTop_toBottomOf="@id/terminalLabelContainer"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ScrollView
+            android:id="@+id/scrollMonitor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/txtSerial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#00FF66"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:lineSpacingExtra="4dp"
+                android:text=" Aguardando dados..."/>
+        </ScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

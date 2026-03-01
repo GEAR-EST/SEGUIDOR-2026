@@ -11,7 +11,6 @@ enum RobotCommand
     CMD_SET_STRATEGY,
     CMD_START,
     CMD_STOP,
-    CMD_INFORMATION
 };
 
 #endif
