@@ -14,14 +14,21 @@ O robô precisa seguir determinada sequência de comandos e ações para o devid
 
 Foi feito o diagrama de Máquina de Estados Finita (FSM) no draw.io baseado, principalmente, nos projetos de robô seguidor de linha e perseguidor de linha da [equipe Raiju](https://raiju.team/projects/raijin) da USP e o projeto de 2025 do [G.E.A.R](https://github.com/GEAR-projects/SEGUIDOR_PRO_2025/).
 
-![FSM_Seguidor_e_Perseguidor_de_Linha](<images/FSM-Seguidor e Perseguidor de Linha.drawio.png>)
+![FSM_Seguidor_e_Perseguidor_de_Linha (v.3)](images/FSM-SeguidorPerseguidorDeLinha(v3).jpg)
 - *Desligado* - estado inicial e final, em que o robô está inativo eletronicamente.
-- *Parado Ocioso* - estado ao ligar, parado esperado o próximo comando humano, sendo possível mudar parâmetros.
-- *Parado Calibrado* - estado após a calibração feita.
-- *Seguidor de Linha e Perseguidor* - Estados que representam os dois modos do robô.
-- *Conservado e Arriscado* - Estados que definem a estratégia escolhida para o futuro momento do funcionamento do robô, que possuem paramêtros diferentes.
-- *Corrida* - Estado do robô em movimento durante a volta.
-- *Parado Concluído* - Termino da volta, seja por detecção da faixa de parada ou comando de parada.
+- *Parado ligado* - estado ao ligar, parado esperado o próximo comando humano.
+- *Calibrado* - estado após a calibração feita.
+- *Modo selecionado (Seguidor ou Perseguidor)* - Estado que representa a escolha entre os dois modos do robô.
+- *Estratégia selecionada (Conservador e Arriscado)* - Estado que  define a estratégia escolhida para o futuro momento do funcionamento do robô, que possuem paramêtros diferentes.
+- *Em Corrida* - Estado do robô em movimento durante a volta.
+- *Parado Concluído* - Término da volta, seja por detecção da faixa de parada ou comando de parada. 
+  
+  Desse estado, pode voltar ao estado de corrida direto com uma nova calibração (sem a necessidade de mudar de modo ou estratégia), uma nova estratégia, os dois juntos, ou sem mudanças.
+  
+  Se desejar mudar modo, deve-se realizar o processo inicial novamente, podendo escolher se calibra novamente, e necessariamente escolher a estratégia, para assim pode entrar no estado de em corrida.  
+
+
+O diagrama de FSM pode ser encontrado no draw.io, [aqui](https://drive.google.com/file/d/1oaSej4jX4JBlGdejw2AE11unm4lenKVx/view?usp=sharing).
 
 O esqueleto do código da FSM pode ser encontrado [aqui](codes/FSM(Switch-case).cpp).
 
