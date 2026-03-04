@@ -1,22 +1,21 @@
+#include "globals.h"
 #include "sensors.h"
 #include "controls.h"
 
 QTRSensors qtr;
 Preferences preferences;
 
-uint16_t readRight;
-uint16_t readLeft;
-uint16_t sensorValues[SensorCount];
-
 void doCalibration(){
 
     digitalWrite(LED_BUILTIN, HIGH);
+    vTaskDelay(pdMS_TO_TICKS(500));
 
+    Serial.println("Calibrando");
     //calibrando
     for (uint16_t i=0; i < 400; i++){
         qtr.calibrate();
-        vTaskDelay(pdMS_TO_TICKS(1));
     }
+
     //para depuração, os valores máximo e mínimos na calibração
     uint16_t max_values[8];
     uint16_t min_values[8];
@@ -43,10 +42,13 @@ void doCalibration(){
     size_t max_values_bytes = sizeof(max_values);
     size_t min_values_bytes = sizeof(min_values);
 
-    preferences.begin("calibration_values", false);
+    preferences.begin("calib", false);
     preferences.putBytes("max_values_array", max_values, max_values_bytes);
     preferences.putBytes("min_values_array", min_values, min_values_bytes);
     preferences.end();
+
+    digitalWrite(LED_BUILTIN, LOW);
+    Serial.println("Calibração terminou :p");
 }
 
 bool readCalibration(){
@@ -54,7 +56,7 @@ bool readCalibration(){
     uint16_t read_max[8];
     uint16_t read_min[8];
 
-    preferences.begin("calibration_values", true);
+    preferences.begin("calib", true);
     size_t read_size_max = preferences.getBytesLength("max_values_array");
     size_t read_size_min = preferences.getBytesLength("min_values_array");
     
