@@ -176,8 +176,6 @@ void SerialMonitorChecked(RobotCommand cmd)
             SerialBT.println("Escolhendo uma estratégia...");
             break;
 
-
-
         default:
             break;
     }

@@ -27,6 +27,6 @@ extern int VEL_MIN;
 void lineBlack();
 void lineWhite();
 
-void controlMotors(int left, int right);
+void controlMotors(int speedA, int speedB);
 
 #endif
