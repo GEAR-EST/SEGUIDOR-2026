@@ -1,9 +1,3 @@
-> *OBS: Este arquivo (README.md) deve ser excluído. Então mesmo que não tenha a seguir textos em itálico, este arquivo por completo deve ser excluído*
-
-> *OBS 2: As imagens de exemplo devem ser apagadas*
-
----
-
 # Diretório de Eletrônica
 
 Este diretório contém todos as informações relacionados ao desenvolvimento eletrônico do robô seguidor de linha do projeto *SEGUIDOR-2026*.
@@ -29,7 +23,7 @@ A alimentação do sistema é fornecida por uma bateria LiPo, sendo distribuída
 
 A alimentação do sistema é fornecida por uma bateria LiPo 2S de 7,4 V. A energia proveniente da bateria é distribuída para diferentes partes do circuito de acordo com a necessidade de cada componente.
 
-<img src="../media/img/circuit_seguidor.png" height="400" width="auto">
+<img src="/misc/estudos/media/img/circuit_seguidor.png" height="400" width="auto">
 
 A tensão da bateria é direcionada para três partes principais do sistema:
 
@@ -76,79 +70,79 @@ Nesta seção são apresentados os diagramas de pinout dos principais componente
 
 ### ESP32 Dev Kit
 
-<img src="../media/img/pinnout_Esp32.jpeg" width="600">
+<img src="/misc/estudos/media/img/pinout_esp32.png" width="600">
 
 Pinout utilizado para identificar as conexões entre a ESP32 e os demais componentes do robô, incluindo sensores, ponte H e MOSFET de acionamento da ventoinha.
 
 ### Ponte H TB6612FNG
 
-<img src="../misc/img/pinout_tb6612.png" height="350">
+<img src="/misc/estudos/media/img/pinout_TB6612FNG.jpeg" height="350">
 
 A ponte H TB6612FNG é utilizada para controlar os dois motores N20 responsáveis pela locomoção do robô. Ela recebe sinais PWM da ESP32 permitindo controlar a velocidade e o sentido de rotação dos motores.
 
 ### Sensor de Linha QTR-8RC
 
-<img src="../misc/img/pinout_qtr8rc.png" height="350">
+<img src="/misc/estudos/media/img/pinout_QTR-8RC.jpeg" height="350">
 
 O sensor QTR-8RC é o sensor principal do robô, sendo responsável pela detecção da linha da pista. Ele é composto por um conjunto de sensores infravermelhos dispostos em forma de array que permitem identificar a posição da linha em relação ao robô.
 
 ### Sensor Infravermelho TCRT5000
 
-<img src="../misc/img/pinout_tcrt5000.png" height="350">
+<img src="/misc/estudos/media/img/pinout_TCRT5000.jpeg" height="350">
 
 Os sensores TCRT5000 são utilizados como sensores auxiliares para detecção de linhas laterais e marcações ao longo da pista. Eles funcionam através da emissão e recepção de luz infravermelha refletida pela superfície.
 
 ### MOSFET IRLZ44N
 
-<img src="../misc/img/pinout_irlz44n.png" height="350">
+<img src="/misc/estudos/media/img/pinout_IRLZ44N.jpeg" height="350">
 
 O MOSFET IRLZ44N é utilizado para controlar o acionamento do motor coreless responsável pela ventoinha de sucção do robô. Ele atua como uma chave eletrônica controlada pelo microcontrolador.
 
 ### Regulador de Tensão Mini360
 
-<img src="../misc/img/pinout_mini360.png" height="350">
+<img src="/misc/estudos/media/img/pinout_Regulador de tensão Mini 360.jpeg" height="350">
 
 O módulo Mini360 é um conversor DC-DC do tipo buck responsável por reduzir a tensão da bateria LiPo para um nível adequado para alimentação da ESP32 e dos demais componentes eletrônicos do sistema.
 
 ### Bateria LiPo 2S 7.4V
 
-<img src="../misc/img/pinout_bateria.png" height="350">
+<img src="/misc/estudos/media/img/pinout_bateria.png" height="350">
 
 A bateria LiPo 2S de 7,4 V é a fonte principal de alimentação do sistema, fornecendo energia para os motores e para o circuito eletrônico do robô.
 
 ### Motor DC N20 3000 RPM
 
-<img src="../misc/img/pinout_n20.png" height="350">
+<img src="/misc/estudos/media/img/pinout_motor n20.jpeg" height="350">
 
 Os motores N20 são responsáveis pela locomoção do robô. Eles recebem alimentação através da ponte H TB6612FNG que controla a velocidade e o sentido de rotação.
 
 ### Motor Coreless 8523
 
-<img src="../misc/img/pinout_coreless.png" height="350">
+<img src="/misc/estudos/media/img/pinout_Motor coreless 8523.jpeg" height="350">
 
 O motor coreless 8523 é utilizado no sistema de sucção do robô. Esse tipo de motor é capaz de atingir altas rotações e é amplamente utilizado em aplicações que exigem baixo peso e alta eficiência.
 
 ### Diodo 1N4007
 
-<img src="../misc/img/pinout_1n4007.png" height="350">
+<img src="/misc/estudos/media/img/pinout_diodo.jpeg" height="350">
 
 O diodo 1N4007 é utilizado como diodo de flyback para proteger o MOSFET contra picos de tensão gerados pelo motor coreless durante o desligamento.
 
 ### Resistores
 
-<img src="../misc/img/pinout_resistor.png" height="350">
+<img src="/misc/estudos/media/img/pinout_resistores.png" height="350">
 
 Os resistores são utilizados no circuito para limitar corrente e para implementação de divisores de tensão, como no caso do monitoramento da bateria.
 
 ### Switch
 
-<img src="../misc/img/pinout_switch.png" height="350">
+<img src="/misc/estudos/media/img/pinout_chave switch.jpeg" height="350">
 
 O switch é utilizado para ligar e desligar o sistema eletrônico do robô, controlando a alimentação proveniente da bateria.
 
 ### Capacitores
 
-<img src="../misc/img/pinout_capacitor.png" height="350">
+<img src="/misc/estudos/media/img/pinout_capacitores motores.jpeg" height="350">
 
 Os capacitores são utilizados para desacoplamento e filtragem de ruído no circuito eletrônico, contribuindo para maior estabilidade da alimentação do sistema.
 
@@ -172,51 +166,45 @@ Para permitir diferentes formas de prototipagem e fabricação, o projeto da PCB
 | Fabricação industrial | JLCPCB |
 | Versão alternativa | PCB usinada em CNC |
 
-## PCB para Fabricação Industrial
+## PCB para Fabricação Industrial Versão final
 
-<img src="pcb/layout_pcb_china_v1.png" height="400">
+<p align="left">
+  <img src="pcb/PCB_TOP.png" width="35%">
+  <img src="pcb/PCB_BOTTOM.png" width="35%">
+</p>
 
 Layout da placa projetada para fabricação industrial em dupla camada.
 
-### PCB para Fabricação em CNC
+### PCB para Fabricação em CNC (possível versão final)
 
-<img src="pcb/layout_pcb_cnc_v1.png" height="400">
+<img src="pcb/PCB_CNC_V2.png" height="400">
 
 Versão da placa adaptada para fabricação em máquina CNC.
 
-Para o desenvolvimento da Eletrônica não há um software específico que pode ser usado, fica à escolha de quem for desenvolver. Os mais comuns de serem usados são: Cirkit, Fritzing, Proteus, Altium, KiCad e EasyEDA.
+### Esquemático Eletrônico
 
-Este diretório deve conter todos os arquivos relacionados ao projeto eletrônico do robô, neste diretório deve ter:
+O esquemático eletrônico do circuito foi desenvolvido no EasyEDA e representa todas as conexões elétricas entre os componentes do robô, incluindo a alimentação, controle dos motores, sensores e circuito de acionamento da turbina de sucção.
 
-- Diagrama de conexão. Ex:
+<img src="/electronics/img/Esquemático_PCB_V1.png" width="800">
 
-<img src="design/diagrama_conexao_v2.png" height="300">
+### Evolução da PCB
 
-> *O diagrama de conexão é para que a conexão dos componentes físicos seja feita de maneira mais prática, é ideal para saber exatamente quais componentes são necessários e sua localização na placa*
+Durante o desenvolvimento do projeto foram realizadas diversas iterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
 
-- Diagramas de pinout. Ex:
+Como o projeto possui duas versões de placa a evolução de cada versão é apresentada separadamente.
 
-<img src="design/pinout_v1.png" height="300">
+#### PCB Industrial (JLCPCB)
 
-> *O diagrama de pinout é para ficar mais evidente como os pinos dos componentes estão ligados entre si, então haverá um diagrama desse para para componente com vários pinos, como o Microcontrolador, Ponte H, Sensores, etc*
+<p align="left">
+  <img src="pcb/PCB_TOP_V1.png" width="35%">
+  <img src="pcb/PCB_BOTTOM_V1.png" width="35%">
+</p>
 
-- Fotos da placa. Ex:
+Primeira versão do layout da placa desenvolvida para fabricação industrial em dupla camada.
 
-<img src="img/placa_v3.png" height="300">
+<img src="img/pcb_industrial_v2.png" height="300">
 
-> *É recomendado sempre registrar as versões da placa para que depois seja possível observar a evolução ao longo do desenvolvimento*
-
-- (OPCIONAL) Esquemáticos eletrônicos. Ex:
-
-<img src="pcb/esquematico_v1.png" height="300">
-
-> *O esquemático eletrônico servirá para quem for fazer a PCB ou quem for querer fazer simulações mais precisas do circuito*
-
-- (OPCIONAL) Layout de PCB. Ex:
-
-<img src="pcb/layout_pcb_v2.png" height="300">
-
-> *Layout da placa de circuito impresso (PCB)*
+Versão otimizada da PCB com melhorias no posicionamento dos componentes e no roteamento das trilhas.
 
 ## Estrutura
 
