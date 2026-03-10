@@ -54,10 +54,6 @@ void CommunicationTask(void* pvParameters)
                     cmd = CMD_STOP;
                     SerialMonitorChecked(cmd);
                     break;
-                case 'M': //escolher o modo
-                     cmd = CMD_SET_MODE;
-                     SerialMonitorChecked(cmd);
-                     break;
                 case 'S': // modo seguidor
                      md = MODE_FOLLOWER;
                      SerialMonitorCheckedMode(md);
@@ -65,10 +61,6 @@ void CommunicationTask(void* pvParameters)
                 case 'P': // modo perseguidor
                      md = MODE_CHASE; 
                      SerialMonitorCheckedMode(md);
-                     break;
-                case 'E': //escolher estrategia
-                     cmd = CMD_SET_STRATEGY;
-                     SerialMonitorChecked(cmd);
                      break;
                 case 'C': // estrategia conservador
                      stg = S_CONSERVATIVE;
@@ -165,17 +157,6 @@ void SerialMonitorChecked(RobotCommand cmd)
             Serial.println("Robo finalizou a corrida");
             SerialBT.println("Robo finalizou a corrida");
             break;
-
-        case CMD_SET_MODE:
-            Serial.println("Escolhendo um modo...");
-            SerialBT.println("Escolhendo um modo...");
-            break;
-        
-        case CMD_SET_STRATEGY:
-            Serial.println("Escolhendo uma estratégia...");
-            SerialBT.println("Escolhendo uma estratégia...");
-            break;
-
 
 
         default:
