@@ -16,3 +16,9 @@ void PID::reset(){
     previousError = 0;
     integral = 0;
 }
+
+void PID::setTunnings(float _p, float _i, float _d){
+    p_value = _p;
+    i_value = _i;
+    d_value = _d;
+}

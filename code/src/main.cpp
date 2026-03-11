@@ -13,15 +13,7 @@ void setup() {
 
   xTaskCreatePinnedToCore(ControlsTask, "Task_PID", 4096, NULL, 3, NULL, 1);
 
-  xTaskCreatePinnedToCore(
-    CommunicationTask,
-    "Task_BT",
-    8192,
-    NULL,
-    1,
-    NULL,
-    0
-  );
+  xTaskCreatePinnedToCore(CommunicationTask, "Task_BT", 8192, NULL, 1, NULL, 0);
   
 }
 

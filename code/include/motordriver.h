@@ -22,7 +22,7 @@
 #define SETPOINT 3500
 
 extern int VEL_MAX;
-extern int VEL_MIN; 
+extern int VEL_MAX_BACK; 
 
 void lineBlack();
 void lineWhite();

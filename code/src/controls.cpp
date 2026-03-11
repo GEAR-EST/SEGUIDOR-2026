@@ -35,8 +35,8 @@ void _setup() {
     digitalWrite(STBY, HIGH);
 
     //Teste dos motores
-    
-    controlMotors(50, 50);
+
+    controlMotors(200, 200);
     vTaskDelay(pdMS_TO_TICKS(10000));
     controlMotors(0, 0);
     

@@ -15,6 +15,7 @@ public:
     PID(float p, float i, float d);
     float somatory(float setpoint, float mensuredValue);
     void reset();
+    void setTunnings(float _p, float _i, float _d);
 
 };
 

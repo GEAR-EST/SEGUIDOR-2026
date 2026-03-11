@@ -4,7 +4,7 @@
 #include "sensors.h"
 
 int VEL_MAX = 0;
-int VEL_MIN = 0;
+int VEL_MAX_BACK = 0;
 
 L298NX2 motors(PWMA, AI1, AI2, PWMB, BI1, BI2);
 PID pid(0, 0, 0);
@@ -41,6 +41,9 @@ void lineBlack(){
     int vel_m1 = VEL_MAX + pid_value;
     int vel_m2 = VEL_MAX - pid_value;
 
+    vel_m1 = constrain(vel_m1, -220, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -220, VEL_MAX);
+
     controlMotors(vel_m1, vel_m2);
 
 }
@@ -52,8 +55,8 @@ void lineWhite(){
     int vel_m1 = VEL_MAX + pid_value;
     int vel_m2 = VEL_MAX - pid_value;
 
-    vel_m1 = constrain(vel_m1, -VEL_MIN, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -VEL_MIN, VEL_MAX);
+    vel_m1 = constrain(vel_m1, -VEL_MAX_BACK, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX_BACK, VEL_MAX);
 
     controlMotors(vel_m1, vel_m2);
 
