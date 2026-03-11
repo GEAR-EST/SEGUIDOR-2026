@@ -19,7 +19,7 @@
 
 // pid controller informations
 
-#define SETPOINT 3500
+#define SETPOINT 2000
 
 extern int VEL_MAX;
 extern int VEL_MAX_BACK; 

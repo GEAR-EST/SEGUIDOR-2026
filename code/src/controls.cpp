@@ -34,18 +34,23 @@ void _setup() {
 
     digitalWrite(STBY, HIGH);
 
-    //Teste dos motores
+    /*
+    Teste dos motores
 
     controlMotors(200, 200);
     vTaskDelay(pdMS_TO_TICKS(10000));
     controlMotors(0, 0);
-    
+
+    */
+
+    pid.setTunnings(1, 0, 5);
 }
 
 void _loop() {
 
     uint16_t position = qtr.readLineBlack(sensorValues);
 
+    //Sensor frontal
     Serial.print("Frontal: ");
     for (uint8_t i = 0; i < SensorCount; i++) {
         Serial.print(sensorValues[i]);
@@ -54,6 +59,8 @@ void _loop() {
     Serial.println();
     Serial.print("Pos: ");
     Serial.println(position);
+
+    lineBlack();
 
     //Sensores laterais
     readRight = digitalRead(RightSensor);
