@@ -62,4 +62,9 @@ void lineWhite(){
 
 }
 
-
+void pinModeMotors(){
+    pinMode(PWMA, OUTPUT); pinMode(PWMB, OUTPUT);
+    pinMode(AI1, OUTPUT); pinMode(AI2, OUTPUT);
+    pinMode(BI1, OUTPUT); pinMode(BI2, OUTPUT);
+    pinMode(STBY, OUTPUT);
+}

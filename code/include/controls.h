@@ -4,8 +4,6 @@
 
 #include <Arduino.h>
 
-#define LED_BUILTIN 2
-
 extern RobotState robotState; 
 
 void ControlsTask(void* pvParameters);

@@ -29,4 +29,6 @@ void lineWhite();
 
 void controlMotors(int speedA, int speedB);
 
+void pinModeMotors();
+
 #endif

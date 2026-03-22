@@ -3,10 +3,12 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include "pid.h"
+#include "battery.h"
 
 uint16_t readRight = 0;
 uint16_t readLeft = 0;
 uint16_t sensorValues[SensorCount];
+
 
 void _setup() {
 
@@ -16,22 +18,17 @@ void _setup() {
     // qtr.setSensorPins((const uint8_t[]){14, 27, 26, 25, 33, 32, 35, 34}, SensorCount);
     qtr.setSensorPins((const uint8_t[]){D8_PIN, D7_PIN, D6_PIN, D5_PIN, D4_PIN, D3_PIN, D2_PIN, D1_PIN}, SensorCount);
 
-    pinMode(LED_BUILTIN, OUTPUT);
-
     //verificar se já há valores calibrados
-    //if (readCalibration() == false)  doCalibration();
+    //if (readCalibration() == false)  
 
     //configuração dos sensores laterais
     pinMode(RightSensor, INPUT);
     pinMode(LeftSensor, INPUT);
 
     //motor driver pin mode
+    doCalibration();
 
-    pinMode(PWMA, OUTPUT); pinMode(PWMB, OUTPUT);
-    pinMode(AI1, OUTPUT); pinMode(AI2, OUTPUT);
-    pinMode(BI1, OUTPUT); pinMode(BI2, OUTPUT);
-    pinMode(STBY, OUTPUT);
-
+    pinModeMotors();
     digitalWrite(STBY, HIGH);
 
     /*
@@ -44,6 +41,9 @@ void _setup() {
     */
 
     pid.setTunnings(1, 0, 5);
+
+    //Bateria
+    analogSetAttenuation(ADC_11db); // Atenuação para 1.1 V
 }
 
 void _loop() {
@@ -71,6 +71,11 @@ void _loop() {
 
     vTaskDelay(pdMS_TO_TICKS(2000));
 
+    //Bateria
+
+    int battery_read = analogRead(BATTERY_PIN);
+    float vout = voutCalculation(battery_read);
+    float percentage = percentageCalculation(vout);
 
 }
 
