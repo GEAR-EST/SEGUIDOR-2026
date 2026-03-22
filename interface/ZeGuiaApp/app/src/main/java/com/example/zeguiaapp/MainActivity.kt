@@ -5,20 +5,26 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.button.MaterialButton
 import java.io.IOException
+import java.util.Locale
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +35,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var txtModoRobo: TextView
     private lateinit var txtEstrategiaRobo: TextView
 
+    // Textos dos Parâmetros
+    private lateinit var txtParamV: TextView
+    private lateinit var txtParamKp: TextView
+    private lateinit var txtParamKi: TextView
+    private lateinit var txtParamKd: TextView
+
     // Botões de Controle
     private lateinit var btnCalibrar: Button
     private lateinit var btnStartRun: Button
@@ -37,24 +49,42 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnModeChase: Button
     private lateinit var btnStrategyConservative: Button
     private lateinit var btnStrategyRisk: Button
+    private lateinit var btnAbrirEdicao: MaterialButton
 
-    // Variáveis do Bluetooth e Memória de Estado
+    // Variáveis do Bluetooth, Memória de Estado e Salvamento Local
     private var continuarEscutando = false
-    private var modoSelecionado = false // Lembra se o modo já foi escolhido alguma vez
+    private var modoSelecionado = false
     private lateinit var btAdapter: BluetoothAdapter
     private var btSocket: BluetoothSocket? = null
     private val address: String = "CC:DB:A7:62:8D:96" // MAC da ESP32
     private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
+    // Objeto para salvar os dados na memória do celular
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Inicializar a Memória do Celular
+        sharedPreferences = getSharedPreferences("ZeGuiaPrefs", Context.MODE_PRIVATE)
 
         // Inicializar os Textos
         txtEstadoRobo = findViewById(R.id.txtEstadoRobo)
         txtModoRobo = findViewById(R.id.txtModoRobo)
         txtEstrategiaRobo = findViewById(R.id.txtEstrategiaRobo)
         txtSerial = findViewById(R.id.txtSerial)
+
+        txtParamV = findViewById(R.id.txtParamV)
+        txtParamKp = findViewById(R.id.txtParamKp)
+        txtParamKi = findViewById(R.id.txtParamKi)
+        txtParamKd = findViewById(R.id.txtParamKd)
+
+        // Carregar os valores salvos (se não tiver nada, coloca "0.0" por padrão)
+        txtParamV.text = sharedPreferences.getString("paramV", "0.0")
+        txtParamKp.text = sharedPreferences.getString("paramKp", "0.0")
+        txtParamKi.text = sharedPreferences.getString("paramKi", "0.0")
+        txtParamKd.text = sharedPreferences.getString("paramKd", "0.0")
 
         // Inicializar os Botões
         btnCalibrar = findViewById(R.id.calibrate)
@@ -64,6 +94,8 @@ class MainActivity : AppCompatActivity() {
         btnModeChase = findViewById(R.id.chase)
         btnStrategyConservative = findViewById(R.id.conservative)
         btnStrategyRisk = findViewById(R.id.risk)
+        btnAbrirEdicao = findViewById(R.id.btnAbrirEdicao)
+
         estadoDesconectado()
 
         // Permissões de Bluetooth
@@ -100,8 +132,81 @@ class MainActivity : AppCompatActivity() {
         btnStrategyRisk.setOnClickListener { enviarComando("A") }
         btnStartRun.setOnClickListener { enviarComando("R") }
         btnStopRun.setOnClickListener { enviarComando("F") }
+
+        // Clique para abrir o Pop-up de Edição
+        btnAbrirEdicao.setOnClickListener { mostrarDialogEdicao() }
     }
 
+    private fun mostrarDialogEdicao() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.editar_parametros, null)
+        val builder = AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        val alertDialog = builder.create()
+        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        alertDialog.show()
+
+        val editV = dialogView.findViewById<EditText>(R.id.editV)
+        val editKp = dialogView.findViewById<EditText>(R.id.editKp)
+        val editKi = dialogView.findViewById<EditText>(R.id.editKi)
+        val editKd = dialogView.findViewById<EditText>(R.id.editKd)
+
+        // Puxa os valores atuais da tela principal para as caixas de texto
+        editV.setText(txtParamV.text.toString())
+        editKp.setText(txtParamKp.text.toString())
+        editKi.setText(txtParamKi.text.toString())
+        editKd.setText(txtParamKd.text.toString())
+
+        // Função auxiliar para os botões de + e -
+        fun configurarStepper(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
+            dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
+                val valorAtual = editText.text.toString().toFloatOrNull() ?: 0f
+                // Usa Locale.US para garantir que saia com ponto (1.5) e não vírgula (1,5)
+                editText.setText(String.format(Locale.US, "%.1f", valorAtual + 0.1f))
+            }
+            dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
+                val valorAtual = editText.text.toString().toFloatOrNull() ?: 0f
+                editText.setText(String.format(Locale.US, "%.1f", valorAtual - 0.1f))
+            }
+        }
+
+        // Aplica o + e - em cada linha
+        configurarStepper(R.id.btnDiminuirV, R.id.btnAumentarV, editV)
+        configurarStepper(R.id.btnDiminuirKp, R.id.btnAumentarKp, editKp)
+        configurarStepper(R.id.btnDiminuirKi, R.id.btnAumentarKi, editKi)
+        configurarStepper(R.id.btnDiminuirKd, R.id.btnAumentarKd, editKd)
+
+        dialogView.findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        dialogView.findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
+            val novoV = editV.text.toString().ifEmpty { "0.0" }
+            val novoKp = editKp.text.toString().ifEmpty { "0.0" }
+            val novoKi = editKi.text.toString().ifEmpty { "0.0" }
+            val novoKd = editKd.text.toString().ifEmpty { "0.0" }
+
+            // 1. Atualiza na tela
+            txtParamV.text = novoV
+            txtParamKp.text = novoKp
+            txtParamKi.text = novoKi
+            txtParamKd.text = novoKd
+
+            // 2. Salva permanentemente na memória do celular
+            sharedPreferences.edit().apply {
+                putString("paramV", novoV)
+                putString("paramKp", novoKp)
+                putString("paramKi", novoKi)
+                putString("paramKd", novoKd)
+                apply() // Salva em segundo plano
+            }
+
+            // 3. Envia os novos parâmetros para o robô via Bluetooth.
+            // Exemplo: O robô recebe a string "PID:1.5|2.0|0.0|0.5\n"
+            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd\n")
+
+            alertDialog.dismiss()
+        }
+    }
 
     private fun configurarBotao(botao: Button, habilitado: Boolean) {
         botao.isEnabled = habilitado
@@ -109,7 +214,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun estadoDesconectado() {
-        modoSelecionado = false // Esquece o modo ao desconectar
+        modoSelecionado = false
         configurarBotao(btnCalibrar, false)
         configurarBotao(btnModeFollower, false)
         configurarBotao(btnModeChase, false)
@@ -120,7 +225,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun estadoConectadoInicial() {
-        // Só disponível: calibrar e modos
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
@@ -134,37 +238,28 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
-
         configurarBotao(btnStrategyConservative, modoSelecionado)
         configurarBotao(btnStrategyRisk, modoSelecionado)
-
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
     }
 
     private fun estadoPosModo() {
         configurarBotao(btnCalibrar, false)
-
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
-
-        // Estratégias ficam libertas
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
-
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
     }
 
     private fun estadoPosEstrategia() {
         configurarBotao(btnCalibrar, false)
-
         configurarBotao(btnModeFollower, false)
         configurarBotao(btnModeChase, false)
-
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
-
         configurarBotao(btnStartRun, true)
         configurarBotao(btnStopRun, false)
     }
@@ -180,9 +275,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun estadoFinalizado() {
-
         configurarBotao(btnCalibrar, true)
-        configurarBotao(btnModeFollower, true) 
+        configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
@@ -282,14 +376,12 @@ class MainActivity : AppCompatActivity() {
                         val mensagem = String(buffer, 0, bytes)
 
                         runOnUiThread {
-                            // Atualiza o Terminal e rola para baixo
                             txtSerial.append(mensagem)
                             val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
                             scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
 
                             val msgMinuscula = mensagem.lowercase()
 
-                            // --- 1. VERIFICA O ESTADO ---
                             if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
                                 txtEstadoRobo.text = "Correndo"
                                 txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
@@ -306,31 +398,23 @@ class MainActivity : AppCompatActivity() {
                                 estadoFinalizado()
                             }
 
-                            // --- 2. VERIFICA O MODO ---
                             if (msgMinuscula.contains("perseguidor")) {
                                 txtModoRobo.text = "Perseguidor"
                                 txtModoRobo.setTextColor(Color.parseColor("#FF007F"))
-
-                                // RESET DA ESTRATÉGIA
                                 txtEstrategiaRobo.text = "Aguardando..."
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-
-                                modoSelecionado = true // Lembra que um modo já foi escolhido
+                                modoSelecionado = true
                                 estadoPosModo()
                             }
                             else if (msgMinuscula.contains("seguidor")) {
                                 txtModoRobo.text = "Seguidor"
                                 txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
-
-                                // RESET DA ESTRATÉGIA
                                 txtEstrategiaRobo.text = "Aguardando..."
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-
-                                modoSelecionado = true // Lembra que um modo já foi escolhido
+                                modoSelecionado = true
                                 estadoPosModo()
                             }
 
-                            // --- 3. VERIFICA A ESTRATÉGIA ---
                             if (msgMinuscula.contains("arriscado") || msgMinuscula.contains("kamikaze")) {
                                 txtEstrategiaRobo.text = "Arriscado"
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
@@ -343,7 +427,6 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
-
                 } catch (e: IOException) {
                     break
                 }
