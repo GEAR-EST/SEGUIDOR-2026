@@ -256,9 +256,39 @@
                     <TextView android:id="@+id/txtEstrategiaRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="0dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Bateria" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtBateria" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.0V" android:textColor="#00FF66" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="0dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Bateria"
+                        android:textColor="#CFC9D8"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/sourcecodepro_bold" />
+
+                    <TextView
+                        android:id="@+id/txtBatteryVoltage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.0V"
+                        android:textColor="#EBB3FF"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/sourcecodepro_bold" />
+
+                    <TextView
+                        android:id="@+id/txtBatteryPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" (0%)"
+                        android:textColor="#EBB3FF"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/sourcecodepro_bold" />
+
                 </LinearLayout>
             </LinearLayout>
 

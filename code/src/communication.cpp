@@ -2,6 +2,7 @@
 #include "commands.h"
 #include "robot_state.h"
 #include "battery.h"
+#include "globals.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -25,79 +26,107 @@ void CommunicationTask(void* pvParameters)
         uint32_t nowMs = millis();
         if (SerialBT.hasClient() && (nowMs - lastBatterySendMs >= BATTERY_SEND_INTERVAL_MS))
         {
-            float batteryVoltage = voutCalculation(analogRead(34));
-            int batteryPercentage = percentageCalculation(batteryVoltage);
+            float batteryVoltage = voutCalculation(analogRead(BATTERY_PIN));
+            float batteryPercentage = percentageCalculation(batteryVoltage);
 
-            SerialBT.printf("%.2f (%d%%)\n", batteryVoltage, batteryPercentage);
+            String batteryValue = "BAT," + String(batteryVoltage, 2) + "," + String(batteryPercentage, 2) + "\n";
+            SerialBT.print(batteryValue);
             lastBatterySendMs = nowMs;
         }
 
-        if (SerialBT.available()) 
+        static String inputLine = "";
+        while (SerialBT.available())
         {
-            char msg = SerialBT.read();
-            Serial.print("Comando recebido: ");
-            Serial.println(msg);
-
-            RobotCommand cmd = CMD_NONE;
-            RobotMode md = MODE_NONE;
-            RobotStrategy stg = S_NONE;
-
-
-            switch(msg)
+            char c = SerialBT.read();
+            if (c == '\n')
             {
-                case '1': //ligar led
-                    cmd = CMD_LED_ON;
-                    digitalWrite(2, HIGH);
-                    SerialMonitorChecked(cmd);
-                    break;
-                case '0': //desligar led
-                    cmd = CMD_LED_OFF;
-                    digitalWrite(2, LOW);
-                    SerialMonitorChecked(cmd);
-                    break;
-                case 'K': //calibrar
-                    cmd = CMD_CALIBRATE;
-                    SerialMonitorChecked(cmd);
-                    break;
-                case 'R': //começar corrida
-                    cmd = CMD_START;
-                    SerialMonitorChecked(cmd);
-                    break;
-                case 'F': //finalizar corrida
-                    cmd = CMD_STOP;
-                    SerialMonitorChecked(cmd);
-                    break;
-                case 'S': // modo seguidor
-                     md = MODE_FOLLOWER;
-                     SerialMonitorCheckedMode(md);
-                     break;
-                case 'P': // modo perseguidor
-                     md = MODE_CHASE; 
-                     SerialMonitorCheckedMode(md);
-                     break;
-                case 'C': // estrategia conservador
-                     stg = S_CONSERVATIVE;
-                     SerialMonitorCheckedStg(stg);
-                     break;
-                case 'A': //estrategia arriscado
-                     stg = S_RISK;
-                     SerialMonitorCheckedStg(stg);
-                     break;
+                inputLine.trim();
+                Serial.print("Linha recebida: ");
+                Serial.println(inputLine);
 
-                default:
-                    cmd = CMD_NONE;
-                    md = MODE_NONE;
-                    stg = S_NONE;
-                    break;
-                
+                RobotCommand cmd = CMD_NONE;
+                RobotMode md = MODE_NONE;
+                RobotStrategy stg = S_NONE;
+
+                if (inputLine.startsWith("PID:"))
+                {
+                    // Formato: PID:V|Kp|Ki|Kd
+                    String payload = inputLine.substring(4);
+                    int sep1 = payload.indexOf('|');
+                    int sep2 = payload.indexOf('|', sep1 + 1);
+                    int sep3 = payload.indexOf('|', sep2 + 1);
+
+                    if (sep1 > 0 && sep2 > 0 && sep3 > 0)
+                    {
+                        float novoKp = payload.substring(sep1 + 1, sep2).toFloat();
+                        float novoKi = payload.substring(sep2 + 1, sep3).toFloat();
+                        float novoKd = payload.substring(sep3 + 1).toFloat();
+                        pid.setTunnings(novoKp, novoKi, novoKd);
+                        Serial.printf("PID atualizado: Kp=%.2f Ki=%.2f Kd=%.2f\n", novoKp, novoKi, novoKd);
+                        SerialBT.printf("PID atualizado: Kp=%.2f Ki=%.2f Kd=%.2f\n", novoKp, novoKi, novoKd);
+                    }
+                }
+                else if (inputLine.length() == 1)
+                {
+                    char msg = inputLine.charAt(0);
+                    switch(msg)
+                    {
+                        case '1':
+                            cmd = CMD_LED_ON;
+                            digitalWrite(2, HIGH);
+                            SerialMonitorChecked(cmd);
+                            break;
+                        case '0':
+                            cmd = CMD_LED_OFF;
+                            digitalWrite(2, LOW);
+                            SerialMonitorChecked(cmd);
+                            break;
+                        case 'K':
+                            cmd = CMD_CALIBRATE;
+                            SerialMonitorChecked(cmd);
+                            break;
+                        case 'R':
+                            cmd = CMD_START;
+                            SerialMonitorChecked(cmd);
+                            break;
+                        case 'F':
+                            cmd = CMD_STOP;
+                            SerialMonitorChecked(cmd);
+                            break;
+                        case 'S':
+                            md = MODE_FOLLOWER;
+                            SerialMonitorCheckedMode(md);
+                            break;
+                        case 'P':
+                            md = MODE_CHASE;
+                            SerialMonitorCheckedMode(md);
+                            break;
+                        case 'C':
+                            stg = S_CONSERVATIVE;
+                            SerialMonitorCheckedStg(stg);
+                            break;
+                        case 'A':
+                            stg = S_RISK;
+                            SerialMonitorCheckedStg(stg);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                if (cmd != CMD_NONE)
+                {
+                    xQueueSend(commandsQueue, &cmd, 0);
+                }
+
+                inputLine = "";
             }
-
-            if (cmd != CMD_NONE)
+            else if (c != '\r')
             {
-                xQueueSend(commandsQueue, &cmd, 0); //envia comando para a fila de comandos (mudar de 0 para quando o controls estiver implementado)
-
+                inputLine += c;
             }
         }
+
         vTaskDelay(pdMS_TO_TICKS(50));
         
     }

@@ -11,6 +11,8 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -23,25 +25,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStreamReader
 import java.util.Locale
 import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
-    // Textos do Terminal e do Cartão de Informações
     private lateinit var txtSerial: TextView
+    private lateinit var txtBatteryVoltage: TextView
+    private lateinit var txtBatteryPercent: TextView
     private lateinit var txtEstadoRobo: TextView
     private lateinit var txtModoRobo: TextView
     private lateinit var txtEstrategiaRobo: TextView
+    private lateinit var txtCronometro: TextView
 
-    // Textos dos Parâmetros
     private lateinit var txtParamV: TextView
     private lateinit var txtParamKp: TextView
     private lateinit var txtParamKi: TextView
     private lateinit var txtParamKd: TextView
 
-    // Botões de Controle
     private lateinit var btnCalibrar: Button
     private lateinit var btnStartRun: Button
     private lateinit var btnStopRun: Button
@@ -51,42 +55,58 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStrategyRisk: Button
     private lateinit var btnAbrirEdicao: MaterialButton
 
-    // Variáveis do Bluetooth, Memória de Estado e Salvamento Local
     private var continuarEscutando = false
     private var modoSelecionado = false
     private lateinit var btAdapter: BluetoothAdapter
     private var btSocket: BluetoothSocket? = null
-    private val address: String = "CC:DB:A7:62:8D:96" // MAC da ESP32
+    private val address: String = "CC:DB:A7:62:8D:96"
     private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
-    // Objeto para salvar os dados na memória do celular
     private lateinit var sharedPreferences: SharedPreferences
+
+    // Cronometro sincronizado pela mensagem do robo
+    private val cronometroHandler = Handler(Looper.getMainLooper())
+    private var cronometroRodando = false
+    private var tempoInicioMs: Long = 0L
+
+    private val atualizarCronometro = object : Runnable {
+        override fun run() {
+            if (!cronometroRodando) return
+            val decorrido = System.currentTimeMillis() - tempoInicioMs
+            val minutos = (decorrido / 1000) / 60
+            val segundos = (decorrido / 1000) % 60
+            val centesimos = (decorrido % 1000) / 10
+            txtCronometro.text = String.format(Locale.US, "%02d:%02d:%02d", minutos, segundos, centesimos)
+            cronometroHandler.postDelayed(this, 50)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Inicializar a Memória do Celular
         sharedPreferences = getSharedPreferences("ZeGuiaPrefs", Context.MODE_PRIVATE)
 
-        // Inicializar os Textos
         txtEstadoRobo = findViewById(R.id.txtEstadoRobo)
         txtModoRobo = findViewById(R.id.txtModoRobo)
         txtEstrategiaRobo = findViewById(R.id.txtEstrategiaRobo)
         txtSerial = findViewById(R.id.txtSerial)
+        txtCronometro = findViewById(R.id.txtCronometro)
+
+        txtBatteryVoltage = findViewById(R.id.txtBatteryVoltage)
+        txtBatteryPercent = findViewById(R.id.txtBatteryPercent)
 
         txtParamV = findViewById(R.id.txtParamV)
         txtParamKp = findViewById(R.id.txtParamKp)
         txtParamKi = findViewById(R.id.txtParamKi)
         txtParamKd = findViewById(R.id.txtParamKd)
 
-        // Carregar os valores salvos (se não tiver nada, coloca "0.0" por padrão)
         txtParamV.text = sharedPreferences.getString("paramV", "0.0")
         txtParamKp.text = sharedPreferences.getString("paramKp", "0.0")
         txtParamKi.text = sharedPreferences.getString("paramKi", "0.0")
         txtParamKd.text = sharedPreferences.getString("paramKd", "0.0")
+        txtCronometro.text = "00:00:00"
 
-        // Inicializar os Botões
         btnCalibrar = findViewById(R.id.calibrate)
         btnStartRun = findViewById(R.id.run)
         btnStopRun = findViewById(R.id.stop)
@@ -98,9 +118,11 @@ class MainActivity : AppCompatActivity() {
 
         estadoDesconectado()
 
-        // Permissões de Bluetooth
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN), 1)
+            requestPermissions(
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN),
+                1
+            )
         }
 
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
@@ -124,7 +146,7 @@ class MainActivity : AppCompatActivity() {
             if (isChecked) enviarComando("1") else enviarComando("0")
         }
 
-        // Cliques dos Botões
+        // Cliques so enviam comando; cronometro inicia/para quando chegar mensagem do robo
         btnCalibrar.setOnClickListener { enviarComando("K") }
         btnModeFollower.setOnClickListener { enviarComando("S") }
         btnModeChase.setOnClickListener { enviarComando("P") }
@@ -133,7 +155,6 @@ class MainActivity : AppCompatActivity() {
         btnStartRun.setOnClickListener { enviarComando("R") }
         btnStopRun.setOnClickListener { enviarComando("F") }
 
-        // Clique para abrir o Pop-up de Edição
         btnAbrirEdicao.setOnClickListener { mostrarDialogEdicao() }
     }
 
@@ -150,17 +171,14 @@ class MainActivity : AppCompatActivity() {
         val editKi = dialogView.findViewById<EditText>(R.id.editKi)
         val editKd = dialogView.findViewById<EditText>(R.id.editKd)
 
-        // Puxa os valores atuais da tela principal para as caixas de texto
         editV.setText(txtParamV.text.toString())
         editKp.setText(txtParamKp.text.toString())
         editKi.setText(txtParamKi.text.toString())
         editKd.setText(txtParamKd.text.toString())
 
-        // Função auxiliar para os botões de + e -
         fun configurarStepper(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
             dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
                 val valorAtual = editText.text.toString().toFloatOrNull() ?: 0f
-                // Usa Locale.US para garantir que saia com ponto (1.5) e não vírgula (1,5)
                 editText.setText(String.format(Locale.US, "%.1f", valorAtual + 0.1f))
             }
             dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
@@ -169,7 +187,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Aplica o + e - em cada linha
         configurarStepper(R.id.btnDiminuirV, R.id.btnAumentarV, editV)
         configurarStepper(R.id.btnDiminuirKp, R.id.btnAumentarKp, editKp)
         configurarStepper(R.id.btnDiminuirKi, R.id.btnAumentarKi, editKi)
@@ -185,27 +202,39 @@ class MainActivity : AppCompatActivity() {
             val novoKi = editKi.text.toString().ifEmpty { "0.0" }
             val novoKd = editKd.text.toString().ifEmpty { "0.0" }
 
-            // 1. Atualiza na tela
             txtParamV.text = novoV
             txtParamKp.text = novoKp
             txtParamKi.text = novoKi
             txtParamKd.text = novoKd
 
-            // 2. Salva permanentemente na memória do celular
             sharedPreferences.edit().apply {
                 putString("paramV", novoV)
                 putString("paramKp", novoKp)
                 putString("paramKi", novoKi)
                 putString("paramKd", novoKd)
-                apply() // Salva em segundo plano
+                apply()
             }
 
-            // 3. Envia os novos parâmetros para o robô via Bluetooth.
-            // Exemplo: O robô recebe a string "PID:1.5|2.0|0.0|0.5\n"
-            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd\n")
-
+            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd")
             alertDialog.dismiss()
         }
+    }
+
+    private fun iniciarCronometro() {
+        if (cronometroRodando) return
+        cronometroRodando = true
+        tempoInicioMs = System.currentTimeMillis()
+        cronometroHandler.post(atualizarCronometro)
+    }
+
+    private fun pararCronometro() {
+        cronometroRodando = false
+        cronometroHandler.removeCallbacks(atualizarCronometro)
+    }
+
+    private fun resetarCronometro() {
+        pararCronometro()
+        txtCronometro.text = "00:00:00"
     }
 
     private fun configurarBotao(botao: Button, habilitado: Boolean) {
@@ -286,9 +315,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun permissaoBluetooth(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
         } else {
             true
         }
@@ -313,6 +340,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val dispositivo = btAdapter.getRemoteDevice(address)
                 btSocket = dispositivo.createRfcommSocketToServiceRecord(MY_UUID)
+                btAdapter.cancelDiscovery()
                 btSocket?.connect()
 
                 continuarEscutando = true
@@ -322,7 +350,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Conectado ao ZeGuia!", Toast.LENGTH_SHORT).show()
                     estadoConectadoInicial()
                 }
-
             } catch (e: IOException) {
                 runOnUiThread {
                     findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
@@ -342,13 +369,19 @@ class MainActivity : AppCompatActivity() {
             runOnUiThread {
                 Toast.makeText(this, "Desconectado", Toast.LENGTH_SHORT).show()
                 estadoDesconectado()
+                resetarCronometro()
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
-    private fun atualizarCoresSwitch(switchCompat: SwitchCompat, textView: TextView, isChecked: Boolean, textoLigado: String) {
+    private fun atualizarCoresSwitch(
+        switchCompat: SwitchCompat,
+        textView: TextView,
+        isChecked: Boolean,
+        textoLigado: String
+    ) {
         if (isChecked) {
             textView.text = textoLigado
             textView.setTextColor(Color.parseColor("#00FF66"))
@@ -363,39 +396,54 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun receberDados() {
-        val buffer = ByteArray(1024)
-
         Thread {
             val input = btSocket?.inputStream ?: return@Thread
+            val reader = BufferedReader(InputStreamReader(input))
 
             while (continuarEscutando) {
                 try {
-                    val bytes = input.read(buffer)
+                    val mensagem = reader.readLine() ?: break
 
-                    if (bytes > 0) {
-                        val mensagem = String(buffer, 0, bytes)
+                    if (mensagem.startsWith("BAT,")) {
+                        val partes = mensagem.split(",")
+                        if (partes.size == 3) {
+                            val tensao = partes[1].toFloatOrNull()
+                            val percentual = partes[2].toIntOrNull()
+                            if (tensao != null && percentual != null) {
+                                runOnUiThread {
+                                    txtBatteryVoltage.text = String.format(Locale.US, "%.1fV", tensao)
+                                    txtBatteryPercent.text = " (${percentual}%)"
 
+                                    val cor = when {
+                                        percentual > 50 -> Color.parseColor("#00FF66")
+                                        percentual > 20 -> Color.parseColor("#FFAA00")
+                                        else -> Color.parseColor("#FF2A55")
+                                    }
+                                    txtBatteryPercent.setTextColor(cor)
+                                }
+                            }
+                        }
+                    } else {
+                        val msgMinuscula = mensagem.lowercase()
                         runOnUiThread {
-                            txtSerial.append(mensagem)
+                            txtSerial.append("$mensagem\n")
                             val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
                             scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
-
-                            val msgMinuscula = mensagem.lowercase()
-
+                            
                             if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
                                 txtEstadoRobo.text = "Correndo"
                                 txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
                                 estadoCorrendo()
-                            }
-                            else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
+                                iniciarCronometro()
+                            } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
                                 txtEstadoRobo.text = "Calibrando"
                                 txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
                                 estadoPosCalibracao()
-                            }
-                            else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
+                            } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
                                 txtEstadoRobo.text = "Parado"
                                 txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
                                 estadoFinalizado()
+                                pararCronometro()
                             }
 
                             if (msgMinuscula.contains("perseguidor")) {
@@ -405,8 +453,7 @@ class MainActivity : AppCompatActivity() {
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
                                 modoSelecionado = true
                                 estadoPosModo()
-                            }
-                            else if (msgMinuscula.contains("seguidor")) {
+                            } else if (msgMinuscula.contains("seguidor")) {
                                 txtModoRobo.text = "Seguidor"
                                 txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
                                 txtEstrategiaRobo.text = "Aguardando..."
@@ -419,8 +466,7 @@ class MainActivity : AppCompatActivity() {
                                 txtEstrategiaRobo.text = "Arriscado"
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
                                 estadoPosEstrategia()
-                            }
-                            else if (msgMinuscula.contains("conservador")) {
+                            } else if (msgMinuscula.contains("conservador")) {
                                 txtEstrategiaRobo.text = "Conservador"
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
                                 estadoPosEstrategia()
@@ -440,7 +486,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
         try {
-            btSocket?.outputStream?.write(sinal.toByteArray())
+            val payload = if (sinal.endsWith("\n")) sinal else "$sinal\n"
+            btSocket?.outputStream?.write(payload.toByteArray())
         } catch (e: IOException) {
             Toast.makeText(this, "Erro ao enviar dados", Toast.LENGTH_SHORT).show()
         }
@@ -449,6 +496,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         continuarEscutando = false
+        pararCronometro()
         btSocket?.close()
     }
 }

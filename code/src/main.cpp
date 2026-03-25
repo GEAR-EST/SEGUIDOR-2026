@@ -11,6 +11,14 @@ void setup() {
   delay(1500);
   Serial.println("Sistema Iniciando...");
 
+  commandsQueue = xQueueCreate(10, sizeof(RobotCommand));
+  if (commandsQueue == NULL) {
+    Serial.println("Falha ao criar commandsQueue");
+    while (true) {
+      delay(1000);
+    }
+  }
+
   xTaskCreatePinnedToCore(ControlsTask, "Task_PID", 4096, NULL, 3, NULL, 1);
 
   xTaskCreatePinnedToCore(CommunicationTask, "Task_BT", 8192, NULL, 1, NULL, 0);
