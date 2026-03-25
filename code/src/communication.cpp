@@ -1,6 +1,7 @@
 #include "communication.h"
 #include "commands.h"
 #include "robot_state.h"
+#include "battery.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -15,10 +16,22 @@ void SerialMonitorCheckedStg(RobotStrategy stg);
 void CommunicationTask(void* pvParameters) 
 {
     pinMode(2, OUTPUT);
+    const uint32_t BATTERY_SEND_INTERVAL_MS = 1000;
+    uint32_t lastBatterySendMs = 0;
 
     BluetoothConnection();
     
     for (;;) {
+        uint32_t nowMs = millis();
+        if (SerialBT.hasClient() && (nowMs - lastBatterySendMs >= BATTERY_SEND_INTERVAL_MS))
+        {
+            float batteryVoltage = voutCalculation(analogRead(34));
+            int batteryPercentage = percentageCalculation(batteryVoltage);
+
+            SerialBT.printf("%.2f (%d%%)\n", batteryVoltage, batteryPercentage);
+            lastBatterySendMs = nowMs;
+        }
+
         if (SerialBT.available()) 
         {
             char msg = SerialBT.read();
@@ -28,8 +41,8 @@ void CommunicationTask(void* pvParameters)
             RobotCommand cmd = CMD_NONE;
             RobotMode md = MODE_NONE;
             RobotStrategy stg = S_NONE;
-            
-            
+
+
             switch(msg)
             {
                 case '1': //ligar led
