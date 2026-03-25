@@ -2,8 +2,14 @@
 #define CONTROLS_H
 #include "robot_state.h"
 
-extern RobotState robotState;   
+#include <Arduino.h>
+
+extern RobotState robotState; 
 
 void ControlsTask(void* pvParameters);
+
+void _setup();
+
+void _loop();
 
 #endif
