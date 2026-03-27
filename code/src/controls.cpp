@@ -3,7 +3,6 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include "pid.h"
-#include "battery.h"
 
 uint16_t readRight = 0;
 uint16_t readLeft = 0;
@@ -31,6 +30,9 @@ void _setup() {
     pinModeMotors();
     digitalWrite(STBY, HIGH);
 
+    //Bateria
+    pinMode(BATTERY_PIN, INPUT);
+
     /*
     Teste dos motores
 
@@ -42,12 +44,10 @@ void _setup() {
 
     pid.setTunnings(1, 0, 5);
 
-    //Bateria
-    analogSetAttenuation(ADC_11db); // Atenuação para 1.1 V
 }
 
 void _loop() {
-
+    /*
     uint16_t position = qtr.readLineBlack(sensorValues);
 
     //Sensor frontal
@@ -70,13 +70,16 @@ void _loop() {
     Serial.print("Esquerdo: "); Serial.println(readLeft);
 
     vTaskDelay(pdMS_TO_TICKS(2000));
+    */
 
     //Bateria
 
-    int battery_read = analogRead(BATTERY_PIN);
-    float vout = voutCalculation(battery_read);
-    float percentage = percentageCalculation(vout);
-
+    int percentage = map(analogRead(BATTERY_PIN), 2539, 3325, 0, 100);
+    Serial.print("Bateria: ");
+    Serial.println(percentage);
+    Serial.print("Analog read: ");
+    Serial.println(analogRead(BATTERY_PIN));
+    delay(3000);
 }
 
 void ControlsTask(void* pvParameters) {

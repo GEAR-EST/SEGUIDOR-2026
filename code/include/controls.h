@@ -4,6 +4,8 @@
 
 #include <Arduino.h>
 
+#define BATTERY_PIN 13
+
 extern RobotState robotState; 
 
 void ControlsTask(void* pvParameters);
