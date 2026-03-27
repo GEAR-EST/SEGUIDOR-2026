@@ -1,19 +1,48 @@
-> *OBS: Este arquivo (README.md) deve ser excluído. Então mesmo que não tenha a seguir textos em itálico, este arquivo por completo deve ser excluído*
+# Diretório de Mecânica
+
+Todos os arquivos relacionados ao projeto mecânico do robô seguidor de linha estão aqui!
 
 ---
 
-# Diretório de Mecânica
+## Ferramentas Utilizadas
 
-Para o desenvolvimento da mecânica, é aconselhado o uso do software **Autodesk Inventor**, ao qual alunos com email institucional podem acessar gratuitamente. 
+Para o desenvolvimento da mecânica, foi usado o *software* **Autodesk Inventor**.
 
-Este diretório deve conter todos os arquivos relacionados ao projeto mecânico do robô, incluindo:
+---
 
-- Arquivos CAD 3D e montagem (arquivos .ipt, .iam no CAD Inventor)
-- Arquivos para impressão 3D (arquivos .stl)
-- Imagens do modelo 3D e da estrutura física (arquivos de imagem)
+## Estrutura do Diretório
 
-## Estrutura
+Este diretório contém todos os arquivos relacionados ao projeto mecânico do robô:
 
-- `3d_model/`: Modelos 3D das peças com versões
-- `stl_file/`: Arquivos prontos para impressão 3D
-- `img/`: Arquivos de imagens de perpectivas do modelo 3D e estrutura final
+- [**`3d_model/`**](./3d_model/): Modelos 3D das peças com versões (V1, V2, etc.)
+  - Arquivos CAD 3D e montagem (`.ipt`, `.iam` no Autodesk Inventor)
+  
+- [**`stl_file/`**](./stl_file/): Arquivos prontos para impressão 3D (`.stl`)
+  
+- [**`img/`**](./img/): Galeria do projeto
+  - Imagens de perspectivas do modelo 3D
+  - Fotos da estrutura física montada
+
+---
+
+## Galeria de Imagens
+
+- Visão Geral
+
+<img src="img/V2/Geral.jpg" height="300">
+
+- Visão Geral 2
+
+<img src="img/V2/Geral 3.jpg" height="300">
+
+- Visão Traseira
+
+<img src="img/V2/Costa.jpg" height="300">
+
+- Visão Superior
+
+<img src="img/V2/Superior.jpg" height="300">
+
+- Visão Inferior
+
+<img src="img/V2/Baixo.jpg" height="300">
