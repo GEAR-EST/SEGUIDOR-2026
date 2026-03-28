@@ -3,7 +3,11 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include "pid.h"
-#include "battery.h"
+#include "commands.h"
+#include "zeGuia.h"
+
+extern QueueHandle_t commandsQueue;
+extern ZeGuia zeGuia;
 
 uint16_t readRight = 0;
 uint16_t readLeft = 0;
@@ -73,18 +77,19 @@ void _loop() {
 
     //Bateria
 
-    int battery_read = analogRead(BATTERY_PIN);
-    float vout = voutCalculation(battery_read);
-    float percentage = percentageCalculation(vout);
-
 }
 
 void ControlsTask(void* pvParameters) {
 
-    _setup();
+    zeGuia.setup();
 
     while(true){
-        _loop();
+        RobotMessage message;
+        if (xQueueReceive(commandsQueue, &message, 0) == pdTRUE) {
+            zeGuia.processarMensagem(message);
+        }
+
+        zeGuia.loop();
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 

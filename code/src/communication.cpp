@@ -1,8 +1,5 @@
 #include "communication.h"
 #include "commands.h"
-#include "robot_state.h"
-#include "battery.h"
-#include "globals.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -11,8 +8,6 @@ String bt_device = "Ze-Guia_BT";
 
 void BluetoothConnection();
 void SerialMonitorChecked(RobotCommand cmd);
-void SerialMonitorCheckedMode(RobotMode md);
-void SerialMonitorCheckedStg(RobotStrategy stg);
 
 void CommunicationTask(void* pvParameters) 
 {
@@ -23,16 +18,6 @@ void CommunicationTask(void* pvParameters)
     BluetoothConnection();
     
     for (;;) {
-        uint32_t nowMs = millis();
-        if (SerialBT.hasClient() && (nowMs - lastBatterySendMs >= BATTERY_SEND_INTERVAL_MS))
-        {
-            float batteryVoltage = voutCalculation(analogRead(BATTERY_PIN));
-            float batteryPercentage = percentageCalculation(batteryVoltage);
-
-            String batteryValue = "BAT," + String(batteryVoltage, 2) + "," + String(batteryPercentage, 2) + "\n";
-            SerialBT.print(batteryValue);
-            lastBatterySendMs = nowMs;
-        }
 
         static String inputLine = "";
         while (SerialBT.available())
@@ -44,9 +29,7 @@ void CommunicationTask(void* pvParameters)
                 Serial.print("Linha recebida: ");
                 Serial.println(inputLine);
 
-                RobotCommand cmd = CMD_NONE;
-                RobotMode md = MODE_NONE;
-                RobotStrategy stg = S_NONE;
+                RobotMessage message = {CMD_NONE, false, 0.0f, 0.0f, 0.0f, 0.0f};
 
                 if (inputLine.startsWith("PID:"))
                 {
@@ -58,12 +41,11 @@ void CommunicationTask(void* pvParameters)
 
                     if (sep1 > 0 && sep2 > 0 && sep3 > 0)
                     {
-                        float novoKp = payload.substring(sep1 + 1, sep2).toFloat();
-                        float novoKi = payload.substring(sep2 + 1, sep3).toFloat();
-                        float novoKd = payload.substring(sep3 + 1).toFloat();
-                        pid.setTunnings(novoKp, novoKi, novoKd);
-                        Serial.printf("PID atualizado: Kp=%.2f Ki=%.2f Kd=%.2f\n", novoKp, novoKi, novoKd);
-                        SerialBT.printf("PID atualizado: Kp=%.2f Ki=%.2f Kd=%.2f\n", novoKp, novoKi, novoKd);
+                        message.hasPidTunings = true;
+                        message.vMax = payload.substring(0, sep1).toFloat();
+                        message.kp = payload.substring(sep1 + 1, sep2).toFloat();
+                        message.ki = payload.substring(sep2 + 1, sep3).toFloat();
+                        message.kd = payload.substring(sep3 + 1).toFloat();
                     }
                 }
                 else if (inputLine.length() == 1)
@@ -72,51 +54,57 @@ void CommunicationTask(void* pvParameters)
                     switch(msg)
                     {
                         case '1':
-                            cmd = CMD_LED_ON;
+                            message.command = CMD_LED_ON;
                             digitalWrite(2, HIGH);
-                            SerialMonitorChecked(cmd);
+                            SerialMonitorChecked(message.command);
                             break;
                         case '0':
-                            cmd = CMD_LED_OFF;
+                            message.command = CMD_LED_OFF;
                             digitalWrite(2, LOW);
-                            SerialMonitorChecked(cmd);
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'K':
-                            cmd = CMD_CALIBRATE;
-                            SerialMonitorChecked(cmd);
+                            message.command = CMD_CALIBRATE;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'R':
-                            cmd = CMD_START;
-                            SerialMonitorChecked(cmd);
+                            message.command = CMD_START;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'F':
-                            cmd = CMD_STOP;
-                            SerialMonitorChecked(cmd);
+                            message.command = CMD_STOP;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'S':
-                            md = MODE_FOLLOWER;
-                            SerialMonitorCheckedMode(md);
+                            message.command = CMD_MODE_FOLLOWER;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'P':
-                            md = MODE_CHASE;
-                            SerialMonitorCheckedMode(md);
+                            message.command = CMD_MODE_CHASE;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'C':
-                            stg = S_CONSERVATIVE;
-                            SerialMonitorCheckedStg(stg);
+                            message.command = CMD_STRATEGY_CONSERVATIVE;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'A':
-                            stg = S_RISK;
-                            SerialMonitorCheckedStg(stg);
+                            message.command = CMD_STRATEGY_RISK;
+                            SerialMonitorChecked(message.command);
                             break;
                         default:
                             break;
                     }
                 }
 
-                if (cmd != CMD_NONE)
+                if (message.hasPidTunings)
                 {
-                    xQueueSend(commandsQueue, &cmd, 0);
+                    Serial.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f\n", message.vMax, message.kp, message.ki, message.kd);
+                    SerialBT.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f\n", message.vMax, message.kp, message.ki, message.kd);
+                }
+
+                if (message.command != CMD_NONE || message.hasPidTunings)
+                {
+                    xQueueSend(commandsQueue, &message, 0);
                 }
 
                 inputLine = "";
@@ -200,41 +188,22 @@ void SerialMonitorChecked(RobotCommand cmd)
             SerialBT.println("Robo finalizou a corrida");
             break;
 
-
-        default:
-            break;
-    }
-}
-
-void SerialMonitorCheckedMode(RobotMode md)
-{
-    switch(md)
-    {
-        case MODE_FOLLOWER:
+        case CMD_MODE_FOLLOWER:
             Serial.println("Modo selecionado: SEGUIDOR");
             SerialBT.println("Modo selecionado: SEGUIDOR");
             break;
 
-        case MODE_CHASE:
+        case CMD_MODE_CHASE:
             Serial.println("Modo selecionado: PERSEGUIDOR");
             SerialBT.println("Modo selecionado: PERSEGUIDOR");
             break;
 
-        default:
-            break;
-    }
-}
-
-void SerialMonitorCheckedStg(RobotStrategy stg)
-{
-    switch(stg)
-    {
-        case S_CONSERVATIVE:
+        case CMD_STRATEGY_CONSERVATIVE:
             Serial.println("Estrategia selecionada: CONSERVADOR");
             SerialBT.println("Estrategia selecionada: CONSERVADOR");
             break;
 
-        case S_RISK:
+        case CMD_STRATEGY_RISK:
             Serial.println("Estrategia selecionada: ARRISCADO");
             SerialBT.println("Estrategia selecionada: ARRISCADO");
             break;
