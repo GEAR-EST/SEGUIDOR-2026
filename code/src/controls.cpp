@@ -4,7 +4,10 @@
 #include "sensors.h"
 #include "pid.h"
 #include "commands.h"
-#include "communication.h"
+#include "zeGuia.h"
+
+extern QueueHandle_t commandsQueue;
+extern ZeGuia zeGuia;
 
 uint16_t readRight = 0;
 uint16_t readLeft = 0;
@@ -90,10 +93,15 @@ void _loop() {
 
 void ControlsTask(void* pvParameters) {
 
-    _setup();
+    zeGuia.setup();
 
     while(true){
-        _loop();
+        RobotMessage message;
+        if (xQueueReceive(commandsQueue, &message, 0) == pdTRUE) {
+            zeGuia.processarMensagem(message);
+        }
+
+        zeGuia.loop();
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 
