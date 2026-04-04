@@ -3,6 +3,8 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include "pid.h"
+#include "commands.h"
+#include "communication.h"
 
 uint16_t readRight = 0;
 uint16_t readLeft = 0;
@@ -47,6 +49,10 @@ void _setup() {
 }
 
 void _loop() {
+
+    if (CMD_CALIBRATE) doCalibration();
+
+    
     /*
     uint16_t position = qtr.readLineBlack(sensorValues);
 

@@ -1,7 +1,6 @@
 #include "communication.h"
 #include "commands.h"
 #include "robot_state.h"
-#include "battery.h"
 #include "globals.h"
 
 extern QueueHandle_t commandsQueue;
