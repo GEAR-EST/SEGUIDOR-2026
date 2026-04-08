@@ -18,7 +18,6 @@ void _setup() {
     setup_side_sensors();
 
     pinModeMotors();
-    digitalWrite(STBY, HIGH);
 
     //Bateria
     pinMode(BATTERY_PIN, INPUT);
@@ -31,9 +30,6 @@ void _setup() {
     controlMotors(0, 0);
 
     */
-
-    pid.setTunnings(1, 0, 5);
-
 }
 
 void _loop() {
@@ -41,11 +37,7 @@ void _loop() {
     /*
     qtr_print();
 
-    lineBlack();
-
     side_sensors_print();
-    
-    vTaskDelay(pdMS_TO_TICKS(2000));
     */
 
 }
@@ -59,6 +51,13 @@ int battery_percentage(){
     return map(avg, 2539, 3325, 0, 100);
 }
 
+void send_battery(){
+    unsigned long current_time = millis();
+    if (current_time - past_time >= bat_interval){
+        past_time = current_time;
+        //Pega essa função leandra
+    }
+}
 
 void ControlsTask(void* pvParameters) {
 

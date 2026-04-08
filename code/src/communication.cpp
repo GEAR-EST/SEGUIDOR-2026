@@ -11,7 +11,6 @@ void SerialMonitorChecked(RobotCommand cmd);
 
 void CommunicationTask(void* pvParameters) 
 {
-    pinMode(2, OUTPUT);
     const uint32_t BATTERY_SEND_INTERVAL_MS = 1000;
     uint32_t lastBatterySendMs = 0;
 

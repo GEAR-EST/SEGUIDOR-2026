@@ -4,6 +4,7 @@
 #include "controls.h"
 #include "globals.h"
 #include "motordriver.h"
+#include "sensors.h"
 #include <Arduino.h>
 
 void ZeGuia::setup() 
@@ -78,29 +79,34 @@ void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop p
 
     if (strategy == S_CONSERVATIVE) 
     {
-        // Lógica para estratégia conservadora do perseguidor  
+        pid.setTunnings(0.5, 1, 10);
+        lineWhite();  
 
     } 
     else if (strategy == S_RISK) 
     {
-        // Lógica para estratégia arriscada do perseguidor
+        pid.setTunnings(1, 1, 5);
+        lineWhite(); 
     }
 
 }
 void ZeGuia::calibrarRobo()
 {
-    // Lógica de calibração do robô
+    doCalibration();
 }
 
 void ZeGuia:: iniciarCorrida()
 {
     //logica iniciar corrida
     running = true;
+    digitalWrite(STBY, HIGH);
 }
 
 void ZeGuia:: terminarCorrida()
 {
     running = false;
+    controlMotors(0, 0);
+    digitalWrite(STBY, LOW);
     //logica terminar corrida 
 }
 

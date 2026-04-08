@@ -18,7 +18,7 @@ void controlMotors(int speedA, int speedB){
         motors.backward();
     } else {
         motors.setSpeed(0);
-        motors.stop();
+        motors.stopA();
     }
 
     if (speedB > 0){
@@ -29,7 +29,7 @@ void controlMotors(int speedA, int speedB){
         motors.backward();
     } else {
         motors.setSpeed(0);
-        motors.stop();
+        motors.stopB();
     }
 
 }
