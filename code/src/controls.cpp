@@ -52,9 +52,6 @@ void _setup() {
 }
 
 void _loop() {
-
-    if (CMD_CALIBRATE) doCalibration();
-
     
     /*
     uint16_t position = qtr.readLineBlack(sensorValues);
@@ -81,15 +78,17 @@ void _loop() {
     vTaskDelay(pdMS_TO_TICKS(2000));
     */
 
-    //Bateria
-
-    int percentage = map(analogRead(BATTERY_PIN), 2539, 3325, 0, 100);
-    Serial.print("Bateria: ");
-    Serial.println(percentage);
-    Serial.print("Analog read: ");
-    Serial.println(analogRead(BATTERY_PIN));
-    delay(3000);
 }
+
+int battery_percentage(){
+    long sum = 0;
+    for (int i = 0; i < 16; i++){
+        sum += analogRead(BATTERY_PIN);
+    }
+    int avg = sum/16;
+    return map(avg, 2539, 3325, 0, 100);
+}
+
 
 void ControlsTask(void* pvParameters) {
 
