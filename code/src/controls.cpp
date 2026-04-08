@@ -9,28 +9,13 @@
 extern QueueHandle_t commandsQueue;
 extern ZeGuia zeGuia;
 
-uint16_t readRight = 0;
-uint16_t readLeft = 0;
-uint16_t sensorValues[SensorCount];
-
-
 void _setup() {
 
-    //configuração do QTR-8A
-    qtr.setTypeAnalog(); //tipo de sensor é analogico
+    //setuping
 
-    // qtr.setSensorPins((const uint8_t[]){14, 27, 26, 25, 33, 32, 35, 34}, SensorCount);
-    qtr.setSensorPins((const uint8_t[]){D8_PIN, D7_PIN, D6_PIN, D5_PIN, D4_PIN, D3_PIN, D2_PIN, D1_PIN}, SensorCount);
+    setup_qtr();
 
-    //verificar se já há valores calibrados
-    //if (readCalibration() == false)  
-
-    //configuração dos sensores laterais
-    pinMode(RightSensor, INPUT);
-    pinMode(LeftSensor, INPUT);
-
-    //motor driver pin mode
-    doCalibration();
+    setup_side_sensors();
 
     pinModeMotors();
     digitalWrite(STBY, HIGH);
@@ -54,27 +39,12 @@ void _setup() {
 void _loop() {
     
     /*
-    uint16_t position = qtr.readLineBlack(sensorValues);
-
-    //Sensor frontal
-    Serial.print("Frontal: ");
-    for (uint8_t i = 0; i < SensorCount; i++) {
-        Serial.print(sensorValues[i]);
-        Serial.print('\t');
-    }
-    Serial.println();
-    Serial.print("Pos: ");
-    Serial.println(position);
+    qtr_print();
 
     lineBlack();
 
-    //Sensores laterais
-    readRight = digitalRead(RightSensor);
-    readLeft = digitalRead(LeftSensor);
-    Serial.print("Direito: "); Serial.print(readRight);
-    Serial.print('\t');
-    Serial.print("Esquerdo: "); Serial.println(readLeft);
-
+    side_sensors_print();
+    
     vTaskDelay(pdMS_TO_TICKS(2000));
     */
 

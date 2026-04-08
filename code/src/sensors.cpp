@@ -1,20 +1,64 @@
 #include "globals.h"
 #include "sensors.h"
 #include "controls.h"
+#include "motordriver.h"
 
 QTRSensors qtr;
 Preferences preferences;
+uint16_t sensorValues[SensorCount];
+
+void setup_qtr(){
+    //configuração do QTR-8A
+    qtr.setTypeAnalog(); //tipo de sensor é analogico
+
+    // qtr.setSensorPins((const uint8_t[]){14, 27, 26, 25, 33, 32, 35, 34}, SensorCount);
+    qtr.setSensorPins((const uint8_t[]){D8_PIN, D7_PIN, D6_PIN, D5_PIN, D4_PIN, D3_PIN, D2_PIN, D1_PIN}, SensorCount);
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
+}
+
+void setup_side_sensors(){
+    //configuração dos sensores laterais
+    pinMode(RightSensor, INPUT);
+    pinMode(LeftSensor, INPUT);
+}
+
+void qtr_print(){
+    uint16_t position = qtr.readLineBlack(sensorValues);
+
+    //Sensor frontal
+    Serial.print("Frontal: ");
+    for (uint8_t i = 0; i < SensorCount; i++) {
+        Serial.print(sensorValues[i]);
+        Serial.print('\t');
+    }
+    Serial.println();
+    Serial.print("Pos: ");
+    Serial.println(position);
+}
+
+void side_sensors_print(){
+    //Sensores laterais
+    readRight = digitalRead(RightSensor);
+    readLeft = digitalRead(LeftSensor);
+    Serial.print("Direito: "); Serial.print(readRight);
+    Serial.print('\t');
+    Serial.print("Esquerdo: "); Serial.println(readLeft);
+}
 
 void doCalibration(){
 
     digitalWrite(LED_BUILTIN, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(500));
+    vTaskDelay(pdMS_TO_TICKS(50));
 
     Serial.println("Calibrando");
     //calibrando
-    for (uint16_t i=0; i < 400; i++){
+    motors_calibrate();
+    for (uint16_t i=0; i < 3000; i++){
         qtr.calibrate();
     }
+    motors.stop();
 
     //para depuração, os valores máximo e mínimos na calibração
     uint16_t max_values[8];
@@ -43,8 +87,8 @@ void doCalibration(){
     size_t min_values_bytes = sizeof(min_values);
 
     preferences.begin("calib", false);
-    preferences.putBytes("max_values_array", max_values, max_values_bytes);
-    preferences.putBytes("min_values_array", min_values, min_values_bytes);
+    preferences.putBytes("max_val", max_values, max_values_bytes);
+    preferences.putBytes("min_val", min_values, min_values_bytes);
     preferences.end();
 
     digitalWrite(LED_BUILTIN, LOW);
@@ -53,21 +97,39 @@ void doCalibration(){
 
 bool readCalibration(){
 
-    uint16_t read_max[8];
-    uint16_t read_min[8];
+    uint16_t read_max[SensorCount];
+    uint16_t read_min[SensorCount];
 
     preferences.begin("calib", true);
-    size_t read_size_max = preferences.getBytesLength("max_values_array");
-    size_t read_size_min = preferences.getBytesLength("min_values_array");
     
-    if(read_size_max == sizeof(read_max)) preferences.getBytes("max_values_array", read_max, sizeof(read_max));
-    if(read_size_min == sizeof(read_min)) preferences.getBytes("min_values_array", read_min, sizeof(read_min));
+    size_t resMax = preferences.getBytes("max_val", read_max, sizeof(read_max));
+    size_t resMin = preferences.getBytes("min_val", read_min, sizeof(read_min));
 
     preferences.end();
 
+    if (resMax != sizeof(read_max) || resMin != sizeof(read_min)) return false;
+    
     for (auto n : read_max){
-        if (n == EMPTY_VALUE) return false;
+        if (n == EMPTY_VALUE) {
+            Serial.println("Erro: um valor vazio foi encontrado, por favor calibrar novamente");
+            return false;
+        }
     }
+
+    for (auto n : read_min){
+        if (n == EMPTY_VALUE) {
+            Serial.println("Erro: um valor vazio foi encontrado, por favor calibrar novamente");
+            return false;
+        }
+    }
+
+    qtr.calibrate();
+    for(uint8_t i = 0; i < SensorCount; i++){
+        qtr.calibrationOn.maximum[i] = read_max[i];
+        qtr.calibrationOn.minimum[i] = read_min[i];
+    }
+
+    Serial.println("Calibração carregada com sucesso");
 
     return true;
   
