@@ -23,6 +23,7 @@
 
 extern int VEL_MAX;
 extern int VEL_MAX_BACK; 
+extern L298NX2 motors;
 
 void lineBlack();
 void lineWhite();
@@ -30,5 +31,7 @@ void lineWhite();
 void controlMotors(int speedA, int speedB);
 
 void pinModeMotors();
+
+void motors_calibrate();
 
 #endif

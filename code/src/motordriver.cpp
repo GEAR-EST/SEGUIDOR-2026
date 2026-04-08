@@ -18,7 +18,7 @@ void controlMotors(int speedA, int speedB){
         motors.backward();
     } else {
         motors.setSpeed(0);
-        motors.stop();
+        motors.stopA();
     }
 
     if (speedB > 0){
@@ -29,7 +29,7 @@ void controlMotors(int speedA, int speedB){
         motors.backward();
     } else {
         motors.setSpeed(0);
-        motors.stop();
+        motors.stopB();
     }
 
 }
@@ -67,4 +67,10 @@ void pinModeMotors(){
     pinMode(AI1, OUTPUT); pinMode(AI2, OUTPUT);
     pinMode(BI1, OUTPUT); pinMode(BI2, OUTPUT);
     pinMode(STBY, OUTPUT);
+}
+
+void motors_calibrate(){
+    motors.setSpeed(50);
+    motors.forwardA();
+    motors.forwardB();
 }

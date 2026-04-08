@@ -3,33 +3,24 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include "pid.h"
-#include "battery.h"
+#include "commands.h"
+#include "zeGuia.h"
 
-uint16_t readRight = 0;
-uint16_t readLeft = 0;
-uint16_t sensorValues[SensorCount];
-
+extern QueueHandle_t commandsQueue;
+extern ZeGuia zeGuia;
 
 void _setup() {
 
-    //configuração do QTR-8A
-    qtr.setTypeAnalog(); //tipo de sensor é analogico
+    //setuping
 
-    // qtr.setSensorPins((const uint8_t[]){14, 27, 26, 25, 33, 32, 35, 34}, SensorCount);
-    qtr.setSensorPins((const uint8_t[]){D8_PIN, D7_PIN, D6_PIN, D5_PIN, D4_PIN, D3_PIN, D2_PIN, D1_PIN}, SensorCount);
+    setup_qtr();
 
-    //verificar se já há valores calibrados
-    //if (readCalibration() == false)  
-
-    //configuração dos sensores laterais
-    pinMode(RightSensor, INPUT);
-    pinMode(LeftSensor, INPUT);
-
-    //motor driver pin mode
-    doCalibration();
+    setup_side_sensors();
 
     pinModeMotors();
-    digitalWrite(STBY, HIGH);
+
+    //Bateria
+    pinMode(BATTERY_PIN, INPUT);
 
     /*
     Teste dos motores
@@ -39,52 +30,46 @@ void _setup() {
     controlMotors(0, 0);
 
     */
-
-    pid.setTunnings(1, 0, 5);
-
-    //Bateria
-    analogSetAttenuation(ADC_11db); // Atenuação para 1.1 V
 }
 
 void _loop() {
+    
+    /*
+    qtr_print();
 
-    uint16_t position = qtr.readLineBlack(sensorValues);
+    side_sensors_print();
+    */
 
-    //Sensor frontal
-    Serial.print("Frontal: ");
-    for (uint8_t i = 0; i < SensorCount; i++) {
-        Serial.print(sensorValues[i]);
-        Serial.print('\t');
+}
+
+int battery_percentage(){
+    long sum = 0;
+    for (int i = 0; i < 16; i++){
+        sum += analogRead(BATTERY_PIN);
     }
-    Serial.println();
-    Serial.print("Pos: ");
-    Serial.println(position);
+    int avg = sum/16;
+    return map(avg, 2539, 3325, 0, 100);
+}
 
-    lineBlack();
-
-    //Sensores laterais
-    readRight = digitalRead(RightSensor);
-    readLeft = digitalRead(LeftSensor);
-    Serial.print("Direito: "); Serial.print(readRight);
-    Serial.print('\t');
-    Serial.print("Esquerdo: "); Serial.println(readLeft);
-
-    vTaskDelay(pdMS_TO_TICKS(2000));
-
-    //Bateria
-
-    int battery_read = analogRead(BATTERY_PIN);
-    float vout = voutCalculation(battery_read);
-    float percentage = percentageCalculation(vout);
-
+void send_battery(){
+    unsigned long current_time = millis();
+    if (current_time - past_time >= bat_interval){
+        past_time = current_time;
+        //Pega essa função leandra
+    }
 }
 
 void ControlsTask(void* pvParameters) {
 
-    _setup();
+    zeGuia.setup();
 
     while(true){
-        _loop();
+        RobotMessage message;
+        if (xQueueReceive(commandsQueue, &message, 0) == pdTRUE) {
+            zeGuia.processarMensagem(message);
+        }
+
+        zeGuia.loop();
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 
