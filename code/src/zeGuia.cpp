@@ -56,6 +56,7 @@ void ZeGuia::loop()
             default:
                 break;
         }
+        
     }
 }
 
@@ -64,12 +65,11 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        // Lógica para estratégia conservadora do seguidor  
-
+        controlMotors(100, 100);
     } 
     else if (strategy == S_RISK) 
     {
-        // Lógica para estratégia arriscada do seguidor
+        controlMotors(100, 100); 
     }
 
 }

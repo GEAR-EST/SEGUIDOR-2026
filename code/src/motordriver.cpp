@@ -72,5 +72,5 @@ void pinModeMotors(){
 void motors_calibrate(){
     motors.setSpeed(50);
     motors.forwardA();
-    motors.forwardB();
+    motors.backwardB();
 }

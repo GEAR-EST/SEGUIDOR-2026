@@ -17,6 +17,8 @@ void _setup() {
 
     setup_side_sensors();
 
+    readCalibration();
+
     pinModeMotors();
 
     //Bateria
