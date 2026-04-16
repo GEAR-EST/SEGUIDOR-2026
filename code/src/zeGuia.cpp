@@ -56,7 +56,6 @@ void ZeGuia::loop()
             default:
                 break;
         }
-        
     }
 }
 

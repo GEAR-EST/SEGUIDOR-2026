@@ -21,6 +21,11 @@
 
 #define SETPOINT 2000
 
+// fail safe
+
+const unsigned long failtime = 500;
+extern unsigned long past_fail;
+
 extern int VEL_MAX;
 extern int VEL_MAX_BACK; 
 extern L298NX2 motors;
@@ -33,5 +38,7 @@ void controlMotors(int speedA, int speedB);
 void pinModeMotors();
 
 void motors_calibrate();
+
+bool fail_safe();
 
 #endif

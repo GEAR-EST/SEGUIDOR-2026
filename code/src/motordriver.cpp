@@ -2,6 +2,7 @@
 #include "motordriver.h"
 #include "pid.h"
 #include "sensors.h"
+#include "communication.h"
 
 int VEL_MAX = 0;
 int VEL_MAX_BACK = 0;
@@ -38,6 +39,13 @@ void lineBlack(){
     int pos = qtr.readLineBlack(sensorValues);
     int pid_value = pid.somatory(SETPOINT, pos);
 
+    if (pos == 0){
+        if (fail_safe() == true){
+            controlMotors(0, 0);
+            digitalWrite(STBY, LOW);
+        }
+    }
+
     int vel_m1 = VEL_MAX + pid_value;
     int vel_m2 = VEL_MAX - pid_value;
 
@@ -50,6 +58,14 @@ void lineBlack(){
 
 void lineWhite(){
     int pos = qtr.readLineWhite(sensorValues);
+
+    if (pos == 0){
+        if (fail_safe() == true){
+            controlMotors(0, 0);
+            digitalWrite(STBY, LOW);
+            SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
+        }
+    }
     int pid_value = pid.somatory(SETPOINT, pos);
 
     int vel_m1 = VEL_MAX + pid_value;
@@ -73,4 +89,12 @@ void motors_calibrate(){
     motors.setSpeed(50);
     motors.forwardA();
     motors.backwardB();
+}
+
+bool fail_safe(){
+    unsigned long current_time = millis();
+    while (qtr.readLineWhite(sensorValues) == 0){
+        if (current_time - past_fail >= failtime) return true;
+    }
+    return false;
 }
