@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -34,7 +35,6 @@ import java.util.UUID
 class MainActivity : AppCompatActivity() {
 
     private lateinit var txtSerial: TextView
-    private lateinit var txtBatteryVoltage: TextView
     private lateinit var txtBatteryPercent: TextView
     private lateinit var txtEstadoRobo: TextView
     private lateinit var txtModoRobo: TextView
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnModeChase: Button
     private lateinit var btnStrategyConservative: Button
     private lateinit var btnStrategyRisk: Button
-    private lateinit var btnAbrirEdicao: MaterialButton
+    private lateinit var btnAbrirEdicao: ImageView
 
     private var continuarEscutando = false
     private var modoSelecionado = false
@@ -93,7 +93,6 @@ class MainActivity : AppCompatActivity() {
         txtSerial = findViewById(R.id.txtSerial)
         txtCronometro = findViewById(R.id.txtCronometro)
 
-        txtBatteryVoltage = findViewById(R.id.txtBatteryVoltage)
         txtBatteryPercent = findViewById(R.id.txtBatteryPercent)
 
         txtParamV = findViewById(R.id.txtParamV)
@@ -130,19 +129,15 @@ class MainActivity : AppCompatActivity() {
 
         val swBluetooth = findViewById<SwitchCompat>(R.id.bluetooth)
         val swLED = findViewById<SwitchCompat>(R.id.LED)
-        val txtStatusBluetooth = findViewById<TextView>(R.id.txtStatusBluetooth)
-        val txtStatusLED = findViewById<TextView>(R.id.txtStatusLED)
 
-        atualizarCoresSwitch(swBluetooth, txtStatusBluetooth, swBluetooth.isChecked, "CONECTADO")
-        atualizarCoresSwitch(swLED, txtStatusLED, swLED.isChecked, "LIGADO")
 
         swBluetooth.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swBluetooth, txtStatusBluetooth, isChecked, "CONECTADO")
+            atualizarCoresSwitch(swBluetooth, isChecked)
             if (isChecked) conectarBluetooth() else desconectarBluetooth()
         }
 
         swLED.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swLED, txtStatusLED, isChecked, "LIGADO")
+            atualizarCoresSwitch(swLED, isChecked)
             if (isChecked) enviarComando("1") else enviarComando("0")
         }
 
@@ -378,18 +373,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun atualizarCoresSwitch(
         switchCompat: SwitchCompat,
-        textView: TextView,
-        isChecked: Boolean,
-        textoLigado: String
+        isChecked: Boolean
     ) {
         if (isChecked) {
-            textView.text = textoLigado
-            textView.setTextColor(Color.parseColor("#00FF66"))
             switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
             switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#A066FF"))
         } else {
-            textView.text = "DESLIGADO"
-            textView.setTextColor(Color.parseColor("#3D285B"))
             switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#A09DA5"))
             switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#2E1A47"))
         }
@@ -411,8 +400,8 @@ class MainActivity : AppCompatActivity() {
                             val percentual = partes[2].toIntOrNull()
                             if (tensao != null && percentual != null) {
                                 runOnUiThread {
-                                    txtBatteryVoltage.text = String.format(Locale.US, "%.1fV", tensao)
-                                    txtBatteryPercent.text = " (${percentual}%)"
+                                    // Removemos o txtBatteryVoltage
+                                    txtBatteryPercent.text = "${percentual}%"
 
                                     val cor = when {
                                         percentual > 50 -> Color.parseColor("#00FF66")
