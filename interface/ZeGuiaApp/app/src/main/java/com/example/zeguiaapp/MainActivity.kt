@@ -31,6 +31,10 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.util.Locale
 import java.util.UUID
+import android.widget.LinearLayout
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -69,6 +73,10 @@ class MainActivity : AppCompatActivity() {
     private var cronometroRodando = false
     private var tempoInicioMs: Long = 0L
 
+    private lateinit var containerCards: LinearLayout
+
+    private var txtSensoresModal: TextView? = null
+
     private val atualizarCronometro = object : Runnable {
         override fun run() {
             if (!cronometroRodando) return
@@ -106,6 +114,7 @@ class MainActivity : AppCompatActivity() {
         txtParamKd.text = sharedPreferences.getString("paramKd", "0.0")
         txtCronometro.text = "00:00:00"
 
+        val btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
         btnCalibrar = findViewById(R.id.calibrate)
         btnStartRun = findViewById(R.id.run)
         btnStopRun = findViewById(R.id.stop)
@@ -143,6 +152,12 @@ class MainActivity : AppCompatActivity() {
 
         // Cliques so enviam comando; cronometro inicia/para quando chegar mensagem do robo
         btnCalibrar.setOnClickListener { enviarComando("K") }
+
+        btnLerSensores.setOnClickListener {
+            abrirModalSensores()
+            //enviarComando("L")
+            simularLeituraSensores()
+        }
         btnModeFollower.setOnClickListener { enviarComando("S") }
         btnModeChase.setOnClickListener { enviarComando("P") }
         btnStrategyConservative.setOnClickListener { enviarComando("C") }
@@ -400,7 +415,7 @@ class MainActivity : AppCompatActivity() {
                             val percentual = partes[2].toIntOrNull()
                             if (tensao != null && percentual != null) {
                                 runOnUiThread {
-                                    // Removemos o txtBatteryVoltage
+
                                     txtBatteryPercent.text = "${percentual}%"
 
                                     val cor = when {
@@ -431,6 +446,11 @@ class MainActivity : AppCompatActivity() {
                             } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
                                 txtEstadoRobo.text = "Parado"
                                 txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
+                                if (cronometroRodando) {
+                                    val tempoParaSalvar = txtCronometro.text.toString()
+                                    adicionarCorridaAoHistorico(tempoParaSalvar)
+                                }
+
                                 estadoFinalizado()
                                 pararCronometro()
                             }
@@ -460,6 +480,11 @@ class MainActivity : AppCompatActivity() {
                                 txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
                                 estadoPosEstrategia()
                             }
+                            if (mensagem.startsWith("S,")) { // Supondo que o robô envie prefixo "S" para sensores
+                                val valores = mensagem.substring(2).replace(",", "  |  ")
+                                txtSensoresModal?.text = valores // Isso atualiza o modal em tempo real se ele estiver aberto
+                            }
+
                         }
                     }
                 } catch (e: IOException) {
@@ -467,6 +492,26 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun simularLeituraSensores() {
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            repeat(20) {
+                val fakeData = StringBuilder()
+                for (i in 1..8) {
+                    val valor = (0..1000).random() // Gera valor entre 0 e 1000
+                    fakeData.append(valor)
+                    if (i < 8) fakeData.append("  |  ")
+                    if (i == 4) fakeData.append("\n")
+                }
+
+                txtSensoresModal?.text = fakeData.toString()
+
+                delay(500)
+            }
+            txtSensoresModal?.text = "Simulação Finalizada."
+        }
     }
 
     private fun enviarComando(sinal: String) {
@@ -479,6 +524,54 @@ class MainActivity : AppCompatActivity() {
             btSocket?.outputStream?.write(payload.toByteArray())
         } catch (e: IOException) {
             Toast.makeText(this, "Erro ao enviar dados", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun adicionarCorridaAoHistorico(tempo: String) {
+        // Remove o texto de "Nenhuma corrida" se for a primeira
+        if (containerCards.childCount > 0 && containerCards.getChildAt(0) is TextView) {
+            val tv = containerCards.getChildAt(0) as TextView
+            if (tv.text.contains("Nenhuma")) containerCards.removeAllViews()
+        }
+
+        // Cria o Card (um FrameLayout ou LinearLayout)
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundResource(android.R.drawable.dialog_holo_dark_frame) // Estilo escuro
+            setPadding(40, 40, 40, 40)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, 0, 0, 24) }
+        }
+
+        val txtTempo = TextView(this).apply {
+            text = "⏱️ Tempo: $tempo"
+            setTextColor(android.graphics.Color.GREEN)
+            textSize = 20f
+            typeface = android.graphics.Typeface.MONOSPACE
+        }
+
+        card.addView(txtTempo)
+
+        // Adiciona o novo card no TOPO da lista (índice 0)
+        containerCards.addView(card, 0)
+    }
+
+    private fun abrirModalSensores() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.modal_sensores, null)
+        builder.setView(dialogView)
+
+        txtSensoresModal = dialogView.findViewById(R.id.txtValoresSensores)
+
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+
+        dialog.setOnDismissListener {
+            txtSensoresModal = null // Para de atualizar quando fechar
         }
     }
 
