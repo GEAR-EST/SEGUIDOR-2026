@@ -59,6 +59,16 @@ void ZeGuia::loop()
                 break;
         }
     }
+
+    if (sensorStreaming)
+    {
+        const uint32_t now = millis();
+        if (now - lastSensorSendMs >= SENSOR_SEND_INTERVAL_MS)
+        {
+            lastSensorSendMs = now;
+            enviarLeituraSensores();
+        }
+    }
 }
 
 void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop principal quando o modo é MODE_FOLLOWER
@@ -90,7 +100,9 @@ void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop p
 }
 void ZeGuia::calibrarRobo()
 {
+    SerialBT.println("Calibrando");
     doCalibration();
+    SerialBT.println("Robo calibrado");
 }
 
 void ZeGuia:: iniciarCorrida()
@@ -106,6 +118,26 @@ void ZeGuia:: terminarCorrida()
     controlMotors(0, 0);
     digitalWrite(STBY, LOW);
     //logica terminar corrida 
+}
+
+void ZeGuia::enviarLeituraSensores()
+{
+    uint16_t position = qtr.readLineBlack(sensorValues);
+    readRight = digitalRead(RightSensor);
+    readLeft = digitalRead(LeftSensor);
+
+    // Formato para o app: S,<pos>,<s1>...<s8>,<right>,<left>
+    SerialBT.print("S,");
+    SerialBT.print(position);
+    for (uint8_t i = 0; i < SensorCount; i++)
+    {
+        SerialBT.print(',');
+        SerialBT.print(sensorValues[i]);
+    }
+    SerialBT.print(',');
+    SerialBT.print(readRight);
+    SerialBT.print(',');
+    SerialBT.println(readLeft);
 }
 
 
@@ -133,6 +165,13 @@ void ZeGuia::processarComando(RobotCommand cmd)
         break;
     case CMD_STRATEGY_RISK:
         strategy = S_RISK;
+        break;
+    case CMD_SENSOR_STREAM_ON:
+        sensorStreaming = true;
+        lastSensorSendMs = 0;
+        break;
+    case CMD_SENSOR_STREAM_OFF:
+        sensorStreaming = false;
         break;
 
     default:

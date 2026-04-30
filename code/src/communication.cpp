@@ -13,6 +13,7 @@ void CommunicationTask(void* pvParameters)
 {
     const uint32_t BATTERY_SEND_INTERVAL_MS = 1000;
     uint32_t lastBatterySendMs = 0;
+    bool sensorStreamRequested = false;
 
     BluetoothConnection();
     
@@ -89,6 +90,22 @@ void CommunicationTask(void* pvParameters)
                         case 'A':
                             message.command = CMD_STRATEGY_RISK;
                             SerialMonitorChecked(message.command);
+                            break;
+                        case 'L':
+                            if (!sensorStreamRequested)
+                            {
+                                message.command = CMD_SENSOR_STREAM_ON;
+                                sensorStreamRequested = true;
+                                SerialMonitorChecked(message.command);
+                            }
+                            break;
+                        case 'l':
+                            if (sensorStreamRequested)
+                            {
+                                message.command = CMD_SENSOR_STREAM_OFF;
+                                sensorStreamRequested = false;
+                                SerialMonitorChecked(message.command);
+                            }
                             break;
                         default:
                             break;
@@ -205,6 +222,18 @@ void SerialMonitorChecked(RobotCommand cmd)
         case CMD_STRATEGY_RISK:
             Serial.println("Estrategia selecionada: ARRISCADO");
             SerialBT.println("Estrategia selecionada: ARRISCADO");
+            break;
+
+
+        case CMD_SENSOR_STREAM_ON:
+            Serial.println("Stream de sensores ligado");
+            SerialBT.println("Stream de sensores ligado");
+                
+            break;
+
+        case CMD_SENSOR_STREAM_OFF:
+            Serial.println("Stream de sensores desligado");
+            SerialBT.println("Stream de sensores desligado");
             break;
 
         default:

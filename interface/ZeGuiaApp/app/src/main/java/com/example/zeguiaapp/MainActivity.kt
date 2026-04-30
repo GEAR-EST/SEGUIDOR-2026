@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -30,11 +31,15 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.util.Locale
 import java.util.UUID
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.*
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var txtSerial: TextView
-    private lateinit var txtBatteryVoltage: TextView
     private lateinit var txtBatteryPercent: TextView
     private lateinit var txtEstadoRobo: TextView
     private lateinit var txtModoRobo: TextView
@@ -53,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnModeChase: Button
     private lateinit var btnStrategyConservative: Button
     private lateinit var btnStrategyRisk: Button
-    private lateinit var btnAbrirEdicao: MaterialButton
+    private lateinit var btnAbrirEdicao: RelativeLayout
 
     private var continuarEscutando = false
     private var modoSelecionado = false
@@ -69,6 +74,15 @@ class MainActivity : AppCompatActivity() {
     private var cronometroRodando = false
     private var tempoInicioMs: Long = 0L
 
+    private lateinit var containerCards: LinearLayout
+
+    private var lendoSensores = false
+    private val sensorHandler = Handler(Looper.getMainLooper())
+
+    private var txtSensoresModal: TextView? = null
+
+    private lateinit var btnLerSensores: Button
+
     private val atualizarCronometro = object : Runnable {
         override fun run() {
             if (!cronometroRodando) return
@@ -80,6 +94,16 @@ class MainActivity : AppCompatActivity() {
             cronometroHandler.postDelayed(this, 50)
         }
     }
+
+    private val sensorPollRunnable = object : Runnable {
+        override fun run() {
+            if (!lendoSensores) return
+            enviarComando("L")
+            sensorHandler.postDelayed(this, 180) // ajuste: 120-250ms
+        }
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,7 +117,6 @@ class MainActivity : AppCompatActivity() {
         txtSerial = findViewById(R.id.txtSerial)
         txtCronometro = findViewById(R.id.txtCronometro)
 
-        txtBatteryVoltage = findViewById(R.id.txtBatteryVoltage)
         txtBatteryPercent = findViewById(R.id.txtBatteryPercent)
 
         txtParamV = findViewById(R.id.txtParamV)
@@ -107,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         txtParamKd.text = sharedPreferences.getString("paramKd", "0.0")
         txtCronometro.text = "00:00:00"
 
+        btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
         btnCalibrar = findViewById(R.id.calibrate)
         btnStartRun = findViewById(R.id.run)
         btnStopRun = findViewById(R.id.stop)
@@ -130,24 +154,25 @@ class MainActivity : AppCompatActivity() {
 
         val swBluetooth = findViewById<SwitchCompat>(R.id.bluetooth)
         val swLED = findViewById<SwitchCompat>(R.id.LED)
-        val txtStatusBluetooth = findViewById<TextView>(R.id.txtStatusBluetooth)
-        val txtStatusLED = findViewById<TextView>(R.id.txtStatusLED)
 
-        atualizarCoresSwitch(swBluetooth, txtStatusBluetooth, swBluetooth.isChecked, "CONECTADO")
-        atualizarCoresSwitch(swLED, txtStatusLED, swLED.isChecked, "LIGADO")
 
         swBluetooth.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swBluetooth, txtStatusBluetooth, isChecked, "CONECTADO")
+            atualizarCoresSwitch(swBluetooth, isChecked)
             if (isChecked) conectarBluetooth() else desconectarBluetooth()
         }
 
         swLED.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swLED, txtStatusLED, isChecked, "LIGADO")
+            atualizarCoresSwitch(swLED, isChecked)
             if (isChecked) enviarComando("1") else enviarComando("0")
         }
 
         // Cliques so enviam comando; cronometro inicia/para quando chegar mensagem do robo
         btnCalibrar.setOnClickListener { enviarComando("K") }
+
+        btnLerSensores.setOnClickListener {
+            abrirModalSensores()
+            //simularLeituraSensores()
+        }
         btnModeFollower.setOnClickListener { enviarComando("S") }
         btnModeChase.setOnClickListener { enviarComando("P") }
         btnStrategyConservative.setOnClickListener { enviarComando("C") }
@@ -251,12 +276,14 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnLerSensores, false) // sem conexão, desabilitado
     }
 
     private fun estadoConectadoInicial() {
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, false)
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
@@ -267,6 +294,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, modoSelecionado)
         configurarBotao(btnStrategyRisk, modoSelecionado)
         configurarBotao(btnStartRun, false)
@@ -277,6 +305,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, false)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, false)
@@ -287,6 +316,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, false)
         configurarBotao(btnModeFollower, false)
         configurarBotao(btnModeChase, false)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, true)
@@ -300,6 +330,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyConservative, false)
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
+        configurarBotao(btnLerSensores, false)
         configurarBotao(btnStopRun, true)
     }
 
@@ -311,6 +342,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, true)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnLerSensores, true)
     }
 
     private fun permissaoBluetooth(): Boolean {
@@ -378,18 +410,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun atualizarCoresSwitch(
         switchCompat: SwitchCompat,
-        textView: TextView,
-        isChecked: Boolean,
-        textoLigado: String
+        isChecked: Boolean
     ) {
         if (isChecked) {
-            textView.text = textoLigado
-            textView.setTextColor(Color.parseColor("#00FF66"))
             switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
             switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#A066FF"))
         } else {
-            textView.text = "DESLIGADO"
-            textView.setTextColor(Color.parseColor("#3D285B"))
             switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#A09DA5"))
             switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#2E1A47"))
         }
@@ -404,72 +430,77 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val mensagem = reader.readLine() ?: break
 
-                    if (mensagem.startsWith("BAT,")) {
-                        val partes = mensagem.split(",")
-                        if (partes.size == 3) {
-                            val tensao = partes[1].toFloatOrNull()
-                            val percentual = partes[2].toIntOrNull()
-                            if (tensao != null && percentual != null) {
-                                runOnUiThread {
-                                    txtBatteryVoltage.text = String.format(Locale.US, "%.1fV", tensao)
-                                    txtBatteryPercent.text = " (${percentual}%)"
-
-                                    val cor = when {
-                                        percentual > 50 -> Color.parseColor("#00FF66")
-                                        percentual > 20 -> Color.parseColor("#FFAA00")
-                                        else -> Color.parseColor("#FF2A55")
+                    runOnUiThread {
+                        when {
+                            mensagem.startsWith("BAT,") -> {
+                                val partes = mensagem.split(",")
+                                if (partes.size == 3) {
+                                    val percentual = partes[2].toIntOrNull()
+                                    if (percentual != null) {
+                                        txtBatteryPercent.text = "${percentual}%"
+                                        val cor = when {
+                                            percentual > 50 -> Color.parseColor("#00FF66")
+                                            percentual > 20 -> Color.parseColor("#FFAA00")
+                                            else -> Color.parseColor("#FF2A55")
+                                        }
+                                        txtBatteryPercent.setTextColor(cor)
                                     }
-                                    txtBatteryPercent.setTextColor(cor)
                                 }
                             }
-                        }
-                    } else {
-                        val msgMinuscula = mensagem.lowercase()
-                        runOnUiThread {
-                            txtSerial.append("$mensagem\n")
-                            val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
-                            scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
-                            
-                            if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
-                                txtEstadoRobo.text = "Correndo"
-                                txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
-                                estadoCorrendo()
-                                iniciarCronometro()
-                            } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
-                                txtEstadoRobo.text = "Calibrando"
-                                txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
-                                estadoPosCalibracao()
-                            } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
-                                txtEstadoRobo.text = "Parado"
-                                txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
-                                estadoFinalizado()
-                                pararCronometro()
+
+                            mensagem.trim().startsWith("S,")-> {
+                                // Sensores: atualiza SOMENTE o modal
+                                txtSensoresModal?.text = formatarSensoresBonito(mensagem)
                             }
 
-                            if (msgMinuscula.contains("perseguidor")) {
-                                txtModoRobo.text = "Perseguidor"
-                                txtModoRobo.setTextColor(Color.parseColor("#FF007F"))
-                                txtEstrategiaRobo.text = "Aguardando..."
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                modoSelecionado = true
-                                estadoPosModo()
-                            } else if (msgMinuscula.contains("seguidor")) {
-                                txtModoRobo.text = "Seguidor"
-                                txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
-                                txtEstrategiaRobo.text = "Aguardando..."
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                modoSelecionado = true
-                                estadoPosModo()
-                            }
+                            else -> {
+                                txtSerial.append("$mensagem\n")
+                                val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
+                                scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
 
-                            if (msgMinuscula.contains("arriscado") || msgMinuscula.contains("kamikaze")) {
-                                txtEstrategiaRobo.text = "Arriscado"
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
-                                estadoPosEstrategia()
-                            } else if (msgMinuscula.contains("conservador")) {
-                                txtEstrategiaRobo.text = "Conservador"
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
-                                estadoPosEstrategia()
+                                val msgMinuscula = mensagem.lowercase()
+
+                                if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
+                                    txtEstadoRobo.text = "Correndo"
+                                    txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
+                                    estadoCorrendo()
+                                    iniciarCronometro()
+                                } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
+                                    txtEstadoRobo.text = "Calibrando"
+                                    txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
+                                    estadoPosCalibracao()
+                                } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
+                                    txtEstadoRobo.text = "Parado"
+                                    txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
+                                    estadoFinalizado()
+                                    pararCronometro()
+                                }
+
+                                if (msgMinuscula.contains("perseguidor")) {
+                                    txtModoRobo.text = "Perseguidor"
+                                    txtModoRobo.setTextColor(Color.parseColor("#FF007F"))
+                                    txtEstrategiaRobo.text = "Aguardando..."
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
+                                    modoSelecionado = true
+                                    estadoPosModo()
+                                } else if (msgMinuscula.contains("seguidor")) {
+                                    txtModoRobo.text = "Seguidor"
+                                    txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
+                                    txtEstrategiaRobo.text = "Aguardando..."
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
+                                    modoSelecionado = true
+                                    estadoPosModo()
+                                }
+
+                                if (msgMinuscula.contains("arriscado") || msgMinuscula.contains("kamikaze")) {
+                                    txtEstrategiaRobo.text = "Arriscado"
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
+                                    estadoPosEstrategia()
+                                } else if (msgMinuscula.contains("conservador")) {
+                                    txtEstrategiaRobo.text = "Conservador"
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
+                                    estadoPosEstrategia()
+                                }
                             }
                         }
                     }
@@ -478,6 +509,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun formatarSensoresBonito(mensagem: String): String {
+        val p = mensagem.trim().split(",").map { it.trim() }
+        if (p.size < 10 || p[0] != "S") return "Aguardando sensores..."
+
+        val pos = p.getOrNull(1) ?: "-"
+        val frontais = (2..9).map { idx -> p.getOrNull(idx) ?: "-" }.joinToString(" | ")
+        val direito = p.getOrNull(10) ?: "-"
+        val esquerdo = p.getOrNull(11) ?: "-"
+
+        return "POS: $pos\n$frontais\nDIR: $direito | ESQ: $esquerdo"
+    }
+
+    private fun simularLeituraSensores() {
+
+        lifecycleScope.launch(Dispatchers.Main) {
+            repeat(20) {
+                val fakeData = StringBuilder()
+                for (i in 1..8) {
+                    val valor = (0..1000).random() // Gera valor entre 0 e 1000
+                    fakeData.append(valor)
+                    if (i < 8) fakeData.append("  |  ")
+                    if (i == 4) fakeData.append("\n")
+                }
+
+                txtSensoresModal?.text = fakeData.toString()
+
+                delay(500)
+            }
+            txtSensoresModal?.text = "Simulação Finalizada."
+        }
     }
 
     private fun enviarComando(sinal: String) {
@@ -490,6 +553,28 @@ class MainActivity : AppCompatActivity() {
             btSocket?.outputStream?.write(payload.toByteArray())
         } catch (e: IOException) {
             Toast.makeText(this, "Erro ao enviar dados", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+    private fun abrirModalSensores() {
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.modal_sensores, null)
+        builder.setView(dialogView)
+
+        txtSensoresModal = dialogView.findViewById(R.id.txtValoresSensores)
+
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        txtSensoresModal?.text = "Aguardando sensores..."
+        dialog.show()
+
+        enviarComando("L") // liga stream no firmware
+
+        dialog.setOnDismissListener {
+            enviarComando("l") // desliga stream no firmware
+            txtSensoresModal = null
         }
     }
 

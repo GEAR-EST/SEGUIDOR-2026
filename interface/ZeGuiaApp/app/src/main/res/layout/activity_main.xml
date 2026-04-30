@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,7 +12,7 @@
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:background="@drawable/topbar_gradient"
+        android:background="#130822"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,58 +33,86 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
+        android:id="@+id/containerToggles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="12dp"
         app:layout_constraintTop_toTopOf="@id/headerBackground"
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
         app:layout_constraintEnd_toEndOf="parent">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:layout_marginEnd="8dp">
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                app:srcCompat="@drawable/ic_led"
-                app:tint="#A066FF" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="LED"
-                android:textColor="#FFFFFF"
-                android:textSize="9sp"
-                android:fontFamily="@font/orbitron"
-                android:textStyle="bold" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/LED"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="24dp" />
-            <TextView
-                android:id="@+id/txtStatusLED"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="DESLIGADO"
-                android:textColor="#3D285B"
-                android:textSize="8sp"
-                android:fontFamily="@font/orbitron"
-                android:textStyle="bold" />
-        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="6dp"
+            app:cardBackgroundColor="#1A0D2A"
+            app:cardCornerRadius="10dp"
+            app:strokeColor="#2E1A47"
+            app:strokeWidth="1dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/ic_led"
+                    app:tint="#A066FF" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/LED"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:scaleX="0.6"
+                    android:scaleY="0.6"
+                    app:thumbTint="#A066FF"
+                    app:trackTint="#2E1A47" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            app:cardBackgroundColor="#1A0D2A"
+            app:cardCornerRadius="10dp"
+            app:strokeColor="#2E1A47"
+            app:strokeWidth="1dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="2dp"
+                    app:srcCompat="@drawable/ic_bluetooth"
+                    app:tint="#A066FF" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/bluetooth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:scaleX="0.6"
+                    android:scaleY="0.6"
+                    app:thumbTint="#A066FF"
+                    app:trackTint="#2E1A47" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/statusContainer"
+        android:id="@+id/mainStatusCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
@@ -100,265 +129,280 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingTop="16dp"
-            android:paddingBottom="11dp"
-            android:paddingHorizontal="12dp"
+            android:padding="12dp"
             android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:gravity="top">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_bluetooth"
-                    app:tint="#A066FF"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="BLUETOOTH"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/orbitron"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/txtStatusBluetooth"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="DESLIGADO"
-                        android:textColor="#4D3475"
-                        android:textSize="10sp"
-                        android:fontFamily="@font/orbitron"
-                        android:textStyle="bold"/>
-                </LinearLayout>
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/bluetooth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:scaleX="1.1"
-                    android:scaleY="1.1"
-                    android:layout_marginTop="-2dp"
-                    android:layout_marginEnd="4dp"/>
-            </LinearLayout>
+                android:orientation="vertical">
 
-            <View
-                android:layout_width="1.5dp"
-                android:layout_height="40dp"
-                android:background="#2E1A47" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:gravity="top">
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    app:srcCompat="@android:drawable/ic_menu_recent_history"
-                    app:tint="#A066FF"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="8dp"/>
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="85dp"
                     android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CRONÔMETRO"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/orbitron"
-                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CRONÔMETRO"
+                            android:textColor="#A09DA5"
+                            android:textSize="9sp"
+                            android:fontFamily="@font/orbitron"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginTop="2dp" />
+                    </RelativeLayout>
+
                     <TextView
                         android:id="@+id/txtCronometro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="00:00.000"
-                        android:textColor="#EBB3FF"
-                        android:textSize="18sp"
-                        android:fontFamily="@font/sourcecodepro_bold"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/infoContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
-        app:cardBackgroundColor="#0A0410"
-        app:strokeColor="#2E1A47"
-        app:strokeWidth="1dp"
-        app:cardCornerRadius="12dp"
-        app:layout_constraintTop_toBottomOf="@id/statusContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:baselineAligned="false">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingEnd="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="22dp"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="INFORMAÇÕES"
-                        android:textColor="#A09DA5"
-                        android:textSize="10sp"
+                        android:text="0:0.000"
+                        android:textColor="#00FF66"
+                        android:textSize="30sp"
+                        android:fontFamily="@font/orbitron"
                         android:textStyle="bold"
-                        android:fontFamily="@font/orbitron" />
+                        android:layout_marginTop="20dp" />
                 </LinearLayout>
 
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estado" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtEstadoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Parado" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Modo" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtModoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estratégia" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtEstrategiaRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#2E1A47"
+                    android:layout_marginVertical="4dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="0dp">
+                    android:layout_height="75dp"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Bateria"
-                        android:textColor="#CFC9D8"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/sourcecodepro_bold" />
-
-                    <TextView
-                        android:id="@+id/txtBatteryVoltage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0.0V"
-                        android:textColor="#EBB3FF"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/sourcecodepro_bold" />
+                        android:text="BATERIA"
+                        android:textColor="#A09DA5"
+                        android:textSize="9sp"
+                        android:fontFamily="@font/orbitron" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="26dp"
+                        android:weightSum="6">
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/txtBatteryPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=" (0%)"
-                        android:textColor="#EBB3FF"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/sourcecodepro_bold" />
-
+                        android:text="100%"
+                        android:textColor="#00E5FF"
+                        android:textSize="10sp"
+                        android:layout_marginTop="8dp"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/orbitron" />
                 </LinearLayout>
             </LinearLayout>
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
+                android:layout_marginHorizontal="12dp"
                 android:background="#2E1A47" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingStart="12dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="22dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="16dp"
-                    android:weightSum="1">
+                    android:layout_height="85dp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/btnAbrirEdicao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="6dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PARÂMETROS"
+                            android:textColor="#A09DA5"
+                            android:textSize="9sp"
+                            android:fontFamily="@font/orbitron"
+                            android:layout_marginTop="2dp"/>
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginTop="2dp"
+                            app:srcCompat="@android:drawable/ic_menu_edit"
+                            app:tint="#A066FF"/>
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp"
+                        android:baselineAligned="false">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="VM"
+                                android:textColor="#CFC9D8"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+
+                            <TextView
+                                android:id="@+id/txtParamV"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kp"
+                                android:textColor="#CFC9D8"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+
+                            <TextView
+                                android:id="@+id/txtParamKp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ki"
+                                android:textColor="#CFC9D8"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+
+                            <TextView
+                                android:id="@+id/txtParamKi"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kd"
+                                android:textColor="#CFC9D8"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+
+                            <TextView
+                                android:id="@+id/txtParamKd"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout> <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2E1A47"
+                android:layout_marginVertical="4dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:fontFamily="@font/orbitron"
-                        android:text="PARÂMETROS"
+                        android:text="INFORMAÇÕES"
                         android:textColor="#A09DA5"
                         android:textSize="9sp"
-                        android:textStyle="bold" />
+                        android:fontFamily="@font/orbitron" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnAbrirEdicao"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="0dp"
-                        android:layout_height="22dp"
-                        android:layout_weight="0.4"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:minHeight="0dp"
-                        android:minWidth="0dp"
-                        android:paddingHorizontal="4dp"
-                        android:text="EDITAR"
-                        android:textColor="#EBB3FF"
-                        android:textSize="8sp"
-                        android:fontFamily="@font/orbitron"
-                        app:strokeColor="#4D3475"
-                        app:strokeWidth="1dp" />
-                </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estado" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" />
+                        <TextView android:id="@+id/txtEstadoRobo" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" />
+                    </LinearLayout>
 
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="V" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtParamV" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                </LinearLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Modo" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" />
+                        <TextView android:id="@+id/txtModoRobo" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" />
+                    </LinearLayout>
 
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Kp" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtParamKp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="10dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Ki" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtParamKi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="0dp">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Kd" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
-                    <TextView android:id="@+id/txtParamKd" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#EBB3FF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estratégia" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" />
+                        <TextView android:id="@+id/txtEstrategiaRobo" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -374,7 +418,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         android:fontFamily="@font/orbitron"
-        app:layout_constraintTop_toBottomOf="@id/infoContainer"
+        app:layout_constraintTop_toBottomOf="@id/mainStatusCard"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"/>
@@ -391,24 +435,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/calibrate"
-            style="?attr/materialButtonOutlinedStyle"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="CALIBRAR"
-            android:textColor="#F39200"
-            app:icon="@drawable/ic_calibrar"
-            app:iconTint="#F39200"
-            app:iconGravity="textStart"
-            app:strokeColor="#F39200"
-            app:strokeWidth="1dp"
-            app:backgroundTint="#1F1200"
-            app:cornerRadius="12dp"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:fontFamily="@font/orbitron"
-            app:rippleColor="#F39200"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/calibrate"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="CALIBRAR"
+                android:textColor="#F39200"
+                app:icon="@drawable/ic_calibrar"
+                app:iconTint="#F39200"
+                app:strokeColor="#F39200"
+                app:cornerRadius="12dp"
+                android:textSize="12sp"
+                android:fontFamily="@font/orbitron" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLerSensores"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="SENSORES"
+                android:textColor="#FFEB3B"
+                app:icon="@android:drawable/ic_menu_view"
+                app:iconTint="#FFEB3B"
+                app:strokeColor="#FFEB3B"
+                app:cornerRadius="12dp"
+                android:textSize="12sp"
+                android:fontFamily="@font/orbitron" />
+        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
