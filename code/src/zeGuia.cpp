@@ -7,6 +7,8 @@
 #include "sensors.h"
 #include <Arduino.h>
 
+int speedA = 0; int speedB = 0;
+
 void ZeGuia::setup() 
 {
     _setup();
@@ -64,11 +66,11 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        controlMotors(100, 100);
+        controlMotors(0, 80);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(100, 100); 
+        controlMotors(0, -80);
     }
 
 }
@@ -77,15 +79,12 @@ void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop p
 {
 
     if (strategy == S_CONSERVATIVE) 
-    {
-        pid.setTunnings(0.5, 1, 10);
-        lineWhite();  
-
+    { 
+        controlMotors(80, 0);
     } 
     else if (strategy == S_RISK) 
     {
-        pid.setTunnings(1, 1, 5);
-        lineWhite(); 
+        controlMotors(-80, 0);
     }
 
 }

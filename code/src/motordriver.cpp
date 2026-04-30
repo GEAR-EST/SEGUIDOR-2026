@@ -6,6 +6,7 @@
 
 int VEL_MAX = 0;
 int VEL_MAX_BACK = 0;
+unsigned long past_fail = 0; 
 
 L298NX2 motors(PWMA, AI1, AI2, PWMB, BI1, BI2);
 PID pid(0, 0, 0);
@@ -13,23 +14,23 @@ PID pid(0, 0, 0);
 void controlMotors(int speedA, int speedB){
     if (speedA > 0){
         motors.setSpeedA(speedA);
-        motors.forward();
+        motors.forwardA();
     } else if (speedA < 0){
         motors.setSpeedA(abs(speedA));
-        motors.backward();
+        motors.backwardA();
     } else {
-        motors.setSpeed(0);
+        motors.setSpeedA(0);
         motors.stopA();
     }
 
     if (speedB > 0){
         motors.setSpeedB(speedB);
-        motors.forward();
-    } else if (speedA < 0){
+        motors.forwardB();
+    } else if (speedB < 0){
         motors.setSpeedB(abs(speedB));
-        motors.backward();
+        motors.backwardB();
     } else {
-        motors.setSpeed(0);
+        motors.setSpeedB(0);
         motors.stopB();
     }
 
@@ -61,6 +62,7 @@ void lineWhite(){
 
     if (pos == 0){
         if (fail_safe() == true){
+            // turbina e tals
             controlMotors(0, 0);
             digitalWrite(STBY, LOW);
             SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
@@ -86,7 +88,7 @@ void pinModeMotors(){
 }
 
 void motors_calibrate(){
-    motors.setSpeed(50);
+    motors.setSpeed(120);
     motors.forwardA();
     motors.backwardB();
 }

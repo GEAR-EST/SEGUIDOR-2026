@@ -9,11 +9,11 @@
 #define PWMA 21
 #define PWMB 15
 
-#define AI1 4
-#define AI2 2
+#define AI1 19
+#define AI2 18
 
-#define BI1 18
-#define BI2 19
+#define BI1 2
+#define BI2 4
 
 #define STBY 5
 
