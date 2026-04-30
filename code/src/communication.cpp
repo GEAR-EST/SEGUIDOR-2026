@@ -240,3 +240,20 @@ void SerialMonitorChecked(RobotCommand cmd)
             break;
     }
 }
+
+int battery_percentage(){
+    long sum = 0;
+    for (int i = 0; i < 16; i++){
+        sum += analogRead(BATTERY_PIN);
+    }
+    int avg = sum/16;
+    return map(avg, 2539, 3325, 0, 100);
+}
+
+void send_battery(){
+    unsigned long current_time = millis();
+    if (current_time - past_time >= bat_interval){
+        past_time = current_time;
+        SerialBT.print("BAT"); SerialBT.println((char) battery_percentage);
+    }
+}
