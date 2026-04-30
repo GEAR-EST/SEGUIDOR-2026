@@ -6,6 +6,8 @@
 QTRSensors qtr;
 Preferences preferences;
 uint16_t sensorValues[SensorCount];
+uint16_t readRight = 0;
+uint16_t readLeft = 0;
 
 void setup_qtr(){
     //configuração do QTR-8A

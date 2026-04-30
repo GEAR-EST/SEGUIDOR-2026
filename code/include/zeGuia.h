@@ -22,6 +22,8 @@ public:
     mode(MODE_NONE), 
     strategy(S_NONE), 
     running(false),
+    sensorStreaming(false),
+    lastSensorSendMs(0),
     velMax(0),
     kp(0.0),
     ki(0.0),
@@ -37,6 +39,9 @@ private:
     RobotMode mode;
     RobotStrategy strategy;
     bool running;
+    bool sensorStreaming;
+    uint32_t lastSensorSendMs;
+    static const uint32_t SENSOR_SEND_INTERVAL_MS = 120;
     
     float velMax, kp, ki, kd;
 
@@ -47,6 +52,7 @@ private:
     void aplicarParametrosPID();
     void loopSeguidor();
     void loopPerseguidor();
+    void enviarLeituraSensores();
 
 
 };
