@@ -3,11 +3,9 @@
 
 #include <BluetoothSerial.h>
 
-#define BATTERY_PIN 13
-
 extern BluetoothSerial SerialBT;
 
-int battery_percentage();
+uint8_t battery_percentage();
 
 void send_battery();
 
