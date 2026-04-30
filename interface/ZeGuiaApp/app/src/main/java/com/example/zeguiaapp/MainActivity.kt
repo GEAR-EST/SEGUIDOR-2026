@@ -32,6 +32,7 @@ import java.io.InputStreamReader
 import java.util.Locale
 import java.util.UUID
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnModeChase: Button
     private lateinit var btnStrategyConservative: Button
     private lateinit var btnStrategyRisk: Button
-    private lateinit var btnAbrirEdicao: ImageView
+    private lateinit var btnAbrirEdicao: RelativeLayout
 
     private var continuarEscutando = false
     private var modoSelecionado = false
@@ -75,7 +76,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var containerCards: LinearLayout
 
+    private var lendoSensores = false
+    private val sensorHandler = Handler(Looper.getMainLooper())
+
     private var txtSensoresModal: TextView? = null
+
+    private lateinit var btnLerSensores: Button
 
     private val atualizarCronometro = object : Runnable {
         override fun run() {
@@ -88,6 +94,16 @@ class MainActivity : AppCompatActivity() {
             cronometroHandler.postDelayed(this, 50)
         }
     }
+
+    private val sensorPollRunnable = object : Runnable {
+        override fun run() {
+            if (!lendoSensores) return
+            enviarComando("L")
+            sensorHandler.postDelayed(this, 180) // ajuste: 120-250ms
+        }
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         txtParamKd.text = sharedPreferences.getString("paramKd", "0.0")
         txtCronometro.text = "00:00:00"
 
-        val btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
+        btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
         btnCalibrar = findViewById(R.id.calibrate)
         btnStartRun = findViewById(R.id.run)
         btnStopRun = findViewById(R.id.stop)
@@ -155,8 +171,7 @@ class MainActivity : AppCompatActivity() {
 
         btnLerSensores.setOnClickListener {
             abrirModalSensores()
-            //enviarComando("L")
-            simularLeituraSensores()
+            //simularLeituraSensores()
         }
         btnModeFollower.setOnClickListener { enviarComando("S") }
         btnModeChase.setOnClickListener { enviarComando("P") }
@@ -261,12 +276,14 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnLerSensores, false) // sem conexão, desabilitado
     }
 
     private fun estadoConectadoInicial() {
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, false)
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
@@ -277,6 +294,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, modoSelecionado)
         configurarBotao(btnStrategyRisk, modoSelecionado)
         configurarBotao(btnStartRun, false)
@@ -287,6 +305,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, false)
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, false)
@@ -297,6 +316,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnCalibrar, false)
         configurarBotao(btnModeFollower, false)
         configurarBotao(btnModeChase, false)
+        configurarBotao(btnLerSensores, true)
         configurarBotao(btnStrategyConservative, true)
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, true)
@@ -310,6 +330,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyConservative, false)
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
+        configurarBotao(btnLerSensores, false)
         configurarBotao(btnStopRun, true)
     }
 
@@ -321,6 +342,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, true)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnLerSensores, true)
     }
 
     private fun permissaoBluetooth(): Boolean {
@@ -408,83 +430,78 @@ class MainActivity : AppCompatActivity() {
                 try {
                     val mensagem = reader.readLine() ?: break
 
-                    if (mensagem.startsWith("BAT,")) {
-                        val partes = mensagem.split(",")
-                        if (partes.size == 3) {
-                            val tensao = partes[1].toFloatOrNull()
-                            val percentual = partes[2].toIntOrNull()
-                            if (tensao != null && percentual != null) {
-                                runOnUiThread {
-
-                                    txtBatteryPercent.text = "${percentual}%"
-
-                                    val cor = when {
-                                        percentual > 50 -> Color.parseColor("#00FF66")
-                                        percentual > 20 -> Color.parseColor("#FFAA00")
-                                        else -> Color.parseColor("#FF2A55")
+                    runOnUiThread {
+                        when {
+                            mensagem.startsWith("BAT,") -> {
+                                val partes = mensagem.split(",")
+                                if (partes.size == 3) {
+                                    val percentual = partes[2].toIntOrNull()
+                                    if (percentual != null) {
+                                        txtBatteryPercent.text = "${percentual}%"
+                                        val cor = when {
+                                            percentual > 50 -> Color.parseColor("#00FF66")
+                                            percentual > 20 -> Color.parseColor("#FFAA00")
+                                            else -> Color.parseColor("#FF2A55")
+                                        }
+                                        txtBatteryPercent.setTextColor(cor)
                                     }
-                                    txtBatteryPercent.setTextColor(cor)
                                 }
                             }
-                        }
-                    } else {
-                        val msgMinuscula = mensagem.lowercase()
-                        runOnUiThread {
-                            txtSerial.append("$mensagem\n")
-                            val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
-                            scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
-                            
-                            if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
-                                txtEstadoRobo.text = "Correndo"
-                                txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
-                                estadoCorrendo()
-                                iniciarCronometro()
-                            } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
-                                txtEstadoRobo.text = "Calibrando"
-                                txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
-                                estadoPosCalibracao()
-                            } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
-                                txtEstadoRobo.text = "Parado"
-                                txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
-                                if (cronometroRodando) {
-                                    val tempoParaSalvar = txtCronometro.text.toString()
-                                    adicionarCorridaAoHistorico(tempoParaSalvar)
+
+                            mensagem.trim().startsWith("S,")-> {
+                                // Sensores: atualiza SOMENTE o modal
+                                txtSensoresModal?.text = formatarSensoresBonito(mensagem)
+                            }
+
+                            else -> {
+                                txtSerial.append("$mensagem\n")
+                                val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
+                                scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
+
+                                val msgMinuscula = mensagem.lowercase()
+
+                                if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
+                                    txtEstadoRobo.text = "Correndo"
+                                    txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
+                                    estadoCorrendo()
+                                    iniciarCronometro()
+                                } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
+                                    txtEstadoRobo.text = "Calibrando"
+                                    txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
+                                    estadoPosCalibracao()
+                                } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
+                                    txtEstadoRobo.text = "Parado"
+                                    txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
+                                    estadoFinalizado()
+                                    pararCronometro()
                                 }
 
-                                estadoFinalizado()
-                                pararCronometro()
-                            }
+                                if (msgMinuscula.contains("perseguidor")) {
+                                    txtModoRobo.text = "Perseguidor"
+                                    txtModoRobo.setTextColor(Color.parseColor("#FF007F"))
+                                    txtEstrategiaRobo.text = "Aguardando..."
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
+                                    modoSelecionado = true
+                                    estadoPosModo()
+                                } else if (msgMinuscula.contains("seguidor")) {
+                                    txtModoRobo.text = "Seguidor"
+                                    txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
+                                    txtEstrategiaRobo.text = "Aguardando..."
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
+                                    modoSelecionado = true
+                                    estadoPosModo()
+                                }
 
-                            if (msgMinuscula.contains("perseguidor")) {
-                                txtModoRobo.text = "Perseguidor"
-                                txtModoRobo.setTextColor(Color.parseColor("#FF007F"))
-                                txtEstrategiaRobo.text = "Aguardando..."
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                modoSelecionado = true
-                                estadoPosModo()
-                            } else if (msgMinuscula.contains("seguidor")) {
-                                txtModoRobo.text = "Seguidor"
-                                txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
-                                txtEstrategiaRobo.text = "Aguardando..."
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                modoSelecionado = true
-                                estadoPosModo()
+                                if (msgMinuscula.contains("arriscado") || msgMinuscula.contains("kamikaze")) {
+                                    txtEstrategiaRobo.text = "Arriscado"
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
+                                    estadoPosEstrategia()
+                                } else if (msgMinuscula.contains("conservador")) {
+                                    txtEstrategiaRobo.text = "Conservador"
+                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
+                                    estadoPosEstrategia()
+                                }
                             }
-
-                            if (msgMinuscula.contains("arriscado") || msgMinuscula.contains("kamikaze")) {
-                                txtEstrategiaRobo.text = "Arriscado"
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
-                                estadoPosEstrategia()
-                            } else if (msgMinuscula.contains("conservador")) {
-                                txtEstrategiaRobo.text = "Conservador"
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
-                                estadoPosEstrategia()
-                            }
-                            if (mensagem.startsWith("S,")) { // Supondo que o robô envie prefixo "S" para sensores
-                                val valores = mensagem.substring(2).replace(",", "  |  ")
-                                txtSensoresModal?.text = valores // Isso atualiza o modal em tempo real se ele estiver aberto
-                            }
-
                         }
                     }
                 } catch (e: IOException) {
@@ -492,6 +509,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun formatarSensoresBonito(mensagem: String): String {
+        val p = mensagem.trim().split(",").map { it.trim() }
+        if (p.size < 10 || p[0] != "S") return "Aguardando sensores..."
+
+        val pos = p.getOrNull(1) ?: "-"
+        val frontais = (2..9).map { idx -> p.getOrNull(idx) ?: "-" }.joinToString(" | ")
+        val direito = p.getOrNull(10) ?: "-"
+        val esquerdo = p.getOrNull(11) ?: "-"
+
+        return "POS: $pos\n$frontais\nDIR: $direito | ESQ: $esquerdo"
     }
 
     private fun simularLeituraSensores() {
@@ -527,51 +556,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun adicionarCorridaAoHistorico(tempo: String) {
-        // Remove o texto de "Nenhuma corrida" se for a primeira
-        if (containerCards.childCount > 0 && containerCards.getChildAt(0) is TextView) {
-            val tv = containerCards.getChildAt(0) as TextView
-            if (tv.text.contains("Nenhuma")) containerCards.removeAllViews()
-        }
 
-        // Cria o Card (um FrameLayout ou LinearLayout)
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundResource(android.R.drawable.dialog_holo_dark_frame) // Estilo escuro
-            setPadding(40, 40, 40, 40)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, 0, 0, 24) }
-        }
-
-        val txtTempo = TextView(this).apply {
-            text = "⏱️ Tempo: $tempo"
-            setTextColor(android.graphics.Color.GREEN)
-            textSize = 20f
-            typeface = android.graphics.Typeface.MONOSPACE
-        }
-
-        card.addView(txtTempo)
-
-        // Adiciona o novo card no TOPO da lista (índice 0)
-        containerCards.addView(card, 0)
-    }
 
     private fun abrirModalSensores() {
         val builder = AlertDialog.Builder(this)
-        val inflater = layoutInflater
-        val dialogView = inflater.inflate(R.layout.modal_sensores, null)
+        val dialogView = layoutInflater.inflate(R.layout.modal_sensores, null)
         builder.setView(dialogView)
 
         txtSensoresModal = dialogView.findViewById(R.id.txtValoresSensores)
 
         val dialog = builder.create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        txtSensoresModal?.text = "Aguardando sensores..."
         dialog.show()
 
+        enviarComando("L") // liga stream no firmware
+
         dialog.setOnDismissListener {
-            txtSensoresModal = null // Para de atualizar quando fechar
+            enviarComando("l") // desliga stream no firmware
+            txtSensoresModal = null
         }
     }
 
