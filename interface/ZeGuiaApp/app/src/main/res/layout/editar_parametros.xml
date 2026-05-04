@@ -18,177 +18,87 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Velocidade (V)"
-            android:textColor="#A09DA5"
-            android:fontFamily="@font/orbitron"
-            android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_stepper"
-            android:padding="4dp">
-
-            <TextView
-                android:id="@+id/btnDiminuirV"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:text="-"
-                android:textSize="20sp"
-                android:textColor="#A066FF"
-                android:gravity="center"
-                android:textStyle="bold"/>
-
-            <EditText
-                android:id="@+id/editV"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:textColor="#FFFFFF"
-                android:gravity="center"
-                android:fontFamily="@font/sourcecodepro_bold"
-                android:inputType="numberDecimal|numberSigned"
-                android:text="0.0"/>
-
-            <TextView
-                android:id="@+id/btnAumentarV"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:text="+"
-                android:textSize="20sp"
-                android:textColor="#A066FF"
-                android:gravity="center"
-                android:textStyle="bold"/>
+    <!-- Velocidade Máxima -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Velocidade (Vm)" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
+            <TextView android:id="@+id/btnDiminuirV" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+            <EditText android:id="@+id/editV" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="numberDecimal|numberSigned" android:text="0.0"/>
+            <TextView android:id="@+id/btnAumentarV" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+    <!-- Vel Esquerda -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Vel Esq (Motor Esq)" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
+            <TextView android:id="@+id/btnDiminuirVelEsq" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+            <EditText android:id="@+id/editVelEsq" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="number" android:text="0"/>
+            <TextView android:id="@+id/btnAumentarVelEsq" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Constante (Kp)"
-            android:textColor="#A09DA5"
-            android:fontFamily="@font/orbitron"
-            android:textSize="12sp" />
+    <!-- Vel Direita -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Vel Dir (Motor Dir)" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
+            <TextView android:id="@+id/btnDiminuirVelDir" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+            <EditText android:id="@+id/editVelDir" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="number" android:text="0"/>
+            <TextView android:id="@+id/btnAumentarVelDir" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_stepper"
-            android:padding="4dp">
-
+    <!-- Kp -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Constante (Kp)" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
             <TextView android:id="@+id/btnDiminuirKp" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
             <EditText android:id="@+id/editKp" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="numberDecimal|numberSigned" android:text="0.0"/>
             <TextView android:id="@+id/btnAumentarKp" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Constante (Ki)"
-            android:textColor="#A09DA5"
-            android:fontFamily="@font/orbitron"
-            android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_stepper"
-            android:padding="4dp">
-
+    <!-- Ki -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Constante (Ki)" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
             <TextView android:id="@+id/btnDiminuirKi" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
             <EditText android:id="@+id/editKi" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="numberDecimal|numberSigned" android:text="0.0"/>
             <TextView android:id="@+id/btnAumentarKi" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="24dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Constante (Kd)"
-            android:textColor="#A09DA5"
-            android:fontFamily="@font/orbitron"
-            android:textSize="12sp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_stepper"
-            android:padding="4dp">
-
+    <!-- Kd -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Constante (Kd)" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
             <TextView android:id="@+id/btnDiminuirKd" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
             <EditText android:id="@+id/editKd" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="numberDecimal|numberSigned" android:text="0.0"/>
             <TextView android:id="@+id/btnAumentarKd" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end">
+    <!-- Marcas -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="24dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Contador de Marcas" android:textColor="#A09DA5" android:fontFamily="@font/orbitron" android:textSize="12sp"/>
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:background="@drawable/bg_stepper" android:padding="4dp">
+            <TextView android:id="@+id/btnDiminuirMarcas" android:layout_width="32dp" android:layout_height="32dp" android:text="-" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+            <EditText android:id="@+id/editMarcas" android:layout_width="60dp" android:layout_height="wrap_content" android:background="@null" android:textColor="#FFFFFF" android:gravity="center" android:fontFamily="@font/sourcecodepro_bold" android:inputType="number" android:text="0"/>
+            <TextView android:id="@+id/btnAumentarMarcas" android:layout_width="32dp" android:layout_height="32dp" android:text="+" android:textSize="20sp" android:textColor="#A066FF" android:gravity="center" android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
 
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end">
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelar"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CANCELAR"
-            android:textColor="#A09DA5"
-            android:fontFamily="@font/orbitron" />
-
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="CANCELAR" android:textColor="#A09DA5" android:fontFamily="@font/orbitron"/>
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSalvar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="SALVAR"
-            app:backgroundTint="#4D3475"
-            android:textColor="#FFFFFF"
-            android:fontFamily="@font/orbitron" />
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" android:text="SALVAR"
+            app:backgroundTint="#4D3475" android:textColor="#FFFFFF" android:fontFamily="@font/orbitron"/>
     </LinearLayout>
 
 </LinearLayout>

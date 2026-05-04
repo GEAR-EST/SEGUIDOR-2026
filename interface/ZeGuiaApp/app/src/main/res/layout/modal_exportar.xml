@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="#130822"
+    app:cardCornerRadius="20dp"
+    app:strokeColor="#A066FF"
+    app:strokeWidth="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="RESUMO DA CORRIDA"
+                android:textColor="#A066FF"
+                android:fontFamily="@font/orbitron"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/btnFecharExportar"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:tint="#A09DA5" />
+        </RelativeLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2E1A47" android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:id="@+id/txtResumoDados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#00FF66"
+            android:textSize="12sp"
+            android:lineSpacingExtra="4dp"
+            android:fontFamily="monospace" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A corrida foi concluída?"
+            android:textColor="#A09DA5"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"/>
+
+        <RadioGroup
+            android:id="@+id/rgStatusCorrida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_marginBottom="8dp">
+
+            <RadioButton
+                android:id="@+id/rbSim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                app:buttonTint="#00FF66" /> <RadioButton
+            android:id="@+id/rbParcial"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Parcial"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:buttonTint="#FFAA00" /> <RadioButton
+            android:id="@+id/rbNao"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Não"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:buttonTint="#FF2A55" /> </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Observações:"
+            android:textColor="#A09DA5"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"/>
+
+        <EditText
+            android:id="@+id/editObservacoes"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/bg_stepper"
+            android:backgroundTint="#2E1A47"
+            android:gravity="top|start"
+            android:hint="Ex: O robô derrapou na curva 3..."
+            android:textColorHint="#666666"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:padding="8dp"
+            android:inputType="textMultiLine" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCopiarResumo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="COPIAR PARA ÁREA DE TRANSFERÊNCIA"
+            android:textColor="#130822"
+            app:backgroundTint="#00FF66"
+            app:cornerRadius="10dp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

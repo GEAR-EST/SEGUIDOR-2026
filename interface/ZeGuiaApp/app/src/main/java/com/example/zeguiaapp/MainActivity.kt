@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var txtEstrategiaRobo: TextView
     private lateinit var txtCronometro: TextView
 
-    private lateinit var txtParamV: TextView
     private lateinit var txtParamKp: TextView
     private lateinit var txtParamKi: TextView
     private lateinit var txtParamKd: TextView
@@ -60,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStrategyRisk: Button
     private lateinit var btnAbrirEdicao: RelativeLayout
 
+    private lateinit var btnExportar: Button
     private var continuarEscutando = false
     private var modoSelecionado = false
     private lateinit var btAdapter: BluetoothAdapter
@@ -119,16 +119,16 @@ class MainActivity : AppCompatActivity() {
 
         txtBatteryPercent = findViewById(R.id.txtBatteryPercent)
 
-        txtParamV = findViewById(R.id.txtParamV)
         txtParamKp = findViewById(R.id.txtParamKp)
         txtParamKi = findViewById(R.id.txtParamKi)
         txtParamKd = findViewById(R.id.txtParamKd)
 
-        txtParamV.text = sharedPreferences.getString("paramV", "0.0")
-        txtParamKp.text = sharedPreferences.getString("paramKp", "0.0")
-        txtParamKi.text = sharedPreferences.getString("paramKi", "0.0")
-        txtParamKd.text = sharedPreferences.getString("paramKd", "0.0")
-        txtCronometro.text = "00:00:00"
+
+
+        txtParamKp.text     = sharedPreferences.getString("paramKp", "0.0")
+        txtParamKi.text     = sharedPreferences.getString("paramKi", "0.0")
+        txtParamKd.text     = sharedPreferences.getString("paramKd", "0.0")
+        txtCronometro.text  = "00:00:00"
 
         btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
         btnCalibrar = findViewById(R.id.calibrate)
@@ -139,6 +139,9 @@ class MainActivity : AppCompatActivity() {
         btnStrategyConservative = findViewById(R.id.conservative)
         btnStrategyRisk = findViewById(R.id.risk)
         btnAbrirEdicao = findViewById(R.id.btnAbrirEdicao)
+
+        btnExportar = findViewById(R.id.btnExportar)
+        btnExportar.setOnClickListener { abrirModalExportar() }
 
         estadoDesconectado()
 
@@ -191,56 +194,85 @@ class MainActivity : AppCompatActivity() {
         alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         alertDialog.show()
 
-        val editV = dialogView.findViewById<EditText>(R.id.editV)
-        val editKp = dialogView.findViewById<EditText>(R.id.editKp)
-        val editKi = dialogView.findViewById<EditText>(R.id.editKi)
-        val editKd = dialogView.findViewById<EditText>(R.id.editKd)
+        val editV      = dialogView.findViewById<EditText>(R.id.editV)
+        val editVelEsq = dialogView.findViewById<EditText>(R.id.editVelEsq)
+        val editVelDir = dialogView.findViewById<EditText>(R.id.editVelDir)
+        val editKp     = dialogView.findViewById<EditText>(R.id.editKp)
+        val editKi     = dialogView.findViewById<EditText>(R.id.editKi)
+        val editKd     = dialogView.findViewById<EditText>(R.id.editKd)
+        val editMarcas = dialogView.findViewById<EditText>(R.id.editMarcas)
 
-        editV.setText(txtParamV.text.toString())
+        editV.setText(sharedPreferences.getString("paramV", "0.0"))
+        editVelEsq.setText(sharedPreferences.getString("paramVelEsq", "0"))
+        editVelDir.setText(sharedPreferences.getString("paramVelDir", "0"))
         editKp.setText(txtParamKp.text.toString())
         editKi.setText(txtParamKi.text.toString())
         editKd.setText(txtParamKd.text.toString())
+        editMarcas.setText(sharedPreferences.getString("paramMarcas", "0"))
 
+        // Stepper para floats (passo 0.1)
         fun configurarStepper(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
             dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
-                val valorAtual = editText.text.toString().toFloatOrNull() ?: 0f
-                editText.setText(String.format(Locale.US, "%.1f", valorAtual + 0.1f))
+                val v = editText.text.toString().toFloatOrNull() ?: 0f
+                editText.setText(String.format(Locale.US, "%.1f", v + 0.1f))
             }
             dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
-                val valorAtual = editText.text.toString().toFloatOrNull() ?: 0f
-                editText.setText(String.format(Locale.US, "%.1f", valorAtual - 0.1f))
+                val v = editText.text.toString().toFloatOrNull() ?: 0f
+                editText.setText(String.format(Locale.US, "%.1f", v - 0.1f))
+            }
+        }
+
+        // Stepper para inteiros (passo 1)
+        fun configurarStepperInt(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
+            dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
+                val v = editText.text.toString().toIntOrNull() ?: 0
+                editText.setText((v + 1).toString())
+            }
+            dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
+                val v = editText.text.toString().toIntOrNull() ?: 0
+                editText.setText((v - 1).toString())
             }
         }
 
         configurarStepper(R.id.btnDiminuirV, R.id.btnAumentarV, editV)
+        configurarStepperInt(R.id.btnDiminuirVelEsq, R.id.btnAumentarVelEsq, editVelEsq)
+        configurarStepperInt(R.id.btnDiminuirVelDir, R.id.btnAumentarVelDir, editVelDir)
         configurarStepper(R.id.btnDiminuirKp, R.id.btnAumentarKp, editKp)
         configurarStepper(R.id.btnDiminuirKi, R.id.btnAumentarKi, editKi)
         configurarStepper(R.id.btnDiminuirKd, R.id.btnAumentarKd, editKd)
+        configurarStepperInt(R.id.btnDiminuirMarcas, R.id.btnAumentarMarcas, editMarcas)
 
         dialogView.findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
             alertDialog.dismiss()
         }
 
         dialogView.findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
-            val novoV = editV.text.toString().ifEmpty { "0.0" }
-            val novoKp = editKp.text.toString().ifEmpty { "0.0" }
-            val novoKi = editKi.text.toString().ifEmpty { "0.0" }
-            val novoKd = editKd.text.toString().ifEmpty { "0.0" }
+            val novoV      = editV.text.toString().ifEmpty { "0.0" }
+            val novoVelEsq = editVelEsq.text.toString().ifEmpty { "0" }
+            val novoVelDir = editVelDir.text.toString().ifEmpty { "0" }
+            val novoKp     = editKp.text.toString().ifEmpty { "0.0" }
+            val novoKi     = editKi.text.toString().ifEmpty { "0.0" }
+            val novoKd     = editKd.text.toString().ifEmpty { "0.0" }
+            val novoMarcas = editMarcas.text.toString().ifEmpty { "0" }
 
-            txtParamV.text = novoV
-            txtParamKp.text = novoKp
-            txtParamKi.text = novoKi
-            txtParamKd.text = novoKd
+            txtParamKp.text     = novoKp
+            txtParamKi.text     = novoKi
+            txtParamKd.text     = novoKd
+
 
             sharedPreferences.edit().apply {
-                putString("paramV", novoV)
-                putString("paramKp", novoKp)
-                putString("paramKi", novoKi)
-                putString("paramKd", novoKd)
+                putString("paramV",      novoV)
+                putString("paramVelEsq", novoVelEsq)
+                putString("paramVelDir", novoVelDir)
+                putString("paramKp",     novoKp)
+                putString("paramKi",     novoKi)
+                putString("paramKd",     novoKd)
+                putString("paramMarcas", novoMarcas)
                 apply()
             }
 
-            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd")
+            // Formato firmware: PID:V|Kp|Ki|Kd|VelEsq|VelDir|NovasMarcas
+            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd|$novoVelEsq|$novoVelDir|$novoMarcas")
             alertDialog.dismiss()
         }
     }
@@ -277,6 +309,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
         configurarBotao(btnLerSensores, false) // sem conexão, desabilitado
+        configurarBotao(btnExportar, false)
     }
 
     private fun estadoConectadoInicial() {
@@ -288,6 +321,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnExportar, false)
     }
 
     private fun estadoPosCalibracao() {
@@ -299,6 +333,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, modoSelecionado)
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnExportar, false)
     }
 
     private fun estadoPosModo() {
@@ -310,6 +345,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, false)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnExportar, false)
     }
 
     private fun estadoPosEstrategia() {
@@ -321,6 +357,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStrategyRisk, true)
         configurarBotao(btnStartRun, true)
         configurarBotao(btnStopRun, false)
+        configurarBotao(btnExportar, false)
     }
 
     private fun estadoCorrendo() {
@@ -332,6 +369,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStartRun, false)
         configurarBotao(btnLerSensores, false)
         configurarBotao(btnStopRun, true)
+        configurarBotao(btnExportar, false)
     }
 
     private fun estadoFinalizado() {
@@ -343,6 +381,7 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnStartRun, true)
         configurarBotao(btnStopRun, false)
         configurarBotao(btnLerSensores, true)
+        configurarBotao(btnExportar, true)
     }
 
     private fun permissaoBluetooth(): Boolean {
@@ -431,19 +470,40 @@ class MainActivity : AppCompatActivity() {
                     val mensagem = reader.readLine() ?: break
 
                     runOnUiThread {
+                        val msgLimpa  = mensagem.trim()
                         when {
-                            mensagem.startsWith("BAT,") -> {
-                                val partes = mensagem.split(",")
-                                if (partes.size == 3) {
-                                    val percentual = partes[2].toIntOrNull()
-                                    if (percentual != null) {
-                                        txtBatteryPercent.text = "${percentual}%"
-                                        val cor = when {
-                                            percentual > 50 -> Color.parseColor("#00FF66")
-                                            percentual > 20 -> Color.parseColor("#FFAA00")
-                                            else -> Color.parseColor("#FF2A55")
+                            msgLimpa.startsWith("BAT") -> {
+                                val valor = msgLimpa.removePrefix("BAT").trim()
+                                val percentual = valor.toIntOrNull()
+
+                                if (percentual != null) {
+                                    txtBatteryPercent.text = "$percentual%"
+
+                                    val corAtiva = when {
+                                        percentual > 50 -> Color.parseColor("#00E5FF") // Azul
+                                        percentual > 20 -> Color.parseColor("#FFAA00") // Laranja
+                                        else -> Color.parseColor("#FF2A55") // Vermelho
+                                    }
+
+                                    val corInativa = Color.parseColor("#2E1A47")
+
+
+                                    txtBatteryPercent.setTextColor(corAtiva)
+
+                                    val barrasAcesas = Math.ceil((percentual / 100.0) * 6).toInt()
+
+
+                                    val layoutBarras = findViewById<LinearLayout>(R.id.layoutBarrasBateria)
+
+                                    for (i in 0 until 6) {
+                                        val barra = layoutBarras.getChildAt(i)
+                                        if (i < barrasAcesas) {
+
+                                            barra.setBackgroundColor(corAtiva)
+                                        } else {
+
+                                            barra.setBackgroundColor(corInativa)
                                         }
-                                        txtBatteryPercent.setTextColor(cor)
                                     }
                                 }
                             }
@@ -523,25 +583,7 @@ class MainActivity : AppCompatActivity() {
         return "POS: $pos\n$frontais\nDIR: $direito | ESQ: $esquerdo"
     }
 
-    private fun simularLeituraSensores() {
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            repeat(20) {
-                val fakeData = StringBuilder()
-                for (i in 1..8) {
-                    val valor = (0..1000).random() // Gera valor entre 0 e 1000
-                    fakeData.append(valor)
-                    if (i < 8) fakeData.append("  |  ")
-                    if (i == 4) fakeData.append("\n")
-                }
-
-                txtSensoresModal?.text = fakeData.toString()
-
-                delay(500)
-            }
-            txtSensoresModal?.text = "Simulação Finalizada."
-        }
-    }
 
     private fun enviarComando(sinal: String) {
         if (btSocket == null) {
@@ -568,6 +610,11 @@ class MainActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         txtSensoresModal?.text = "Aguardando sensores..."
+
+        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharSensores)
+        btnFechar.setOnClickListener {
+            dialog.dismiss()
+        }
         dialog.show()
 
         enviarComando("L") // liga stream no firmware
@@ -576,6 +623,118 @@ class MainActivity : AppCompatActivity() {
             enviarComando("l") // desliga stream no firmware
             txtSensoresModal = null
         }
+    }
+
+    private fun abrirModalExportar() {
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.modal_exportar, null)
+        builder.setView(dialogView)
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val txtResumoDados = dialogView.findViewById<TextView>(R.id.txtResumoDados)
+        val editObservacoes = dialogView.findViewById<EditText>(R.id.editObservacoes)
+        val btnCopiarResumo = dialogView.findViewById<Button>(R.id.btnCopiarResumo)
+        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharExportar)
+        val rgStatusCorrida = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgStatusCorrida)
+
+        // 1. Iniciar o botão "Copiar" como DESABILITADO
+        btnCopiarResumo.isEnabled = false
+        btnCopiarResumo.alpha = 0.4f // Deixa o botão meio transparente
+
+        var statusCorridaSelecionado = ""
+
+        // 2. Ouvinte para quando o usuário escolher uma opção (Sim, Parcial, Não)
+        rgStatusCorrida.setOnCheckedChangeListener { _, checkedId ->
+            // Habilita o botão "Copiar"
+            btnCopiarResumo.isEnabled = true
+            btnCopiarResumo.alpha = 1.0f
+
+            // Salva a resposta de acordo com a caixa marcada
+            statusCorridaSelecionado = when (checkedId) {
+                R.id.rbSim -> "Sim (Completa)"
+                R.id.rbParcial -> "Parcialmente"
+                R.id.rbNao -> "Não (Interrompida)"
+                else -> "Indefinido"
+            }
+        }
+
+        // Formatar Data e Hora atual
+        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+        val dataHora = dateFormat.format(java.util.Date())
+
+        // Pegar informações da tela e memória
+        val tempo = txtCronometro.text.toString()
+        val modo = txtModoRobo.text.toString()
+        val estrategia = txtEstrategiaRobo.text.toString()
+        val kp = txtParamKp.text.toString()
+        val ki = txtParamKi.text.toString()
+        val kd = txtParamKd.text.toString()
+        val velMax = sharedPreferences.getString("paramV", "0.0")
+        val velEsq = sharedPreferences.getString("paramVelEsq", "0")
+        val velDir = sharedPreferences.getString("paramVelDir", "0")
+        val marcas = sharedPreferences.getString("paramMarcas", "0")
+
+        // Montar a String formatada apenas visual (sem o status, pois ele será escolhido)
+        val resumoVisual = """
+        [FEEDBACK DE CORRIDA - ZÉ-GUIA]
+        Data/Hora: $dataHora
+        Tempo Final: $tempo
+        
+        > Configurações:
+        Modo: $modo
+        Estratégia: $estrategia
+        Qtd. Marcas: $marcas
+        
+        > Parâmetros PID:
+        Vel. Máx: $velMax
+        Vel. Esq: $velEsq | Vel. Dir: $velDir
+        Kp: $kp | Ki: $ki | Kd: $kd
+    """.trimIndent()
+
+        txtResumoDados.text = resumoVisual
+
+        // 3. Ação do Botão Copiar (quando habilitado)
+        btnCopiarResumo.setOnClickListener {
+
+            // Agora nós reconstruímos o texto final inserindo a resposta do Status:
+            val resumoFinal = """
+            [FEEDBACK DE CORRIDA - ZÉ-GUIA]
+            Data/Hora: $dataHora
+            Status: $statusCorridaSelecionado
+            Tempo Final: $tempo
+            
+            > Configurações:
+            Modo: $modo
+            Estratégia: $estrategia
+            Qtd. Marcas: $marcas
+            
+            > Parâmetros PID:
+            Vel. Máx: $velMax
+            Vel. Esq: $velEsq | Vel. Dir: $velDir
+            Kp: $kp | Ki: $ki | Kd: $kd
+        """.trimIndent()
+
+            val obs = editObservacoes.text.toString()
+            val textoFinalParaCopiar = if (obs.isNotEmpty()) {
+                "$resumoFinal\n\n> Observações:\n$obs"
+            } else {
+                resumoFinal
+            }
+
+            // Chamar o serviço do Android que copia o texto
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("Feedback do Zé-Guia", textoFinalParaCopiar)
+            clipboard.setPrimaryClip(clip)
+
+            Toast.makeText(this, "Feedback copiado com sucesso!", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        // Ação de fechar no X
+        btnFechar.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
     }
 
     override fun onDestroy() {
