@@ -1,5 +1,6 @@
 #include "communication.h"
 #include "commands.h"
+#include "globals.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -238,5 +239,25 @@ void SerialMonitorChecked(RobotCommand cmd)
 
         default:
             break;
+    }
+}
+
+uint8_t battery_percentage(){
+    long sum = 0;
+    for (int i = 0; i < 16; i++){
+        sum += analogRead(BATTERY_PIN);
+    }
+    int avg = sum/16;
+    int perc = map(avg, 2539, 3325, 0, 100);
+    perc = constrain(perc, 0, 100);
+    return (uint8_t) perc;
+}
+
+void send_battery(){
+    unsigned long current_time = millis();
+    if (current_time - past_time >= bat_interval){
+        past_time = current_time;
+        SerialBT.print("BAT"); 
+        SerialBT.println(battery_percentage());
     }
 }
