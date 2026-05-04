@@ -164,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:text="0:0.000"
                         android:textColor="#00FF66"
-                        android:textSize="30sp"
+                        android:textSize="28sp"
                         android:fontFamily="@font/orbitron"
                         android:textStyle="bold"
                         android:layout_marginTop="20dp" />
@@ -178,7 +178,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="75dp"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
@@ -189,10 +189,23 @@
                         android:textSize="9sp"
                         android:fontFamily="@font/orbitron" />
 
+                    <TextView
+                        android:id="@+id/txtBatteryPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="100%"
+                        android:textColor="#00E5FF"
+                        android:textSize="12sp"
+                        android:layout_marginTop="4dp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/orbitron" />
+
                     <LinearLayout
+                        android:id="@+id/layoutBarrasBateria"
                         android:layout_width="match_parent"
                         android:layout_height="10dp"
-                        android:layout_marginTop="26dp"
+                        android:layout_marginTop="6dp"
                         android:weightSum="6">
                         <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
                         <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
@@ -202,16 +215,17 @@
                         <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/txtBatteryPercent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100%"
-                        android:textColor="#00E5FF"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnExportar"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="16dp"
+                        android:text="EXPORTAR"
                         android:textSize="10sp"
-                        android:layout_marginTop="8dp"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/orbitron" />
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="@font/orbitron"
+                        app:backgroundTint="#A066FF"
+                        app:cornerRadius="8dp"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -265,32 +279,6 @@
                         android:orientation="horizontal"
                         android:layout_marginTop="8dp"
                         android:baselineAligned="false">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="VM"
-                                android:textColor="#CFC9D8"
-                                android:textSize="10sp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-
-                            <TextView
-                                android:id="@+id/txtParamV"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0.0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-                        </LinearLayout>
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -369,6 +357,7 @@
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="@font/sourcecodepro_bold" />
                         </LinearLayout>
+
                     </LinearLayout>
                 </LinearLayout> <View
                 android:layout_width="match_parent"
@@ -726,8 +715,7 @@
                 android:textColor="#00FF66"
                 android:textSize="11sp"
                 android:fontFamily="monospace"
-                android:lineSpacingExtra="4dp"
-                android:text="✓ Sistema inicializado..."/>
+                android:lineSpacingExtra="4dp" />
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>
 
