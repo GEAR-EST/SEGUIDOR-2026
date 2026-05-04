@@ -87,7 +87,7 @@ void pinModeMotors(){
     pinMode(STBY, OUTPUT);
 }
 
-void motors_calibrate(){
+void motors_calibrate(int speed){
     motors.setSpeed(120);
     motors.forwardA();
     motors.backwardB();

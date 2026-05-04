@@ -37,7 +37,7 @@ void controlMotors(int speedA, int speedB);
 
 void pinModeMotors();
 
-void motors_calibrate();
+void motors_calibrate(int speed);
 
 bool fail_safe();
 

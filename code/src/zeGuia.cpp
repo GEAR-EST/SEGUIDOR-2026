@@ -76,7 +76,7 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        controlMotors(0, 80);
+        motors_calibrate();
     } 
     else if (strategy == S_RISK) 
     {
