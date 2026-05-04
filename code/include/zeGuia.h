@@ -27,7 +27,10 @@ public:
     velMax(0),
     kp(0.0),
     ki(0.0),
-    kd(0.0)
+    kd(0.0),
+    velEsq(0),
+    velDir(0),
+    novasMarcas(0)
     {}
 
     void setup();
@@ -44,11 +47,12 @@ private:
     static const uint32_t SENSOR_SEND_INTERVAL_MS = 120;
     
     float velMax, kp, ki, kd;
+    int velEsq, velDir, novasMarcas;
 
     void calibrarRobo(); 
     void iniciarCorrida();
     void terminarCorrida(); 
-    void atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd);
+    void atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas);
     void aplicarParametrosPID();
     void loopSeguidor();
     void loopPerseguidor();

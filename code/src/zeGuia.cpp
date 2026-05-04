@@ -7,8 +7,6 @@
 #include "sensors.h"
 #include <Arduino.h>
 
-int speedA = 0; int speedB = 0;
-
 void ZeGuia::setup() 
 {
     _setup();
@@ -18,7 +16,8 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
 {
     if (message.hasPidTunings)
     {
-        atualizarPID(message.vMax, message.kp, message.ki, message.kd);
+        atualizarPID(message.vMax, message.kp, message.ki, message.kd,
+                     message.velEsq, message.velDir, message.novasMarcas);
     }
 
     if (message.command != CMD_NONE)
@@ -27,19 +26,22 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     }
 }
 
-void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd)
+void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas)
 {
-    velMax = novaVelMax;
-    kp = novoKp;
-    ki = novoKi;
-    kd = novoKd;
+    velMax     = novaVelMax;
+    kp         = novoKp;
+    ki         = novoKi;
+    kd         = novoKd;
+    velEsq     = novoVelEsq;
+    velDir     = novoVelDir;
+    this->novasMarcas = novasMarcas;
     aplicarParametrosPID();
 }
 
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
-    pid.setTunnings(kp, ki, kd);
+    //pid.setTunnings(kp, ki, kd); mudar 
 }
 
 void ZeGuia::loop() 
@@ -82,12 +84,10 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
     {
         controlMotors(0, -80);
     }
-
 }
 
-void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop principal quando o modo é MODE_CHASE
+void ZeGuia::loopPerseguidor()
 {
-
     if (strategy == S_CONSERVATIVE) 
     { 
         controlMotors(80, 0);
@@ -96,7 +96,6 @@ void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop p
     {
         controlMotors(-80, 0);
     }
-
 }
 void ZeGuia::calibrarRobo()
 {
