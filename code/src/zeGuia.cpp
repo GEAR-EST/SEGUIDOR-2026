@@ -78,11 +78,11 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        motors_calibrate();
+        controlMotors(velEsq, velDir);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(0, -80);
+        controlMotors(velEsq, velDir);
     }
 }
 
@@ -90,11 +90,11 @@ void ZeGuia::loopPerseguidor()
 {
     if (strategy == S_CONSERVATIVE) 
     { 
-        controlMotors(80, 0);
+        controlMotors(velEsq, velDir);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(-80, 0);
+        controlMotors(velEsq, velDir);
     }
 }
 void ZeGuia::calibrarRobo()

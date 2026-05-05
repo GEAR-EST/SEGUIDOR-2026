@@ -87,12 +87,6 @@ void pinModeMotors(){
     pinMode(STBY, OUTPUT);
 }
 
-void motors_calibrate(int speed){
-    motors.setSpeed(120);
-    motors.forwardA();
-    motors.backwardB();
-}
-
 bool fail_safe(){
     unsigned long current_time = millis();
     while (qtr.readLineWhite(sensorValues) == 0){

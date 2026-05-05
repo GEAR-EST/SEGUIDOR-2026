@@ -61,7 +61,7 @@ void doCalibration(){
 
     SerialBT.println("Calibrando");
     //calibrando
-    motors_calibrate();
+    ;
     for (uint16_t i=0; i < 400; i++){
         qtr.calibrate();
     }
