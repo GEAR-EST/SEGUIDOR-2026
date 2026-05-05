@@ -659,10 +659,10 @@ uint16_t QTRSensors::readLinePrivate(uint16_t * sensorValues, QTRReadMode mode,
     if (invertReadings) { value = 1000 - value; }
 
     // keep track of whether we see the line at all
-    if (value > 850) { onLine = true; }
+    if (value > 900) { onLine = true; }
 
     // only average in values that are above a noise threshold
-    if (value > 50)
+    if (value > 700)
     {
       avg += (uint32_t)value * (i * 1000);
       sum += value;
