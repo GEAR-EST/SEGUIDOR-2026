@@ -41,7 +41,7 @@ void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float no
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
-    //pid.setTunnings(kp, ki, kd); mudar 
+    pid.setTunnings(kp, ki, kd);  
 }
 
 void ZeGuia::loop() 
@@ -78,7 +78,7 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        controlMotors(velEsq, velDir);
+        lineWhite();
     } 
     else if (strategy == S_RISK) 
     {
@@ -121,7 +121,7 @@ void ZeGuia:: terminarCorrida()
 
 void ZeGuia::enviarLeituraSensores()
 {
-    uint16_t position = qtr.readLineBlack(sensorValues);
+    uint16_t position = qtr.readLineWhite(sensorValues);
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
 
@@ -131,7 +131,7 @@ void ZeGuia::enviarLeituraSensores()
     for (uint8_t i = 0; i < SensorCount; i++)
     {
         SerialBT.print(',');
-        SerialBT.print(sensorValues[i]);
+        SerialBT.print(1000 - sensorValues[i]);
     }
     SerialBT.print(',');
     SerialBT.print(readRight);

@@ -19,7 +19,7 @@
 
 // pid controller informations
 
-#define SETPOINT 2000
+#define SETPOINT 3500
 
 // fail safe
 

@@ -5,7 +5,7 @@
 #include "communication.h"
 
 int VEL_MAX = 0;
-int VEL_MAX_BACK = 0;
+int VEL_MAX_BACK = 150;
 unsigned long past_fail = 0; 
 
 L298NX2 motors(PWMA, AI1, AI2, PWMB, BI1, BI2);
@@ -59,8 +59,8 @@ void lineBlack(){
 
 void lineWhite(){
     int pos = qtr.readLineWhite(sensorValues);
-
-    if (pos == 0){
+    /*
+    if (pos == 0 || pos == 7000){
         if (fail_safe() == true){
             // turbina e tals
             controlMotors(0, 0);
@@ -68,6 +68,8 @@ void lineWhite(){
             SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
         }
     }
+    */
+   
     int pid_value = pid.somatory(SETPOINT, pos);
 
     int vel_m1 = VEL_MAX + pid_value;
