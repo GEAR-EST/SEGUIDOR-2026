@@ -7,8 +7,6 @@
 #include "sensors.h"
 #include <Arduino.h>
 
-int speedA = 0; int speedB = 0;
-
 void ZeGuia::setup() 
 {
     _setup();
@@ -18,7 +16,8 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
 {
     if (message.hasPidTunings)
     {
-        atualizarPID(message.vMax, message.kp, message.ki, message.kd);
+        atualizarPID(message.vMax, message.kp, message.ki, message.kd,
+                     message.velEsq, message.velDir, message.novasMarcas);
     }
 
     if (message.command != CMD_NONE)
@@ -27,19 +26,22 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     }
 }
 
-void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd)
+void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas)
 {
-    velMax = novaVelMax;
-    kp = novoKp;
-    ki = novoKi;
-    kd = novoKd;
+    velMax     = novaVelMax;
+    kp         = novoKp;
+    ki         = novoKi;
+    kd         = novoKd;
+    velEsq     = novoVelEsq;
+    velDir     = novoVelDir;
+    this->novasMarcas = novasMarcas;
     aplicarParametrosPID();
 }
 
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
-    pid.setTunnings(kp, ki, kd);
+    pid.setTunnings(kp, ki, kd);  
 }
 
 void ZeGuia::loop() 
@@ -76,27 +78,24 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        controlMotors(0, 80);
+        lineWhite();
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(0, -80);
+        controlMotors(velEsq, velDir);
     }
-
 }
 
-void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop principal quando o modo é MODE_CHASE
+void ZeGuia::loopPerseguidor()
 {
-
     if (strategy == S_CONSERVATIVE) 
     { 
-        controlMotors(80, 0);
+        controlMotors(velEsq, velDir);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(-80, 0);
+        controlMotors(velEsq, velDir);
     }
-
 }
 void ZeGuia::calibrarRobo()
 {
@@ -122,7 +121,7 @@ void ZeGuia:: terminarCorrida()
 
 void ZeGuia::enviarLeituraSensores()
 {
-    uint16_t position = qtr.readLineBlack(sensorValues);
+    uint16_t position = qtr.readLineWhite(sensorValues);
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
 
@@ -132,7 +131,7 @@ void ZeGuia::enviarLeituraSensores()
     for (uint8_t i = 0; i < SensorCount; i++)
     {
         SerialBT.print(',');
-        SerialBT.print(sensorValues[i]);
+        SerialBT.print(1000 - sensorValues[i]);
     }
     SerialBT.print(',');
     SerialBT.print(readRight);

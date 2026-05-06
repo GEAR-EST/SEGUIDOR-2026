@@ -19,7 +19,7 @@
 
 // pid controller informations
 
-#define SETPOINT 2000
+#define SETPOINT 3500
 
 // fail safe
 
@@ -36,8 +36,6 @@ void lineWhite();
 void controlMotors(int speedA, int speedB);
 
 void pinModeMotors();
-
-void motors_calibrate();
 
 bool fail_safe();
 

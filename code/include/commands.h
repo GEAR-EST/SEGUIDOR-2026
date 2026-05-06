@@ -25,6 +25,9 @@ struct RobotMessage
     float kp;
     float ki;
     float kd;
+    int velEsq;
+    int velDir;
+    int novasMarcas;
 };
 
 #endif
