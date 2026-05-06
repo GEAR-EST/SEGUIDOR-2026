@@ -160,14 +160,19 @@
 
                     <TextView
                         android:id="@+id/txtCronometro"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:text="0:0.000"
                         android:textColor="#00FF66"
                         android:textSize="28sp"
                         android:fontFamily="@font/orbitron"
                         android:textStyle="bold"
-                        android:layout_marginTop="20dp" />
+                        android:gravity="center_vertical"
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeMaxTextSize="28sp"
+                        android:autoSizeStepGranularity="1sp" />
                 </LinearLayout>
 
                 <View
