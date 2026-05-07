@@ -82,7 +82,7 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(velEsq, velDir);
+        lineWhite();
     }
 }
 
@@ -108,14 +108,29 @@ void ZeGuia:: iniciarCorrida()
 {
     //logica iniciar corrida
     running = true;
-    digitalWrite(STBY, HIGH);
 }
 
 void ZeGuia:: terminarCorrida()
 {
     running = false;
-    controlMotors(0, 0);
-    digitalWrite(STBY, LOW);
+    if (strategy == S_CONSERVATIVE){
+        const uint32_t time_now = millis();
+        if (time_now - lastStopMs >= TIME_BACK_STOP){
+            controlMotors(-120, -120);
+        }
+        digitalWrite(AI1, HIGH);
+        digitalWrite(AI2, HIGH);
+        digitalWrite(BI1, HIGH);
+        digitalWrite(BI2, HIGH);
+        SerialBT.println("PARADA ATIVA ATIVADAAAAAAA");
+    } else if (strategy == S_RISK) {
+        digitalWrite(AI1, LOW);
+        digitalWrite(AI2, LOW);
+        digitalWrite(BI1, LOW);
+        digitalWrite(BI2, LOW);
+        SerialBT.println("PARADA PASSIVA ATIVADAAAAAAA");
+    }
+    // digitalWrite(STBY, LOW);
     //logica terminar corrida 
 }
 
@@ -176,4 +191,27 @@ void ZeGuia::processarComando(RobotCommand cmd)
     default:
         break;
     }   
+}
+
+void ZeGuia::lineWhite(){
+    int pos = qtr.readLineWhite(sensorValues);
+    /*
+    if (pos == 0 || pos == 7000){
+        if (fail_safe() == true){
+            terminarCorrida();
+            SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
+        }
+    }
+    */
+   
+    int pid_value = pid.somatory(SETPOINT, pos);
+
+    int vel_m1 = VEL_MAX - pid_value;
+    int vel_m2 = VEL_MAX + pid_value;
+
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
+
+    controlMotors(vel_m1, vel_m2);
+
 }

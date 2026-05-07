@@ -29,14 +29,10 @@ void setup_qtr();
 
 void setup_side_sensors();
 
-void qtr_print();
-
 void side_sensors_print();
 
 void doCalibration();
 
 bool readCalibration();
-
-const long qtr_interval = 10000;
 
 #endif

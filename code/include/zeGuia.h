@@ -44,7 +44,9 @@ private:
     bool running;
     bool sensorStreaming;
     uint32_t lastSensorSendMs;
+    uint32_t lastStopMs;
     static const uint32_t SENSOR_SEND_INTERVAL_MS = 120;
+    static const uint32_t TIME_BACK_STOP = 500;
     
     float velMax, kp, ki, kd;
     int velEsq, velDir, novasMarcas;
@@ -57,6 +59,6 @@ private:
     void loopSeguidor();
     void loopPerseguidor();
     void enviarLeituraSensores();
-
+    void lineWhite();
 
 };
