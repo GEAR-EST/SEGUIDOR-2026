@@ -70,25 +70,25 @@ Nesta seção são apresentados os diagramas de pinout dos principais componente
 
 ### ESP32 Dev Kit
 
-<img src="/misc/estudos/media/img/pinout_esp32.png" width="600">
+<img src="/misc/estudos/media/img/Pinout_ESP32.png" width="600">
 
 Pinout utilizado para identificar as conexões entre a ESP32 e os demais componentes do robô, incluindo sensores, ponte H e MOSFET de acionamento da ventoinha.
 
 ### Ponte H TB6612FNG
 
-<img src="/misc/estudos/media/img/pinout_TB6612FNG.jpeg" height="350">
+<img src="/misc/estudos/media/img/Pinout_TB6612FNG.png" height="350">
 
 A ponte H TB6612FNG é utilizada para controlar os dois motores N20 responsáveis pela locomoção do robô. Ela recebe sinais PWM da ESP32 permitindo controlar a velocidade e o sentido de rotação dos motores.
 
 ### Sensor de Linha QTR-8RC
 
-<img src="/misc/estudos/media/img/pinout_QTR-8RC.jpeg" height="350">
+<img src="/misc/estudos/media/img/Pinout_QTR-8RC.png" height="350">
 
 O sensor QTR-8RC é o sensor principal do robô, sendo responsável pela detecção da linha da pista. Ele é composto por um conjunto de sensores infravermelhos dispostos em forma de array que permitem identificar a posição da linha em relação ao robô.
 
 ### Sensor Infravermelho TCRT5000
 
-<img src="/misc/estudos/media/img/pinout_TCRT5000.jpeg" height="350">
+<img src="/misc/estudos/media/img/Pinout_Sensores_Laterais.png" height="350">
 
 Os sensores TCRT5000 são utilizados como sensores auxiliares para detecção de linhas laterais e marcações ao longo da pista. Eles funcionam através da emissão e recepção de luz infravermelha refletida pela superfície.
 
@@ -100,7 +100,7 @@ O MOSFET IRLZ44N é utilizado para controlar o acionamento do motor coreless res
 
 ### Regulador de Tensão Mini360
 
-<img src="/misc/estudos/media/img/pinout_Regulador de tensão Mini 360.jpeg" height="350">
+<img src="/misc/estudos/media/img/Pinout_Regulador_Tensão Mini 360.png" height="350">
 
 O módulo Mini360 é um conversor DC-DC do tipo buck responsável por reduzir a tensão da bateria LiPo para um nível adequado para alimentação da ESP32 e dos demais componentes eletrônicos do sistema.
 
@@ -130,7 +130,7 @@ O diodo 1N4007 é utilizado como diodo de flyback para proteger o MOSFET contra 
 
 ### Resistores
 
-<img src="/misc/estudos/media/img/pinout_resistores.png" height="350">
+<img src="/misc/estudos/media/img/Pinout_Regulador.png" height="350">
 
 Os resistores são utilizados no circuito para limitar corrente e para implementação de divisores de tensão, como no caso do monitoramento da bateria.
 
@@ -140,9 +140,15 @@ Os resistores são utilizados no circuito para limitar corrente e para implement
 
 O switch é utilizado para ligar e desligar o sistema eletrônico do robô, controlando a alimentação proveniente da bateria.
 
-### Capacitores
+### Capacitores (Eletrolítico e Cerâmico)
 
-<img src="/misc/estudos/media/img/pinout_capacitores motores.jpeg" height="350">
+
+
+### Capacitores dos motores
+
+<img src="/misc/estudos/media/img/Pinout_Capacitor_Motores.png" height="350">
+
+Os capacitores são soldados em paralelo com os terminais dos motores com o objetivo de eliminar os ruídos e melhorar seu funcionamento
 
 Os capacitores são utilizados para desacoplamento e filtragem de ruído no circuito eletrônico, contribuindo para maior estabilidade da alimentação do sistema.
 
