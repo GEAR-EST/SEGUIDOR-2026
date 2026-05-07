@@ -2,10 +2,13 @@
 #include "sensors.h"
 #include "controls.h"
 #include "motordriver.h"
+#include "communication.h"
 
 QTRSensors qtr;
 Preferences preferences;
 uint16_t sensorValues[SensorCount];
+uint16_t readRight = 0;
+uint16_t readLeft = 0;
 
 void setup_qtr(){
     //configuração do QTR-8A
@@ -24,27 +27,13 @@ void setup_side_sensors(){
     pinMode(LeftSensor, INPUT);
 }
 
-void qtr_print(){
-    uint16_t position = qtr.readLineBlack(sensorValues);
-
-    //Sensor frontal
-    Serial.print("Frontal: ");
-    for (uint8_t i = 0; i < SensorCount; i++) {
-        Serial.print(sensorValues[i]);
-        Serial.print('\t');
-    }
-    Serial.println();
-    Serial.print("Pos: ");
-    Serial.println(position);
-}
-
 void side_sensors_print(){
     //Sensores laterais
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
-    Serial.print("Direito: "); Serial.print(readRight);
-    Serial.print('\t');
-    Serial.print("Esquerdo: "); Serial.println(readLeft);
+    SerialBT.print("Direito: "); SerialBT.print(readRight);
+    SerialBT.print('\t');
+    SerialBT.print("Esquerdo: "); SerialBT.println(readLeft);
 }
 
 void doCalibration(){
@@ -52,10 +41,10 @@ void doCalibration(){
     digitalWrite(LED_BUILTIN, HIGH);
     vTaskDelay(pdMS_TO_TICKS(50));
 
-    Serial.println("Calibrando");
+    SerialBT.println("Calibrando");
     //calibrando
-    motors_calibrate();
-    for (uint16_t i=0; i < 3000; i++){
+    ;
+    for (uint16_t i=0; i < 200; i++){
         qtr.calibrate();
     }
     motors.stop();
@@ -69,17 +58,17 @@ void doCalibration(){
         min_values[i] = EMPTY_VALUE;
     }
 
-    Serial.println("Maximum values");
+    SerialBT.println("Maximum values");
     for(uint16_t i=0; i < SensorCount; i++){
-        Serial.print(qtr.calibrationOn.maximum[i]);
-        Serial.print(' ');
+        SerialBT.print(qtr.calibrationOn.maximum[i]);
+        SerialBT.print(' ');
         max_values[i] = qtr.calibrationOn.maximum[i];
     }
 
-    Serial.println("Minimum values");
+    SerialBT.println("Minimum values");
     for(uint16_t i=0; i < SensorCount; i++){
-        Serial.print(qtr.calibrationOn.minimum[i]);
-        Serial.print(' ');
+        SerialBT.print(qtr.calibrationOn.minimum[i]);
+        SerialBT.print(' ');
         min_values[i] = qtr.calibrationOn.minimum[i];
     }
 
@@ -92,7 +81,7 @@ void doCalibration(){
     preferences.end();
 
     digitalWrite(LED_BUILTIN, LOW);
-    Serial.println("Calibração terminou :p");
+    SerialBT.println("Calibração terminou :p");
 }
 
 bool readCalibration(){
@@ -111,14 +100,14 @@ bool readCalibration(){
     
     for (auto n : read_max){
         if (n == EMPTY_VALUE) {
-            Serial.println("Erro: um valor vazio foi encontrado, por favor calibrar novamente");
+            SerialBT.println("Erro: um valor vazio foi encontrado, por favor calibrar novamente");
             return false;
         }
     }
 
     for (auto n : read_min){
         if (n == EMPTY_VALUE) {
-            Serial.println("Erro: um valor vazio foi encontrado, por favor calibrar novamente");
+            SerialBT.println("Erro: um valor vazio foi encontrado, por favor calibrar novamente");
             return false;
         }
     }
@@ -129,7 +118,7 @@ bool readCalibration(){
         qtr.calibrationOn.minimum[i] = read_min[i];
     }
 
-    Serial.println("Calibração carregada com sucesso");
+    SerialBT.println("Calibração carregada com sucesso");
 
     return true;
   

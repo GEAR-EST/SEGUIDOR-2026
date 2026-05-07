@@ -12,7 +12,9 @@ enum RobotCommand
     CMD_MODE_FOLLOWER,
     CMD_MODE_CHASE,
     CMD_STRATEGY_CONSERVATIVE,
-    CMD_STRATEGY_RISK
+    CMD_STRATEGY_RISK,
+    CMD_SENSOR_STREAM_ON,
+    CMD_SENSOR_STREAM_OFF
 };
 
 struct RobotMessage
@@ -23,6 +25,9 @@ struct RobotMessage
     float kp;
     float ki;
     float kd;
+    int velEsq;
+    int velDir;
+    int novasMarcas;
 };
 
 #endif

@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include "pid.h"
 
+#define BATTERY_PIN 13
+
 const uint8_t SensorCount = 8;
 extern uint16_t sensorValues[SensorCount];
 

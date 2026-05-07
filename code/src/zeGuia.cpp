@@ -16,7 +16,8 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
 {
     if (message.hasPidTunings)
     {
-        atualizarPID(message.vMax, message.kp, message.ki, message.kd);
+        atualizarPID(message.vMax, message.kp, message.ki, message.kd,
+                     message.velEsq, message.velDir, message.novasMarcas);
     }
 
     if (message.command != CMD_NONE)
@@ -25,19 +26,22 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     }
 }
 
-void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd)
+void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas)
 {
-    velMax = novaVelMax;
-    kp = novoKp;
-    ki = novoKi;
-    kd = novoKd;
+    velMax     = novaVelMax;
+    kp         = novoKp;
+    ki         = novoKi;
+    kd         = novoKd;
+    velEsq     = novoVelEsq;
+    velDir     = novoVelDir;
+    this->novasMarcas = novasMarcas;
     aplicarParametrosPID();
 }
 
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
-    pid.setTunnings(kp, ki, kd);
+    pid.setTunnings(kp, ki, kd);  
 }
 
 void ZeGuia::loop() 
@@ -57,6 +61,16 @@ void ZeGuia::loop()
                 break;
         }
     }
+
+    if (sensorStreaming)
+    {
+        const uint32_t now = millis();
+        if (now - lastSensorSendMs >= SENSOR_SEND_INTERVAL_MS)
+        {
+            lastSensorSendMs = now;
+            enviarLeituraSensores();
+        }
+    }
 }
 
 void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop principal quando o modo é MODE_FOLLOWER
@@ -64,50 +78,80 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
 
     if (strategy == S_CONSERVATIVE) 
     {
-        // Lógica para estratégia conservadora do seguidor  
-
+        lineWhite();
     } 
     else if (strategy == S_RISK) 
     {
-        // Lógica para estratégia arriscada do seguidor
+        lineWhite();
     }
-
 }
 
-void ZeGuia::loopPerseguidor() //logica do perseguidor, chamada dentro do loop principal quando o modo é MODE_CHASE
+void ZeGuia::loopPerseguidor()
 {
-
     if (strategy == S_CONSERVATIVE) 
-    {
-        pid.setTunnings(0.5, 1, 10);
-        lineWhite();  
-
+    { 
+        controlMotors(velEsq, velDir);
     } 
     else if (strategy == S_RISK) 
     {
-        pid.setTunnings(1, 1, 5);
-        lineWhite(); 
+        controlMotors(velEsq, velDir);
     }
-
 }
 void ZeGuia::calibrarRobo()
 {
+    SerialBT.println("Calibrando");
     doCalibration();
+    SerialBT.println("Robo calibrado");
 }
 
 void ZeGuia:: iniciarCorrida()
 {
     //logica iniciar corrida
     running = true;
-    digitalWrite(STBY, HIGH);
 }
 
 void ZeGuia:: terminarCorrida()
 {
     running = false;
-    controlMotors(0, 0);
-    digitalWrite(STBY, LOW);
+    if (strategy == S_CONSERVATIVE){
+        const uint32_t time_now = millis();
+        if (time_now - lastStopMs >= TIME_BACK_STOP){
+            controlMotors(-120, -120);
+        }
+        digitalWrite(AI1, HIGH);
+        digitalWrite(AI2, HIGH);
+        digitalWrite(BI1, HIGH);
+        digitalWrite(BI2, HIGH);
+        SerialBT.println("PARADA ATIVA ATIVADAAAAAAA");
+    } else if (strategy == S_RISK) {
+        digitalWrite(AI1, LOW);
+        digitalWrite(AI2, LOW);
+        digitalWrite(BI1, LOW);
+        digitalWrite(BI2, LOW);
+        SerialBT.println("PARADA PASSIVA ATIVADAAAAAAA");
+    }
+    // digitalWrite(STBY, LOW);
     //logica terminar corrida 
+}
+
+void ZeGuia::enviarLeituraSensores()
+{
+    uint16_t position = qtr.readLineWhite(sensorValues);
+    readRight = digitalRead(RightSensor);
+    readLeft = digitalRead(LeftSensor);
+
+    // Formato para o app: S,<pos>,<s1>...<s8>,<right>,<left>
+    SerialBT.print("S,");
+    SerialBT.print(position);
+    for (uint8_t i = 0; i < SensorCount; i++)
+    {
+        SerialBT.print(',');
+        SerialBT.print(1000 - sensorValues[i]);
+    }
+    SerialBT.print(',');
+    SerialBT.print(readRight);
+    SerialBT.print(',');
+    SerialBT.println(readLeft);
 }
 
 
@@ -136,8 +180,38 @@ void ZeGuia::processarComando(RobotCommand cmd)
     case CMD_STRATEGY_RISK:
         strategy = S_RISK;
         break;
+    case CMD_SENSOR_STREAM_ON:
+        sensorStreaming = true;
+        lastSensorSendMs = 0;
+        break;
+    case CMD_SENSOR_STREAM_OFF:
+        sensorStreaming = false;
+        break;
 
     default:
         break;
     }   
+}
+
+void ZeGuia::lineWhite(){
+    int pos = qtr.readLineWhite(sensorValues);
+    /*
+    if (pos == 0 || pos == 7000){
+        if (fail_safe() == true){
+            terminarCorrida();
+            SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
+        }
+    }
+    */
+   
+    int pid_value = pid.somatory(SETPOINT, pos);
+
+    int vel_m1 = VEL_MAX - pid_value;
+    int vel_m2 = VEL_MAX + pid_value;
+
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
+
+    controlMotors(vel_m1, vel_m2);
+
 }

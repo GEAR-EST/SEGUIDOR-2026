@@ -29,8 +29,6 @@ void setup_qtr();
 
 void setup_side_sensors();
 
-void qtr_print();
-
 void side_sensors_print();
 
 void doCalibration();

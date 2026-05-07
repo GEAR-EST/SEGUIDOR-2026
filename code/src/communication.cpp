@@ -1,5 +1,6 @@
 #include "communication.h"
 #include "commands.h"
+#include "globals.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -13,6 +14,7 @@ void CommunicationTask(void* pvParameters)
 {
     const uint32_t BATTERY_SEND_INTERVAL_MS = 1000;
     uint32_t lastBatterySendMs = 0;
+    bool sensorStreamRequested = false;
 
     BluetoothConnection();
     
@@ -28,15 +30,18 @@ void CommunicationTask(void* pvParameters)
                 Serial.print("Linha recebida: ");
                 Serial.println(inputLine);
 
-                RobotMessage message = {CMD_NONE, false, 0.0f, 0.0f, 0.0f, 0.0f};
+                RobotMessage message = {CMD_NONE, false, 0.0f, 0.0f, 0.0f, 0.0f, 0, 0, 0};
 
                 if (inputLine.startsWith("PID:"))
                 {
-                    // Formato: PID:V|Kp|Ki|Kd
+                    // Formato: PID:V|Kp|Ki|Kd|VelEsq|VelDir|NovasMarcas
                     String payload = inputLine.substring(4);
                     int sep1 = payload.indexOf('|');
                     int sep2 = payload.indexOf('|', sep1 + 1);
                     int sep3 = payload.indexOf('|', sep2 + 1);
+                    int sep4 = payload.indexOf('|', sep3 + 1);
+                    int sep5 = payload.indexOf('|', sep4 + 1);
+                    int sep6 = payload.indexOf('|', sep5 + 1);
 
                     if (sep1 > 0 && sep2 > 0 && sep3 > 0)
                     {
@@ -44,7 +49,17 @@ void CommunicationTask(void* pvParameters)
                         message.vMax = payload.substring(0, sep1).toFloat();
                         message.kp = payload.substring(sep1 + 1, sep2).toFloat();
                         message.ki = payload.substring(sep2 + 1, sep3).toFloat();
-                        message.kd = payload.substring(sep3 + 1).toFloat();
+                        if (sep4 > sep3 && sep5 > sep4 && sep6 > sep5)
+                        {
+                            message.kd          = payload.substring(sep3 + 1, sep4).toFloat();
+                            message.velEsq      = payload.substring(sep4 + 1, sep5).toInt();
+                            message.velDir      = payload.substring(sep5 + 1, sep6).toInt();
+                            message.novasMarcas = payload.substring(sep6 + 1).toInt();
+                        }
+                        else
+                        {
+                            message.kd = payload.substring(sep3 + 1).toFloat();
+                        }
                     }
                 }
                 else if (inputLine.length() == 1)
@@ -90,6 +105,22 @@ void CommunicationTask(void* pvParameters)
                             message.command = CMD_STRATEGY_RISK;
                             SerialMonitorChecked(message.command);
                             break;
+                        case 'L':
+                            if (!sensorStreamRequested)
+                            {
+                                message.command = CMD_SENSOR_STREAM_ON;
+                                sensorStreamRequested = true;
+                                SerialMonitorChecked(message.command);
+                            }
+                            break;
+                        case 'l':
+                            if (sensorStreamRequested)
+                            {
+                                message.command = CMD_SENSOR_STREAM_OFF;
+                                sensorStreamRequested = false;
+                                SerialMonitorChecked(message.command);
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -97,8 +128,12 @@ void CommunicationTask(void* pvParameters)
 
                 if (message.hasPidTunings)
                 {
-                    Serial.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f\n", message.vMax, message.kp, message.ki, message.kd);
-                    SerialBT.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f\n", message.vMax, message.kp, message.ki, message.kd);
+                    Serial.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f VelEsq=%d VelDir=%d Marcas=%d\n",
+                        message.vMax, message.kp, message.ki, message.kd,
+                        message.velEsq, message.velDir, message.novasMarcas);
+                    SerialBT.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f VelEsq=%d VelDir=%d Marcas=%d\n",
+                        message.vMax, message.kp, message.ki, message.kd,
+                        message.velEsq, message.velDir, message.novasMarcas);
                 }
 
                 if (message.command != CMD_NONE || message.hasPidTunings)
@@ -113,6 +148,8 @@ void CommunicationTask(void* pvParameters)
                 inputLine += c;
             }
         }
+
+        send_battery();
 
         vTaskDelay(pdMS_TO_TICKS(50));
         
@@ -207,7 +244,41 @@ void SerialMonitorChecked(RobotCommand cmd)
             SerialBT.println("Estrategia selecionada: ARRISCADO");
             break;
 
+
+        case CMD_SENSOR_STREAM_ON:
+            Serial.println("Stream de sensores ligado");
+            SerialBT.println("Stream de sensores ligado");
+                
+            break;
+
+        case CMD_SENSOR_STREAM_OFF:
+            Serial.println("Stream de sensores desligado");
+            SerialBT.println("Stream de sensores desligado");
+            break;
+
         default:
             break;
+    }
+}
+
+uint8_t battery_percentage(){
+    long sum = 0;
+    for (int i = 0; i < 16; i++){
+        sum += analogRead(BATTERY_PIN);
+    }
+    int avg = sum/16;
+    int perc = map(avg, 2539, 3325, 0, 100);
+    perc = constrain(perc, 0, 100);
+    return (uint8_t) perc;
+}
+
+void send_battery(){
+    static unsigned long past_time = 0;
+    unsigned long current_time = millis();
+    if (current_time - past_time >= bat_interval){
+        past_time = current_time;
+        SerialBT.print("BAT"); 
+        SerialBT.println(battery_percentage());
+        
     }
 }

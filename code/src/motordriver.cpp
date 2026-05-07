@@ -2,9 +2,11 @@
 #include "motordriver.h"
 #include "pid.h"
 #include "sensors.h"
+#include "communication.h"
+#include "zeGuia.h"
 
 int VEL_MAX = 0;
-int VEL_MAX_BACK = 0;
+uint32_t past_fail = 0; 
 
 L298NX2 motors(PWMA, AI1, AI2, PWMB, BI1, BI2);
 PID pid(0, 0, 0);
@@ -12,23 +14,23 @@ PID pid(0, 0, 0);
 void controlMotors(int speedA, int speedB){
     if (speedA > 0){
         motors.setSpeedA(speedA);
-        motors.forward();
+        motors.forwardA();
     } else if (speedA < 0){
         motors.setSpeedA(abs(speedA));
-        motors.backward();
+        motors.backwardA();
     } else {
-        motors.setSpeed(0);
+        motors.setSpeedA(0);
         motors.stopA();
     }
 
     if (speedB > 0){
         motors.setSpeedB(speedB);
-        motors.forward();
-    } else if (speedA < 0){
+        motors.forwardB();
+    } else if (speedB < 0){
         motors.setSpeedB(abs(speedB));
-        motors.backward();
+        motors.backwardB();
     } else {
-        motors.setSpeed(0);
+        motors.setSpeedB(0);
         motors.stopB();
     }
 
@@ -37,26 +39,20 @@ void controlMotors(int speedA, int speedB){
 void lineBlack(){
     int pos = qtr.readLineBlack(sensorValues);
     int pid_value = pid.somatory(SETPOINT, pos);
+    /*
+    if (pos == 0){
+        if (fail_safe() == true){
+            controlMotors(0, 0);
+            digitalWrite(STBY, LOW);
+        }
+    }
+    */
 
-    int vel_m1 = VEL_MAX + pid_value;
-    int vel_m2 = VEL_MAX - pid_value;
+    int vel_m1 = VEL_MAX - pid_value;
+    int vel_m2 = VEL_MAX + pid_value;
 
-    vel_m1 = constrain(vel_m1, -220, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -220, VEL_MAX);
-
-    controlMotors(vel_m1, vel_m2);
-
-}
-
-void lineWhite(){
-    int pos = qtr.readLineWhite(sensorValues);
-    int pid_value = pid.somatory(SETPOINT, pos);
-
-    int vel_m1 = VEL_MAX + pid_value;
-    int vel_m2 = VEL_MAX - pid_value;
-
-    vel_m1 = constrain(vel_m1, -VEL_MAX_BACK, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -VEL_MAX_BACK, VEL_MAX);
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
 
     controlMotors(vel_m1, vel_m2);
 
@@ -67,10 +63,14 @@ void pinModeMotors(){
     pinMode(AI1, OUTPUT); pinMode(AI2, OUTPUT);
     pinMode(BI1, OUTPUT); pinMode(BI2, OUTPUT);
     pinMode(STBY, OUTPUT);
+
+    digitalWrite(STBY, HIGH);
 }
 
-void motors_calibrate(){
-    motors.setSpeed(50);
-    motors.forwardA();
-    motors.forwardB();
+bool fail_safe(){
+    const uint32_t current_time = millis();
+    while (qtr.readLineWhite(sensorValues) == 0){
+        if (current_time - past_fail >= failtime) return true;
+    }
+    return false;
 }
