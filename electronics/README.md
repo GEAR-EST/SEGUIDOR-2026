@@ -208,11 +208,54 @@ O modelo do chassi foi desenvolvido pelo mecânico em formato SVG e posteriormen
 Além da necessidade de encaixar corretamente todos os componentes no novo formato da placa, também foi preciso planejar cuidadosamente o trajeto das trilhas em áreas bastante limitadas, evitando interferências e mantendo a integridade elétrica do circuito. Após diversos ajustes, reorganizações e validações, foi possível concluir a versão final da PCB/chassi e verificar todas as conexões através das ferramentas de validação do próprio software, garantindo o funcionamento correto do projeto antes da fabricação.
 
 <p align="left">
-  <img src="pcb/PCB_TOP.png" width="35%">
-  <img src="pcb/PCB_BOTTOM.png" width="35%">
+  <img src="../misc/estudos/media/img/PCB_JLC_TOP.png" width="35%">
+  <img src="../misc/estudos/media/img/PCB_JLC_BOTTOM.png" width="35%">
 </p>
 
-### PCB para Fabricação em CNC (possível versão final)
+### Placa Física
+
+Após um período de grande expectativa, a fabricação da PCB foi concluída e as placas finalmente chegaram em Manaus. O lote veio com cinco unidades, o que possibilitou maior segurança durante a etapa de montagem e testes. Assim que chegaram, iniciou-se imediatamente o processo de soldagem e fixação dos componentes eletrônicos na placa. Essa etapa foi, sem dúvidas, uma das mais desafiadoras de todo o desenvolvimento para mim pois alguns componentes possuíam terminais muito pequenos e exigiam maior precisão durante a soldagem, aumentando significativamente o nível de dificuldade da montagem. Além disso, qualquer excesso de estanho ou pequeno erro poderia comprometer trilhas e conexões importantes da placa.
+
+<img src="/misc/estudos/media/img/Solda_placa.jpeg" height="350">
+
+A primeira unidade montada apresentou alguns problemas relacionados à soldagem, principalmente em pontos mais críticos do circuito. Por conta disso, o líder da equipe decidiu utilizar uma segunda placa para continuar o desenvolvimento. Após soldar novamente e realizar diversos ajustes e bastante dedicação durante o processo de soldagem, todos os componentes foram corretamente instalados e, para nossa satisfação, a placa ligou já no primeiro teste funcional (com apenas a esp32 encaixada). Mesmo sendo necessários alguns ajustes posteriores e pequenas correções ao longo da validação do hardware, o resultado final foi extremamente positivo e marcou uma etapa importante no desenvolvimento do robô.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/Seguidor_montado.jpeg" width="24.3%">
+  <img src="../misc/estudos/media/img/Seguidor_montadoo.jpeg" width="35%">
+</p>
+
+
+Com isso, após a realização de mais alguns testes para validar todo o circuito, foi possível confirmar o funcionamento correto da placa em conjunto com os demais sistemas do robô. Dessa forma, o desenvolvimento da PCB JLC foi finalmente concluído, tanto na parte eletrônica quanto na integração mecânica, resultando em uma versão totalmente funcional do projeto.
+
+
+## PCB Fabricada em CNC
+
+### Primeira versão da PCB CNC
+
+A ideia de desenvolver uma versão usinada da placa em máquina CNC surgiu devido à possibilidade de não conseguirmos solicitar a fabricação da PCB na China, principalmente por conta do tempo de entrega e dos custos envolvidos, já que além do valor em dólar também existem taxas adicionais de importação.
+
+Felizmente, conseguimos realizar o pedido da placa industrial, mas enquanto ela ainda estava em transporte para o Brasil, decidimos continuar o desenvolvimento da versão usinada como alternativa e também como forma de aprendizado. Para isso, foi utilizado o mesmo modelo de placa/chassi e o mesmo posicionamento dos componentes da versão original, alterando principalmente o roteamento das trilhas.
+
+Nessa versão, as trilhas precisavam ser mais largas devido ao processo de usinagem, além da limitação de espaço causada pela grande quantidade de conexões em áreas pequenas, o que tornou o desenvolvimento um desafio considerável. Outro ponto importante foi a necessidade de exportar o projeto em formato bitmap, fazendo com que fosse necessário utilizar o software Proteus. Com isso, toda a parte esquemática, posicionamento dos componentes e roteamento precisou ser refeita praticamente do zero, processo que levou cerca de dois dias para ser concluído.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/Esquemático_PCB_Proteus.bmp" width="35%">
+  <img src="../misc/estudos/media/img/PCB_CNC_V2.png" width="35%">
+</p>
+
+Após essa etapa, iniciamos o processo de usinagem da placa no FabLab, utilizando a máquina MonoFab. Toda a parte de vetorização necessária para a fabricação foi realizada pelo atual vice-capitão do gear, Raysson, permitindo que a PCB fosse finalmente usinada e preparada para os testes físicos do projeto.
+
+<img src="/misc/estudos/media/img/PCB_CNC.jpeg" height="350">
+
+Com isso, iniciei os testes de soldagem na PCB usinada, porém essa acabou sendo a etapa mais complicada do processo. Diferente das placas industriais, a soldagem em placas de fenolite usinadas possui diversas limitações que, se não forem seguidas corretamente, podem comprometer toda a placa.Durante aproximadamente uma semana foram realizados vários testes de solda, mas os resultados avançavam lentamente. Qualquer pequeno contato entre o terminal do componente e áreas indevidas da placa podia gerar curto-circuito, além de que o excesso de retrabalho durante a soldagem acabava danificando os pads ou até rompendo algumas trilhas do circuito. Ao todo, foram produzidas duas versões da placa usinada, porém ambas acabaram sendo perdidas devido aos danos causados durante o processo de montagem e soldagem.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/Falhas_PCB_CNC.jpeg" width="25%">
+</p>
+
+Por fim, com a chegada das placas fabricadas pela JLCPCB, nosso líder decidiu direcionar totalmente os esforços para a versão industrial da PCB, já que ela apresentava maior confiabilidade, melhor acabamento e menos limitações durante a montagem e soldagem. Dessa forma, o desenvolvimento da versão usinada acabou sendo interrompido e deixado em segundo plano. Mesmo não sendo concluída, essa etapa foi extremamente importante para adquirir experiência com processos de fabricação CNC, limitações de placas fenolite e técnicas de roteamento e soldagem em PCBs usinadas.
+
 
 - 
 
