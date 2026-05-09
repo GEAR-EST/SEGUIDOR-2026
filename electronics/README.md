@@ -241,7 +241,7 @@ Nessa versão, as trilhas precisavam ser mais largas devido ao processo de usina
 
 <p align="left">
   <img src="../misc/estudos/media/img/Esquemático_PCB_Proteus.bmp" width="35%">
-  <img src="../misc/estudos/media/img/PCB_CNC_V2.png" width="35%">
+  <img src="../electronics/pcb/PCB_CNC_V2.png" width="23%">
 </p>
 
 Após essa etapa, iniciamos o processo de usinagem da placa no FabLab, utilizando a máquina MonoFab. Toda a parte de vetorização necessária para a fabricação foi realizada pelo atual vice-capitão do gear, Raysson, permitindo que a PCB fosse finalmente usinada e preparada para os testes físicos do projeto.
@@ -252,37 +252,10 @@ Com isso, iniciei os testes de soldagem na PCB usinada, porém essa acabou sendo
 
 <p align="left">
   <img src="../misc/estudos/media/img/Falhas_PCB_CNC.jpeg" width="25%">
+  <img src="../misc/estudos/media/img/Falhas1_PCB_CNC.jpeg" width="25%">
 </p>
 
 Por fim, com a chegada das placas fabricadas pela JLCPCB, nosso líder decidiu direcionar totalmente os esforços para a versão industrial da PCB, já que ela apresentava maior confiabilidade, melhor acabamento e menos limitações durante a montagem e soldagem. Dessa forma, o desenvolvimento da versão usinada acabou sendo interrompido e deixado em segundo plano. Mesmo não sendo concluída, essa etapa foi extremamente importante para adquirir experiência com processos de fabricação CNC, limitações de placas fenolite e técnicas de roteamento e soldagem em PCBs usinadas.
-
-
-- 
-
-<img src="pcb/PCB_CNC_V2.png" height="400">
-
-Versão da placa adaptada para fabricação em máquina CNC.
-
-
-
-### Evolução da PCB
-
-Durante o desenvolvimento do projeto foram realizadas diversas alterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
-
-Como o projeto possui duas versões de placa a evolução de cada versão é apresentada separadamente.
-
-### PCB Industrial (JLCPCB)
-
-<p align="left">
-  <img src="pcb/PCB_TOP_V1.png" width="35%">
-  <img src="pcb/PCB_BOTTOM_V1.png" width="35%">
-</p>
-
-Primeira versão do layout da placa desenvolvida para fabricação industrial em dupla camada.
-
-<img src="img/pcb_industrial_v2.png" height="300">
-
-Versão otimizada da PCB com melhorias no posicionamento dos componentes e no roteamento das trilhas.
 
 ## Estrutura
 
