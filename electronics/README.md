@@ -100,7 +100,7 @@ O MOSFET IRLZ44N é utilizado para controlar o acionamento do motor coreless res
 
 ### Regulador de Tensão Mini360
 
-<img src="/misc/estudos/media/img/Pinout_Regulador_Tensão Mini 360.png" height="350">
+<img src="/misc/estudos/media/img/Pinout_Regulador_Tensão.png" height="350">
 
 O módulo Mini360 é um conversor DC-DC do tipo buck responsável por reduzir a tensão da bateria LiPo para um nível adequado para alimentação da ESP32 e dos demais componentes eletrônicos do sistema.
 
@@ -142,7 +142,7 @@ O switch é utilizado para ligar e desligar o sistema eletrônico do robô, cont
 
 ### Capacitores (Eletrolítico e Cerâmico)
 
-
+<img src="/misc/estudos/media/img/Pinout_Capacitores.png" height="350">
 
 ### Capacitores dos motores
 
@@ -172,34 +172,63 @@ Para permitir diferentes formas de prototipagem e fabricação, o projeto da PCB
 | Fabricação industrial | JLCPCB |
 | Versão alternativa | PCB usinada em CNC |
 
-## PCB para Fabricação Industrial Versão final
+## Esquemático Eletrônico
+
+O esquemático eletrônico do circuito foi desenvolvido no EasyEDA e representa todas as conexões elétricas entre os componentes do robô, incluindo a alimentação, controle dos motores, sensores e circuito de acionamento da turbina de sucção.
+
+<img src="/misc/estudos/media/img/Esquema_Elétrico_EASYEDA.png" height="350">
+
+## Evolução da PCB
+
+Durante o desenvolvimento do projeto foram realizadas diversas alterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
+
+Como o projeto possui duas versões de placa a evolução de cada versão é apresentada separadamente.
+
+## PCB Industrial (JLCPCB)
+
+### Primeira versão da PCB
+
+A primeira versão do layout da placa, desenvolvida para fabricação industrial em dupla camada, foi criada em fevereiro. Essa etapa teve como principal objetivo servir como treinamento e aprendizado no desenvolvimento de PCBs mais profissionais, por isso o design adotou um formato mais retangular e simples. Inicialmente, a proposta era apenas produzir uma placa compacta funcional, permitindo estudar melhor a organização dos componentes e o roteamento das trilhas.
+
+Mesmo sendo uma versão inicial, foi possível posicionar todos os componentes necessários, organizar os circuitos de forma mais eficiente e realizar o roteamento das trilhas de alimentação e sinal. Além disso, também foram feitos os primeiros cálculos de largura de trilha, considerando principalmente a distribuição de corrente no circuito.
+
+Essa versão foi consideravelmente mais simples em comparação às posteriores, porém teve um papel importante no desenvolvimento do projeto. O objetivo principal era apresentar a evolução inicial da placa aos demais integrantes do grupo e ao líder da equipe, permitindo receber opiniões, sugestões e avaliar a viabilidade do desenvolvimento até aquele momento.
+
+<p align="left">
+  <img src="pcb/PCB_TOP_V1.png" width="35%">
+  <img src="pcb/PCB_BOTTOM_V1.png" width="35%">
+</p>
+
+### Versão final da PCB
+
+Para a segunda versão, surgiu a proposta do integrante responsável pela parte mecânica de transformar a própria placa em um chassi estrutural do robô. A ideia principal era reduzir o peso total do projeto, otimizar o espaço interno e tornar a montagem mais prática e eficiente. Dessa forma, a PCB deixaria de ser apenas uma placa eletrônica e passaria também a exercer função estrutural, permitindo fixar diretamente componentes mecânicos como sensores, suportes, ventoinhas e outros acessórios.
+
+O modelo do chassi foi desenvolvido pelo mecânico em formato SVG e posteriormente importado para o EasyEDA, onde iniciou-se uma nova etapa de posicionamento dos componentes eletrônicos e roteamento das trilhas. Diferente da primeira versão, esse modelo trouxe desafios significativamente maiores, principalmente devido ao espaço reduzido disponível para acomodar os componentes e realizar o roteamento adequado das conexões elétricas.
+
+Além da necessidade de encaixar corretamente todos os componentes no novo formato da placa, também foi preciso planejar cuidadosamente o trajeto das trilhas em áreas bastante limitadas, evitando interferências e mantendo a integridade elétrica do circuito. Após diversos ajustes, reorganizações e validações, foi possível concluir a versão final da PCB/chassi e verificar todas as conexões através das ferramentas de validação do próprio software, garantindo o funcionamento correto do projeto antes da fabricação.
 
 <p align="left">
   <img src="pcb/PCB_TOP.png" width="35%">
   <img src="pcb/PCB_BOTTOM.png" width="35%">
 </p>
 
-Layout da placa projetada para fabricação industrial em dupla camada.
-
 ### PCB para Fabricação em CNC (possível versão final)
+
+- 
 
 <img src="pcb/PCB_CNC_V2.png" height="400">
 
 Versão da placa adaptada para fabricação em máquina CNC.
 
-### Esquemático Eletrônico
 
-O esquemático eletrônico do circuito foi desenvolvido no EasyEDA e representa todas as conexões elétricas entre os componentes do robô, incluindo a alimentação, controle dos motores, sensores e circuito de acionamento da turbina de sucção.
-
-<img src="/electronics/img/Esquemático_PCB_V1.png" width="800">
 
 ### Evolução da PCB
 
-Durante o desenvolvimento do projeto foram realizadas diversas iterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
+Durante o desenvolvimento do projeto foram realizadas diversas alterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
 
 Como o projeto possui duas versões de placa a evolução de cada versão é apresentada separadamente.
 
-#### PCB Industrial (JLCPCB)
+### PCB Industrial (JLCPCB)
 
 <p align="left">
   <img src="pcb/PCB_TOP_V1.png" width="35%">
