@@ -79,6 +79,7 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
     if (strategy == S_CONSERVATIVE) 
     {
         lineWhite();
+        markCounter(novasMarcas);
     } 
     else if (strategy == S_RISK) 
     {
@@ -113,25 +114,18 @@ void ZeGuia:: iniciarCorrida()
 void ZeGuia:: terminarCorrida()
 {
     running = false;
-    if (strategy == S_CONSERVATIVE){
-        const uint32_t time_now = millis();
-        if (time_now - lastStopMs >= TIME_BACK_STOP){
-            controlMotors(-120, -120);
-        }
-        digitalWrite(AI1, HIGH);
-        digitalWrite(AI2, HIGH);
-        digitalWrite(BI1, HIGH);
-        digitalWrite(BI2, HIGH);
-        SerialBT.println("PARADA ATIVA ATIVADAAAAAAA");
-    } else if (strategy == S_RISK) {
-        digitalWrite(AI1, LOW);
-        digitalWrite(AI2, LOW);
-        digitalWrite(BI1, LOW);
-        digitalWrite(BI2, LOW);
-        SerialBT.println("PARADA PASSIVA ATIVADAAAAAAA");
+    
+    const uint32_t time_now = millis();
+    if (time_now - lastStopMs >= TIME_BACK_STOP){
+        controlMotors(-120, -120);
     }
-    // digitalWrite(STBY, LOW);
-    //logica terminar corrida 
+    digitalWrite(AI1, HIGH);
+    digitalWrite(AI2, HIGH);
+    digitalWrite(BI1, HIGH);
+    digitalWrite(BI2, HIGH);
+    SerialBT.println("Parada Ativa Ativada!");
+    
+      
 }
 
 void ZeGuia::enviarLeituraSensores()
@@ -214,4 +208,22 @@ void ZeGuia::lineWhite(){
 
     controlMotors(vel_m1, vel_m2);
 
+}
+
+void ZeGuia::markCounter(uint8_t n){
+    if (n != 0){
+        if (!digitalRead(RightSensor) && stateR == 0){
+            rsOn++;
+            stateR = 1;
+           SerialBT.print("Contador de marcas: "); SerialBT.println(rsOn);
+        } else if (digitalRead(RightSensor) && stateR == 1){
+            stateR = 0;
+        }
+        if (rsOn == n){
+            processarComando(RobotCommand::CMD_STOP);
+            terminarCorrida();
+      }
+    } else {
+        SerialBT.println("Oie, n = 0, então você escolhe quando parar :p");
+    }
 }
