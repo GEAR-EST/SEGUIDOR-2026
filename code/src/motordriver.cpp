@@ -3,10 +3,10 @@
 #include "pid.h"
 #include "sensors.h"
 #include "communication.h"
+#include "zeGuia.h"
 
 int VEL_MAX = 0;
-int VEL_MAX_BACK = 150;
-unsigned long past_fail = 0; 
+uint32_t past_fail = 0; 
 
 L298NX2 motors(PWMA, AI1, AI2, PWMB, BI1, BI2);
 PID pid(0, 0, 0);
@@ -39,44 +39,20 @@ void controlMotors(int speedA, int speedB){
 void lineBlack(){
     int pos = qtr.readLineBlack(sensorValues);
     int pid_value = pid.somatory(SETPOINT, pos);
-
+    /*
     if (pos == 0){
         if (fail_safe() == true){
             controlMotors(0, 0);
             digitalWrite(STBY, LOW);
         }
     }
-
-    int vel_m1 = VEL_MAX + pid_value;
-    int vel_m2 = VEL_MAX - pid_value;
-
-    vel_m1 = constrain(vel_m1, -220, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -220, VEL_MAX);
-
-    controlMotors(vel_m1, vel_m2);
-
-}
-
-void lineWhite(){
-    int pos = qtr.readLineWhite(sensorValues);
-    /*
-    if (pos == 0 || pos == 7000){
-        if (fail_safe() == true){
-            // turbina e tals
-            controlMotors(0, 0);
-            digitalWrite(STBY, LOW);
-            SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
-        }
-    }
     */
-   
-    int pid_value = pid.somatory(SETPOINT, pos);
 
-    int vel_m1 = VEL_MAX + pid_value;
-    int vel_m2 = VEL_MAX - pid_value;
+    int vel_m1 = VEL_MAX - pid_value;
+    int vel_m2 = VEL_MAX + pid_value;
 
-    vel_m1 = constrain(vel_m1, -VEL_MAX_BACK, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -VEL_MAX_BACK, VEL_MAX);
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
 
     controlMotors(vel_m1, vel_m2);
 
@@ -87,10 +63,12 @@ void pinModeMotors(){
     pinMode(AI1, OUTPUT); pinMode(AI2, OUTPUT);
     pinMode(BI1, OUTPUT); pinMode(BI2, OUTPUT);
     pinMode(STBY, OUTPUT);
+
+    digitalWrite(STBY, HIGH);
 }
 
 bool fail_safe(){
-    unsigned long current_time = millis();
+    const uint32_t current_time = millis();
     while (qtr.readLineWhite(sensorValues) == 0){
         if (current_time - past_fail >= failtime) return true;
     }
