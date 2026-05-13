@@ -11,7 +11,7 @@
     <View
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="55dp"
         android:background="#130822"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -129,7 +129,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="12dp"
+            android:padding="10dp"
             android:baselineAligned="false">
 
             <LinearLayout
@@ -160,19 +160,25 @@
 
                     <TextView
                         android:id="@+id/txtCronometro"
+
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
+
                         android:layout_weight="1"
-                        android:text="0:0.000"
+                        android:text="0:00:00"
                         android:textColor="#00FF66"
-                        android:textSize="28sp"
+                        android:textSize="24sp"
                         android:fontFamily="@font/orbitron"
                         android:textStyle="bold"
                         android:gravity="center_vertical"
                         android:autoSizeTextType="uniform"
                         android:autoSizeMinTextSize="12sp"
+                        android:maxLines="1"
+                        android:singleLine="true"
                         android:autoSizeMaxTextSize="28sp"
-                        android:autoSizeStepGranularity="1sp" />
+                        android:autoSizeStepGranularity="1sp"
+                        android:fontFeatureSettings="tnum"
+                        />
                 </LinearLayout>
 
                 <View
@@ -409,7 +415,7 @@
         android:layout_height="wrap_content"
         android:text="CONTROLES"
         android:textColor="#A09DA5"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:fontFamily="@font/orbitron"
         app:layout_constraintTop_toBottomOf="@id/mainStatusCard"
@@ -423,7 +429,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="5dp"
         android:paddingHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@id/labelControles"
         app:layout_constraintStart_toStartOf="parent"
@@ -446,7 +452,7 @@
                 app:icon="@drawable/ic_calibrar"
                 app:iconTint="#F39200"
                 app:strokeColor="#F39200"
-                app:cornerRadius="12dp"
+                app:cornerRadius="10dp"
                 android:textSize="12sp"
                 android:fontFamily="@font/orbitron" />
 
@@ -462,7 +468,7 @@
                 app:icon="@android:drawable/ic_menu_view"
                 app:iconTint="#FFEB3B"
                 app:strokeColor="#FFEB3B"
-                app:cornerRadius="12dp"
+                app:cornerRadius="10dp"
                 android:textSize="12sp"
                 android:fontFamily="@font/orbitron" />
         </LinearLayout>
@@ -480,7 +486,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="8dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -625,7 +631,7 @@
                 android:id="@+id/run"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="6dp"
                 android:text="COMEÇAR\nCORRIDA"
@@ -646,7 +652,7 @@
                 android:id="@+id/stop"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 android:layout_marginStart="6dp"
                 android:text="FINALIZAR\nCORRIDA"
@@ -687,7 +693,7 @@
             android:layout_height="wrap_content"
             android:text="TERMINAL"
             android:textColor="#A09DA5"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:fontFamily="@font/orbitron"
             android:textStyle="bold"/>
     </LinearLayout>
