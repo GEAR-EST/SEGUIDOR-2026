@@ -166,6 +166,7 @@ void ZeGuia:: iniciarCorrida()
     while (xQueueReceive(commandsQueue, &stale, 0) == pdTRUE) {}
 
     running = true;
+    rsOn = 0;
 }
 
 void ZeGuia:: terminarCorrida()
@@ -266,12 +267,15 @@ void ZeGuia::lineWhite(){
     vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
     vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
 
+    if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
+    else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
+
     controlMotors(vel_m1, vel_m2);
 
 }
 
 void ZeGuia::markCounter(uint8_t n){
-    if (n != 0){
+    if (n > 0){
         if (!digitalRead(RightSensor) && stateR == 0){
             rsOn++;
             stateR = 1;
@@ -283,7 +287,5 @@ void ZeGuia::markCounter(uint8_t n){
             SerialBT.println("Parada Ativa Ativada!");
             processarComando(RobotCommand::CMD_STOP);
       }
-    } else {
-        SerialBT.println("Oie, n = 0, então você escolhe quando parar :p");
     }
 }

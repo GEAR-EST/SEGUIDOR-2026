@@ -47,6 +47,7 @@ private:
     uint32_t lastStopMs;
     static const uint32_t SENSOR_SEND_INTERVAL_MS = 120;
     static const uint32_t TIME_BACK_STOP = 500;
+    static const uint8_t VEL_MIN = 70;
 
     uint8_t rsOn = 0;
     bool stateR = 0;

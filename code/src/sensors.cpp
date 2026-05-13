@@ -42,11 +42,10 @@ void doCalibration(){
     vTaskDelay(pdMS_TO_TICKS(50));
 
     //calibrando
-    ;
+    
     for (uint16_t i=0; i < 200; i++){
         qtr.calibrate();
     }
-    motors.stop();
 
     //para depuração, os valores máximo e mínimos na calibração
     uint16_t max_values[8];
