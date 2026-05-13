@@ -324,6 +324,18 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnExportar, false)
     }
 
+    private fun estadoCalibrando() {
+        configurarBotao(btnCalibrar, false)
+        configurarBotao(btnModeFollower, false)
+        configurarBotao(btnModeChase, false)
+        configurarBotao(btnLerSensores, false)
+        configurarBotao(btnStrategyConservative, false)
+        configurarBotao(btnStrategyRisk, false)
+        configurarBotao(btnStartRun, false)
+        configurarBotao(btnStopRun, false)
+        configurarBotao(btnExportar, false)
+    }
+
     private fun estadoPosCalibracao() {
         configurarBotao(btnCalibrar, true)
         configurarBotao(btnModeFollower, true)
@@ -525,10 +537,18 @@ class MainActivity : AppCompatActivity() {
                                     txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
                                     estadoCorrendo()
                                     iniciarCronometro()
-                                } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
-                                    txtEstadoRobo.text = "Calibrando"
-                                    txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
-                                    estadoPosCalibracao()
+                                } else if (msgMinuscula.contains("calibrado")) {
+                                    if (txtEstadoRobo.text != "Calibrado") {
+                                        txtEstadoRobo.text = "Calibrado"
+                                        txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
+                                        estadoPosCalibracao()
+                                    }
+                                } else if (msgMinuscula.contains("calibrando")) {
+                                    if (txtEstadoRobo.text != "Calibrando") {
+                                        txtEstadoRobo.text = "Calibrando"
+                                        txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
+                                        estadoCalibrando()
+                                    }
                                 } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
                                     txtEstadoRobo.text = "Parado"
                                     txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))

@@ -211,7 +211,6 @@ void SerialMonitorChecked(RobotCommand cmd)
 
         case CMD_CALIBRATE:
             Serial.println("Robo calibrando");
-            SerialBT.println("Robo calibrando");
             break;
 
         case CMD_START:
