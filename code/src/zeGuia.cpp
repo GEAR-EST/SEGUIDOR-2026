@@ -20,7 +20,7 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     if (message.hasPidTunings)
     {
         atualizarPID(message.vMax, message.kp, message.ki, message.kd,
-                     message.velEsq, message.velDir, message.novasMarcas);
+                     message.novasMarcas);
     }
 
     if (message.command != CMD_NONE)
@@ -29,14 +29,12 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     }
 }
 
-void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas)
+void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novasMarcas)
 {
-    velMax     = novaVelMax;
-    kp         = novoKp;
-    ki         = novoKi;
-    kd         = novoKd;
-    velEsq     = novoVelEsq;
-    velDir     = novoVelDir;
+    velMax            = novaVelMax;
+    kp                = novoKp;
+    ki                = novoKi;
+    kd                = novoKd;
     this->novasMarcas = novasMarcas;
     aplicarParametrosPID();
     salvarParametrosNVS();
@@ -61,12 +59,10 @@ void ZeGuia::salvarParametrosNVS()
 
     Preferences prefs;
     prefs.begin("params", false);
-    prefs.putFloat(nvsKey(mAbbr, sAbbr, "v").c_str(),   velMax);
+    prefs.putInt  (nvsKey(mAbbr, sAbbr, "v").c_str(),   (int)velMax);
     prefs.putFloat(nvsKey(mAbbr, sAbbr, "kp").c_str(),  kp);
     prefs.putFloat(nvsKey(mAbbr, sAbbr, "ki").c_str(),  ki);
     prefs.putFloat(nvsKey(mAbbr, sAbbr, "kd").c_str(),  kd);
-    prefs.putInt  (nvsKey(mAbbr, sAbbr, "ve").c_str(),  velEsq);
-    prefs.putInt  (nvsKey(mAbbr, sAbbr, "vd").c_str(),  velDir);
     prefs.putInt  (nvsKey(mAbbr, sAbbr, "mr").c_str(),  novasMarcas);
     prefs.end();
 }
@@ -82,15 +78,13 @@ void ZeGuia::enviarTodosParametros()
     prefs.begin("params", true);
     for (int i = 0; i < 4; i++)
     {
-        float v   = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "v").c_str(),  0.0f);
+        int   v   = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "v").c_str(),  0);
         float pkp = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "kp").c_str(), 0.0f);
         float pki = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "ki").c_str(), 0.0f);
         float pkd = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "kd").c_str(), 0.0f);
-        int   ve  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "ve").c_str(), 0);
-        int   vd  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "vd").c_str(), 0);
         int   mr  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "mr").c_str(), 0);
-        SerialBT.printf("PARAMS:%s|%s|%.2f|%.2f|%.2f|%.2f|%d|%d|%d\n",
-            mNomes[i], sNomes[i], v, pkp, pki, pkd, ve, vd, mr);
+        SerialBT.printf("PARAMS:%s|%s|%d|%.2f|%.2f|%.2f|%d\n",
+            mNomes[i], sNomes[i], v, pkp, pki, pkd, mr);
     }
     prefs.end();
 }
@@ -142,11 +136,11 @@ void ZeGuia::loopPerseguidor()
 {
     if (strategy == S_CONSERVATIVE) 
     { 
-        controlMotors(velEsq, velDir);
+        controlMotors((int)velMax, (int)velMax);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(velEsq, velDir);
+        controlMotors((int)velMax, (int)velMax);
     }
 }
 void ZeGuia::calibrarRobo()

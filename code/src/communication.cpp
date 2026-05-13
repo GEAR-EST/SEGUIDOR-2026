@@ -30,36 +30,25 @@ void CommunicationTask(void* pvParameters)
                 Serial.print("Linha recebida: ");
                 Serial.println(inputLine);
 
-                RobotMessage message = {CMD_NONE, false, 0.0f, 0.0f, 0.0f, 0.0f, 0, 0, 0};
+                RobotMessage message = {CMD_NONE, false, 0.0f, 0.0f, 0.0f, 0.0f, 0};
 
                 if (inputLine.startsWith("PID:"))
                 {
-                    // Formato: PID:V|Kp|Ki|Kd|VelEsq|VelDir|NovasMarcas
+                    // Formato: PID:V|Kp|Ki|Kd|NovasMarcas
                     String payload = inputLine.substring(4);
                     int sep1 = payload.indexOf('|');
                     int sep2 = payload.indexOf('|', sep1 + 1);
                     int sep3 = payload.indexOf('|', sep2 + 1);
                     int sep4 = payload.indexOf('|', sep3 + 1);
-                    int sep5 = payload.indexOf('|', sep4 + 1);
-                    int sep6 = payload.indexOf('|', sep5 + 1);
 
-                    if (sep1 > 0 && sep2 > 0 && sep3 > 0)
+                    if (sep1 > 0 && sep2 > 0 && sep3 > 0 && sep4 > 0)
                     {
                         message.hasPidTunings = true;
-                        message.vMax = payload.substring(0, sep1).toFloat();
-                        message.kp = payload.substring(sep1 + 1, sep2).toFloat();
-                        message.ki = payload.substring(sep2 + 1, sep3).toFloat();
-                        if (sep4 > sep3 && sep5 > sep4 && sep6 > sep5)
-                        {
-                            message.kd          = payload.substring(sep3 + 1, sep4).toFloat();
-                            message.velEsq      = payload.substring(sep4 + 1, sep5).toInt();
-                            message.velDir      = payload.substring(sep5 + 1, sep6).toInt();
-                            message.novasMarcas = payload.substring(sep6 + 1).toInt();
-                        }
-                        else
-                        {
-                            message.kd = payload.substring(sep3 + 1).toFloat();
-                        }
+                        message.vMax        = payload.substring(0, sep1).toFloat();
+                        message.kp          = payload.substring(sep1 + 1, sep2).toFloat();
+                        message.ki          = payload.substring(sep2 + 1, sep3).toFloat();
+                        message.kd          = payload.substring(sep3 + 1, sep4).toFloat();
+                        message.novasMarcas = payload.substring(sep4 + 1).toInt();
                     }
                 }
                 else if (inputLine.length() == 1)
@@ -123,7 +112,7 @@ void CommunicationTask(void* pvParameters)
                             break;
                         case 'Q':
                             message.command = CMD_GET_PARAMS;
-                            SerialMonitorChecked(message.command);
+                    
                             break;
                         default:
                             break;
@@ -132,12 +121,12 @@ void CommunicationTask(void* pvParameters)
 
                 if (message.hasPidTunings)
                 {
-                    Serial.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f VelEsq=%d VelDir=%d Marcas=%d\n",
+                    Serial.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f Marcas=%d\n",
                         message.vMax, message.kp, message.ki, message.kd,
-                        message.velEsq, message.velDir, message.novasMarcas);
-                    SerialBT.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f VelEsq=%d VelDir=%d Marcas=%d\n",
+                        message.novasMarcas);
+                    SerialBT.printf("Controle recebido: V=%.2f Kp=%.2f Ki=%.2f Kd=%.2f Marcas=%d\n",
                         message.vMax, message.kp, message.ki, message.kd,
-                        message.velEsq, message.velDir, message.novasMarcas);
+                        message.novasMarcas);
                 }
 
                 if (message.command != CMD_NONE || message.hasPidTunings)
@@ -164,7 +153,7 @@ void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
     if (event == ESP_SPP_SRV_OPEN_EVT) {
         Serial.println(">>> Celular CONECTADO!");
         SerialBT.println("Conexão Estabelecida com Zé-Guia");
-        RobotMessage getParams = {CMD_GET_PARAMS, false, 0.0f, 0.0f, 0.0f, 0.0f, 0, 0, 0};
+        RobotMessage getParams = {CMD_GET_PARAMS, false, 0.0f, 0.0f, 0.0f, 0.0f, 0};
         xQueueSend(commandsQueue, &getParams, 0);
     }
 
