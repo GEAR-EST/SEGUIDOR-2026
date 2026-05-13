@@ -54,11 +54,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:minLines="3"
+            android:lines="4"
+            android:ellipsize="end"
             android:textColor="#00FF66"
             android:textSize="18sp"
             android:lineSpacingExtra="6dp"
-            android:fontFamily="monospace" />
+            android:fontFamily="monospace"
+            android:fontFeatureSettings="tnum" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

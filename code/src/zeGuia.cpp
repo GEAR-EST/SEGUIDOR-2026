@@ -7,6 +7,8 @@
 #include "sensors.h"
 #include <Arduino.h>
 
+extern QueueHandle_t commandsQueue;
+
 void ZeGuia::setup() 
 {
     _setup();
@@ -100,14 +102,20 @@ void ZeGuia::loopPerseguidor()
 }
 void ZeGuia::calibrarRobo()
 {
-    SerialBT.println("Calibrando");
     doCalibration();
-    SerialBT.println("Robo calibrado");
+    SerialBT.println("Estado: Calibrado");
 }
 
 void ZeGuia:: iniciarCorrida()
 {
-    //logica iniciar corrida
+    // Reseta contadores de marcas para nova corrida
+    rsOn   = 0;
+    stateR = 0;
+
+    // Descarta mensagens antigas que possam estar acumuladas na fila
+    RobotMessage stale;
+    while (xQueueReceive(commandsQueue, &stale, 0) == pdTRUE) {}
+
     running = true;
     rsOn = 0;
 }
@@ -124,7 +132,7 @@ void ZeGuia:: terminarCorrida()
     digitalWrite(AI2, HIGH);
     digitalWrite(BI1, HIGH);
     digitalWrite(BI2, HIGH);
-    SerialBT.println("Parada Ativa Ativada!");
+    SerialBT.println("Estado: Parado");
     
       
 }
@@ -224,8 +232,8 @@ void ZeGuia::markCounter(uint8_t n){
             stateR = 0;
         }
         if (rsOn == n){
+            SerialBT.println("Parada Ativa Ativada!");
             processarComando(RobotCommand::CMD_STOP);
-            terminarCorrida();
       }
     }
 }

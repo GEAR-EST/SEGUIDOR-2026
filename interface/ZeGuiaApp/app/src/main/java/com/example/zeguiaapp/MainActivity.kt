@@ -64,10 +64,13 @@ class MainActivity : AppCompatActivity() {
     private var modoSelecionado = false
     private lateinit var btAdapter: BluetoothAdapter
     private var btSocket: BluetoothSocket? = null
-    private val address: String = "CC:DB:A7:62:8D:96"
+    private val address: String = "88:57:21:7A:C6:1E"
     private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
     private lateinit var sharedPreferences: SharedPreferences
+    // Modo e estrategia selecionados para namespacing dos parametros
+    private var modoAtual: String = ""
+    private var estrategiaAtual: String = ""
 
     // Cronometro sincronizado pela mensagem do robo
     private val cronometroHandler = Handler(Looper.getMainLooper())
@@ -90,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             val minutos = (decorrido / 1000) / 60
             val segundos = (decorrido / 1000) % 60
             val centesimos = (decorrido % 1000) / 10
-            txtCronometro.text = String.format(Locale.US, "%02d:%02d:%02d", minutos, segundos, centesimos)
+            txtCronometro.text = String.format(Locale.US, "%2d:%02d:%02d", minutos, segundos, centesimos)
             cronometroHandler.postDelayed(this, 50)
         }
     }
@@ -128,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         txtParamKp.text     = sharedPreferences.getString("paramKp", "0.0")
         txtParamKi.text     = sharedPreferences.getString("paramKi", "0.0")
         txtParamKd.text     = sharedPreferences.getString("paramKd", "0.0")
-        txtCronometro.text  = "00:00:00"
+        txtCronometro.text  = "0:00:00"
 
         btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
         btnCalibrar = findViewById(R.id.calibrate)
@@ -176,15 +179,68 @@ class MainActivity : AppCompatActivity() {
             abrirModalSensores()
             //simularLeituraSensores()
         }
-        btnModeFollower.setOnClickListener { enviarComando("S") }
-        btnModeChase.setOnClickListener { enviarComando("P") }
-        btnStrategyConservative.setOnClickListener { enviarComando("C") }
-        btnStrategyRisk.setOnClickListener { enviarComando("A") }
+        btnModeFollower.setOnClickListener {
+            modoAtual = "seguidor"
+            estrategiaAtual = ""
+            enviarComando("S")
+        }
+        btnModeChase.setOnClickListener {
+            modoAtual = "perseguidor"
+            estrategiaAtual = ""
+            enviarComando("P")
+        }
+        btnStrategyConservative.setOnClickListener {
+            estrategiaAtual = "conservador"
+            carregarParametros()
+            enviarComando("C")
+        }
+        btnStrategyRisk.setOnClickListener {
+            estrategiaAtual = "arriscado"
+            carregarParametros()
+            enviarComando("A")
+        }
         btnStartRun.setOnClickListener { enviarComando("R") }
         btnStopRun.setOnClickListener { enviarComando("F") }
 
         btnAbrirEdicao.setOnClickListener { mostrarDialogEdicao() }
     }
+
+    // Retorna o prefixo de chave para o modo+estrategia atual, ex: "seguidor_conservador_"
+    // Retorna o prefixo de chave para o modo+estrategia atual, ex: "seguidor_conservador_"
+    private fun prefKey(): String {
+        return if (modoAtual.isNotEmpty() && estrategiaAtual.isNotEmpty()) {
+            "${modoAtual}_${estrategiaAtual}_"
+        } else {
+            ""
+        }
+    }
+
+    private fun atualizarDisplayParametros() {
+        val prefix = prefKey()
+        txtParamKp.text = sharedPreferences.getString("${prefix}paramKp", "0.0") ?: "0.0"
+        txtParamKi.text = sharedPreferences.getString("${prefix}paramKi", "0.0") ?: "0.0"
+        txtParamKd.text = sharedPreferences.getString("${prefix}paramKd", "0.0") ?: "0.0"
+    }
+
+    // Carrega os parametros do modo+estrategia atual, atualiza a tela e envia para o ESP32
+    private fun carregarParametros() {
+        val prefix = prefKey()
+        val kp     = sharedPreferences.getString("${prefix}paramKp", "0.0") ?: "0.0"
+        val ki     = sharedPreferences.getString("${prefix}paramKi", "0.0") ?: "0.0"
+        val kd     = sharedPreferences.getString("${prefix}paramKd", "0.0") ?: "0.0"
+        val v      = sharedPreferences.getString("${prefix}paramV", "0.0") ?: "0.0"
+        val velEsq = sharedPreferences.getString("${prefix}paramVelEsq", "0") ?: "0"
+        val velDir = sharedPreferences.getString("${prefix}paramVelDir", "0") ?: "0"
+        val marcas = sharedPreferences.getString("${prefix}paramMarcas", "0") ?: "0"
+
+        txtParamKp.text = kp
+        txtParamKi.text = ki
+        txtParamKd.text = kd
+
+        // Envia os parametros salvos desta estrategia direto para o ESP32
+        enviarComando("PID:$v|$kp|$ki|$kd|$velEsq|$velDir|$marcas")
+    }
+
 
     private fun mostrarDialogEdicao() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.editar_parametros, null)
@@ -202,13 +258,14 @@ class MainActivity : AppCompatActivity() {
         val editKd     = dialogView.findViewById<EditText>(R.id.editKd)
         val editMarcas = dialogView.findViewById<EditText>(R.id.editMarcas)
 
-        editV.setText(sharedPreferences.getString("paramV", "0.0"))
-        editVelEsq.setText(sharedPreferences.getString("paramVelEsq", "0"))
-        editVelDir.setText(sharedPreferences.getString("paramVelDir", "0"))
-        editKp.setText(txtParamKp.text.toString())
-        editKi.setText(txtParamKi.text.toString())
-        editKd.setText(txtParamKd.text.toString())
-        editMarcas.setText(sharedPreferences.getString("paramMarcas", "0"))
+        val prefix = prefKey()
+        editV.setText(sharedPreferences.getString("${prefix}paramV", "0.0"))
+        editVelEsq.setText(sharedPreferences.getString("${prefix}paramVelEsq", "0"))
+        editVelDir.setText(sharedPreferences.getString("${prefix}paramVelDir", "0"))
+        editKp.setText(sharedPreferences.getString("${prefix}paramKp", "0.0"))
+        editKi.setText(sharedPreferences.getString("${prefix}paramKi", "0.0"))
+        editKd.setText(sharedPreferences.getString("${prefix}paramKd", "0.0"))
+        editMarcas.setText(sharedPreferences.getString("${prefix}paramMarcas", "0"))
 
         // Stepper para floats (passo 0.1)
         fun configurarStepper(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
@@ -261,13 +318,13 @@ class MainActivity : AppCompatActivity() {
 
 
             sharedPreferences.edit().apply {
-                putString("paramV",      novoV)
-                putString("paramVelEsq", novoVelEsq)
-                putString("paramVelDir", novoVelDir)
-                putString("paramKp",     novoKp)
-                putString("paramKi",     novoKi)
-                putString("paramKd",     novoKd)
-                putString("paramMarcas", novoMarcas)
+                putString("${prefix}paramV",      novoV)
+                putString("${prefix}paramVelEsq", novoVelEsq)
+                putString("${prefix}paramVelDir", novoVelDir)
+                putString("${prefix}paramKp",     novoKp)
+                putString("${prefix}paramKi",     novoKi)
+                putString("${prefix}paramKd",     novoKd)
+                putString("${prefix}paramMarcas", novoMarcas)
                 apply()
             }
 
@@ -291,7 +348,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun resetarCronometro() {
         pararCronometro()
-        txtCronometro.text = "00:00:00"
+        txtCronometro.text = "0:00:00"
     }
 
     private fun configurarBotao(botao: Button, habilitado: Boolean) {
@@ -317,6 +374,18 @@ class MainActivity : AppCompatActivity() {
         configurarBotao(btnModeFollower, true)
         configurarBotao(btnModeChase, true)
         configurarBotao(btnLerSensores, true)
+        configurarBotao(btnStrategyConservative, false)
+        configurarBotao(btnStrategyRisk, false)
+        configurarBotao(btnStartRun, false)
+        configurarBotao(btnStopRun, false)
+        configurarBotao(btnExportar, false)
+    }
+
+    private fun estadoCalibrando() {
+        configurarBotao(btnCalibrar, false)
+        configurarBotao(btnModeFollower, false)
+        configurarBotao(btnModeChase, false)
+        configurarBotao(btnLerSensores, false)
         configurarBotao(btnStrategyConservative, false)
         configurarBotao(btnStrategyRisk, false)
         configurarBotao(btnStartRun, false)
@@ -437,6 +506,8 @@ class MainActivity : AppCompatActivity() {
             continuarEscutando = false
             btSocket?.close()
             btSocket = null
+            modoAtual = ""
+            estrategiaAtual = ""
             runOnUiThread {
                 Toast.makeText(this, "Desconectado", Toast.LENGTH_SHORT).show()
                 estadoDesconectado()
@@ -471,99 +542,75 @@ class MainActivity : AppCompatActivity() {
 
                     runOnUiThread {
                         val msgLimpa  = mensagem.trim()
+
+                        if (!msgLimpa.startsWith("BAT") && !msgLimpa.startsWith("S,")) {
+                            txtSerial.append("$mensagem\n")
+                            val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
+                            scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
+                        }
+
                         when {
                             msgLimpa.startsWith("BAT") -> {
                                 val valor = msgLimpa.removePrefix("BAT").trim()
                                 val percentual = valor.toIntOrNull()
-
                                 if (percentual != null) {
                                     txtBatteryPercent.text = "$percentual%"
-
                                     val corAtiva = when {
-                                        percentual > 50 -> Color.parseColor("#00E5FF") // Azul
-                                        percentual > 20 -> Color.parseColor("#FFAA00") // Laranja
-                                        else -> Color.parseColor("#FF2A55") // Vermelho
+                                        percentual > 50 -> Color.parseColor("#00E5FF")
+                                        percentual > 20 -> Color.parseColor("#FFAA00")
+                                        else            -> Color.parseColor("#FF2A55")
                                     }
-
                                     val corInativa = Color.parseColor("#2E1A47")
-
-
                                     txtBatteryPercent.setTextColor(corAtiva)
-
                                     val barrasAcesas = Math.ceil((percentual / 100.0) * 6).toInt()
-
-
                                     val layoutBarras = findViewById<LinearLayout>(R.id.layoutBarrasBateria)
-
                                     for (i in 0 until 6) {
-                                        val barra = layoutBarras.getChildAt(i)
-                                        if (i < barrasAcesas) {
-
-                                            barra.setBackgroundColor(corAtiva)
-                                        } else {
-
-                                            barra.setBackgroundColor(corInativa)
-                                        }
+                                        layoutBarras.getChildAt(i).setBackgroundColor(
+                                            if (i < barrasAcesas) corAtiva else corInativa
+                                        )
                                     }
                                 }
                             }
 
-                            mensagem.trim().startsWith("S,")-> {
-                                // Sensores: atualiza SOMENTE o modal
+                            msgLimpa.startsWith("S,") -> {
                                 txtSensoresModal?.text = formatarSensoresBonito(mensagem)
                             }
 
-                            else -> {
-                                txtSerial.append("$mensagem\n")
-                                val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
-                                scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
-
-                                val msgMinuscula = mensagem.lowercase()
-
-                                if (msgMinuscula.contains("comecando") || msgMinuscula.contains("correndo")) {
-                                    txtEstadoRobo.text = "Correndo"
-                                    txtEstadoRobo.setTextColor(Color.parseColor("#00FF66"))
-                                    estadoCorrendo()
-                                    iniciarCronometro()
-                                } else if (msgMinuscula.contains("calibrando") || msgMinuscula.contains("calibrado")) {
-                                    txtEstadoRobo.text = "Calibrando"
-                                    txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00"))
-                                    estadoPosCalibracao()
-                                } else if (msgMinuscula.contains("finalizou") || msgMinuscula.contains("parado")) {
-                                    txtEstadoRobo.text = "Parado"
-                                    txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55"))
-                                    estadoFinalizado()
-                                    pararCronometro()
-                                }
-
-                                if (msgMinuscula.contains("perseguidor")) {
-                                    txtModoRobo.text = "Perseguidor"
-                                    txtModoRobo.setTextColor(Color.parseColor("#FF007F"))
-                                    txtEstrategiaRobo.text = "Aguardando..."
-                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                    modoSelecionado = true
-                                    estadoPosModo()
-                                } else if (msgMinuscula.contains("seguidor")) {
-                                    txtModoRobo.text = "Seguidor"
-                                    txtModoRobo.setTextColor(Color.parseColor("#00FFFF"))
-                                    txtEstrategiaRobo.text = "Aguardando..."
-                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                    modoSelecionado = true
-                                    estadoPosModo()
-                                }
-
-                                if (msgMinuscula.contains("arriscado") || msgMinuscula.contains("kamikaze")) {
-                                    txtEstrategiaRobo.text = "Arriscado"
-                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#FF8800"))
-                                    estadoPosEstrategia()
-                                } else if (msgMinuscula.contains("conservador")) {
-                                    txtEstrategiaRobo.text = "Conservador"
-                                    txtEstrategiaRobo.setTextColor(Color.parseColor("#3399FF"))
-                                    estadoPosEstrategia()
+                            msgLimpa.startsWith("Estado: ") -> {
+                                val valor = msgLimpa.removePrefix("Estado: ")
+                                txtEstadoRobo.text = valor
+                                when (valor) {
+                                    "Correndo"   -> { txtEstadoRobo.setTextColor(Color.parseColor("#00FF66")); estadoCorrendo(); iniciarCronometro() }
+                                    "Parado"     -> { txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55")); estadoFinalizado(); pararCronometro() }
+                                    "Calibrando" -> { txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00")); estadoCalibrando() }
+                                    "Calibrado"  -> { txtEstadoRobo.setTextColor(Color.parseColor("#9d00ff")); estadoPosCalibracao() }
                                 }
                             }
+
+                            msgLimpa.startsWith("Modo: ") -> {
+                                val valor = msgLimpa.removePrefix("Modo: ")
+                                modoAtual = valor.lowercase()
+                                txtModoRobo.text = valor
+                                txtModoRobo.setTextColor(if (valor == "Seguidor") Color.parseColor("#00FFFF") else Color.parseColor("#FF007F"))
+                                txtEstrategiaRobo.text = "Aguardando..."
+                                txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
+                                estrategiaAtual = ""
+                                modoSelecionado = true
+                                estadoPosModo()
+                            }
+
+                            msgLimpa.startsWith("Estrategia: ") -> {
+                                val valor = msgLimpa.removePrefix("Estrategia: ")
+                                estrategiaAtual = valor.lowercase()
+                                txtEstrategiaRobo.text = valor
+                                txtEstrategiaRobo.setTextColor(if (valor == "Conservador") Color.parseColor("#3399FF") else Color.parseColor("#FF8800"))
+                                atualizarDisplayParametros()
+                                estadoPosEstrategia()
+                            }
                         }
-                    }
+
+                        }
+
                 } catch (e: IOException) {
                     break
                 }
@@ -572,15 +619,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun formatarSensoresBonito(mensagem: String): String {
-        val p = mensagem.trim().split(",").map { it.trim() }
-        if (p.size < 10 || p[0] != "S") return "Aguardando sensores..."
 
-        val pos = p.getOrNull(1) ?: "-"
-        val frontais = (2..9).map { idx -> p.getOrNull(idx) ?: "-" }.joinToString(" | ")
-        val direito = p.getOrNull(10) ?: "-"
-        val esquerdo = p.getOrNull(11) ?: "-"
+            val p = mensagem.trim().split(",").map { it.trim() }
+            if (p.size < 10 || p[0] != "S") return "Aguardando sensores..."
 
-        return "POS: $pos\n$frontais\nDIR: $direito | ESQ: $esquerdo"
+            val pos = p.getOrNull(1) ?: "-"
+
+            // Função interna para garantir que todo número ocupe sempre o exato mesmo espaço visual (4 caracteres)
+            fun pad(valor: String?): String {
+                return (valor ?: "-").padStart(4, ' ')
+            }
+
+            // Pega os índices de 2 a 5 para a primeira linha
+            val linha1 = "${pad(p.getOrNull(2))} | ${pad(p.getOrNull(3))} | ${pad(p.getOrNull(4))} | ${pad(p.getOrNull(5))}"
+
+            // Pega os índices de 6 a 9 para a segunda linha
+            val linha2 = "${pad(p.getOrNull(6))} | ${pad(p.getOrNull(7))} | ${pad(p.getOrNull(8))} | ${pad(p.getOrNull(9))}"
+
+            val direito = pad(p.getOrNull(10))
+            val esquerdo = pad(p.getOrNull(11))
+
+            // Retorna exatamente no formato de 4 linhas que você pediu
+            return "POS: $pos\n$linha1\n$linha2\nDIR: $direito | ESQ: $esquerdo"
+
     }
 
 
@@ -663,23 +724,38 @@ class MainActivity : AppCompatActivity() {
         val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
         val dataHora = dateFormat.format(java.util.Date())
 
-        // Pegar informações da tela e memória
-        val tempo = txtCronometro.text.toString()
+        val txtTempo = txtCronometro.text.toString() // Pega o que está no visor, ex: "01:59:00"
+        val partesTempo = txtTempo.split(":")
+
+        val tempoFormatadoParaExportar = if (partesTempo.size == 3) {
+            val min = partesTempo[0].filter { it.isDigit() }.toIntOrNull() ?: 0
+            val seg = partesTempo[1].filter { it.isDigit() }.toIntOrNull() ?: 0
+            val cent = partesTempo[2].filter { it.isDigit() }.toIntOrNull() ?: 0
+
+            // Cálculo dos segundos totais
+            val totalSegundos = (min * 60.0) + seg + (cent / 100.0)
+
+            // Resultado: "01:59:00 (119.00s)"
+            val segundosFormatados = String.format(Locale.US, "%.2fs", totalSegundos)
+            "$txtTempo ($segundosFormatados)"
+        } else {
+            txtTempo // Caso o cronômetro não esteja no formato esperado
+        }
         val modo = txtModoRobo.text.toString()
         val estrategia = txtEstrategiaRobo.text.toString()
         val kp = txtParamKp.text.toString()
         val ki = txtParamKi.text.toString()
         val kd = txtParamKd.text.toString()
-        val velMax = sharedPreferences.getString("paramV", "0.0")
-        val velEsq = sharedPreferences.getString("paramVelEsq", "0")
-        val velDir = sharedPreferences.getString("paramVelDir", "0")
-        val marcas = sharedPreferences.getString("paramMarcas", "0")
+        val exportPrefix = prefKey()
+        val velMax = sharedPreferences.getString("${exportPrefix}paramV", "0.0")
+        val marcas = sharedPreferences.getString("${exportPrefix}paramMarcas", "0")
+
 
         // Montar a String formatada apenas visual (sem o status, pois ele será escolhido)
         val resumoVisual = """
         [FEEDBACK DE CORRIDA - ZÉ-GUIA]
         Data/Hora: $dataHora
-        Tempo Final: $tempo
+        Tempo Final: $tempoFormatadoParaExportar
         
         > Configurações:
         Modo: $modo
@@ -688,7 +764,6 @@ class MainActivity : AppCompatActivity() {
         
         > Parâmetros PID:
         Vel. Máx: $velMax
-        Vel. Esq: $velEsq | Vel. Dir: $velDir
         Kp: $kp | Ki: $ki | Kd: $kd
     """.trimIndent()
 
@@ -702,7 +777,7 @@ class MainActivity : AppCompatActivity() {
             [FEEDBACK DE CORRIDA - ZÉ-GUIA]
             Data/Hora: $dataHora
             Status: $statusCorridaSelecionado
-            Tempo Final: $tempo
+            Tempo Final: $tempoFormatadoParaExportar
             
             > Configurações:
             Modo: $modo
@@ -711,7 +786,6 @@ class MainActivity : AppCompatActivity() {
             
             > Parâmetros PID:
             Vel. Máx: $velMax
-            Vel. Esq: $velEsq | Vel. Dir: $velDir
             Kp: $kp | Ki: $ki | Kd: $kd
         """.trimIndent()
 

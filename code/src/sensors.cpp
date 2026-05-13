@@ -41,7 +41,6 @@ void doCalibration(){
     digitalWrite(LED_BUILTIN, HIGH);
     vTaskDelay(pdMS_TO_TICKS(50));
 
-    SerialBT.println("Calibrando");
     //calibrando
     
     for (uint16_t i=0; i < 200; i++){
