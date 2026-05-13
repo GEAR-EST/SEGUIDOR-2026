@@ -95,20 +95,14 @@ void CommunicationTask(void* pvParameters)
                             SerialMonitorChecked(message.command);
                             break;
                         case 'L':
-                            if (!sensorStreamRequested)
-                            {
-                                message.command = CMD_SENSOR_STREAM_ON;
-                                sensorStreamRequested = true;
-                                SerialMonitorChecked(message.command);
-                            }
+                            message.command = CMD_SENSOR_STREAM_ON;
+                            sensorStreamRequested = true;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'l':
-                            if (sensorStreamRequested)
-                            {
-                                message.command = CMD_SENSOR_STREAM_OFF;
-                                sensorStreamRequested = false;
-                                SerialMonitorChecked(message.command);
-                            }
+                            message.command = CMD_SENSOR_STREAM_OFF;
+                            sensorStreamRequested = false;
+                            SerialMonitorChecked(message.command);
                             break;
                         case 'Q':
                             message.command = CMD_GET_PARAMS;
@@ -153,12 +147,18 @@ void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
     if (event == ESP_SPP_SRV_OPEN_EVT) {
         Serial.println(">>> Celular CONECTADO!");
         SerialBT.println("Conexão Estabelecida com Zé-Guia");
+        // Garante que sensorStreaming seja resetado a cada reconexão
+        RobotMessage stopStream = {CMD_SENSOR_STREAM_OFF, false, 0.0f, 0.0f, 0.0f, 0.0f, 0};
+        xQueueSend(commandsQueue, &stopStream, 0);
         RobotMessage getParams = {CMD_GET_PARAMS, false, 0.0f, 0.0f, 0.0f, 0.0f, 0};
         xQueueSend(commandsQueue, &getParams, 0);
     }
 
     if (event == ESP_SPP_CLOSE_EVT) {
         Serial.println(">>> Celular DESCONECTADO!");
+        // Garante que o próximo "L" funcione ao reconectar
+        RobotMessage stopStream = {CMD_SENSOR_STREAM_OFF, false, 0.0f, 0.0f, 0.0f, 0.0f, 0};
+        xQueueSend(commandsQueue, &stopStream, 0);
     }
 }
 
