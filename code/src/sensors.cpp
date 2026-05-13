@@ -38,7 +38,6 @@ void side_sensors_print(){
 
 void doCalibration(){
 
-    digitalWrite(LED_BUILTIN, HIGH);
     vTaskDelay(pdMS_TO_TICKS(50));
 
     //calibrando
