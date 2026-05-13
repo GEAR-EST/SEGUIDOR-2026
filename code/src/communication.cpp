@@ -121,6 +121,10 @@ void CommunicationTask(void* pvParameters)
                                 SerialMonitorChecked(message.command);
                             }
                             break;
+                        case 'Q':
+                            message.command = CMD_GET_PARAMS;
+                            SerialMonitorChecked(message.command);
+                            break;
                         default:
                             break;
                     }
@@ -160,6 +164,8 @@ void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
     if (event == ESP_SPP_SRV_OPEN_EVT) {
         Serial.println(">>> Celular CONECTADO!");
         SerialBT.println("Conexão Estabelecida com Zé-Guia");
+        RobotMessage getParams = {CMD_GET_PARAMS, false, 0.0f, 0.0f, 0.0f, 0.0f, 0, 0, 0};
+        xQueueSend(commandsQueue, &getParams, 0);
     }
 
     if (event == ESP_SPP_CLOSE_EVT) {

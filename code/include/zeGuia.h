@@ -59,6 +59,8 @@ private:
     void terminarCorrida(); 
     void atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas);
     void aplicarParametrosPID();
+    void salvarParametrosNVS();
+    void enviarTodosParametros();
     void loopSeguidor();
     void loopPerseguidor();
     void enviarLeituraSensores();
