@@ -7,6 +7,8 @@
 #include "sensors.h"
 #include <Arduino.h>
 
+extern QueueHandle_t commandsQueue;
+
 void ZeGuia::setup() 
 {
     _setup();
@@ -79,10 +81,11 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
     if (strategy == S_CONSERVATIVE) 
     {
         lineWhite();
+        markCounter(novasMarcas);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(velEsq, velDir);
+        lineWhite();
     }
 }
 
@@ -99,24 +102,38 @@ void ZeGuia::loopPerseguidor()
 }
 void ZeGuia::calibrarRobo()
 {
-    SerialBT.println("Calibrando");
     doCalibration();
-    SerialBT.println("Robo calibrado");
+    SerialBT.println("Estado: Calibrado");
 }
 
 void ZeGuia:: iniciarCorrida()
 {
-    //logica iniciar corrida
+    // Reseta contadores de marcas para nova corrida
+    rsOn   = 0;
+    stateR = 0;
+
+    // Descarta mensagens antigas que possam estar acumuladas na fila
+    RobotMessage stale;
+    while (xQueueReceive(commandsQueue, &stale, 0) == pdTRUE) {}
+
     running = true;
-    digitalWrite(STBY, HIGH);
 }
 
 void ZeGuia:: terminarCorrida()
 {
     running = false;
-    controlMotors(0, 0);
-    digitalWrite(STBY, LOW);
-    //logica terminar corrida 
+    
+    const uint32_t time_now = millis();
+    if (time_now - lastStopMs >= TIME_BACK_STOP){
+        controlMotors(-120, -120);
+    }
+    digitalWrite(AI1, HIGH);
+    digitalWrite(AI2, HIGH);
+    digitalWrite(BI1, HIGH);
+    digitalWrite(BI2, HIGH);
+    SerialBT.println("Estado: Parado");
+    
+      
 }
 
 void ZeGuia::enviarLeituraSensores()
@@ -176,4 +193,45 @@ void ZeGuia::processarComando(RobotCommand cmd)
     default:
         break;
     }   
+}
+
+void ZeGuia::lineWhite(){
+    int pos = qtr.readLineWhite(sensorValues);
+    /*
+    if (pos == 0 || pos == 7000){
+        if (fail_safe() == true){
+            terminarCorrida();
+            SerialBT.println("FAIL SAFE FOI ATIVADO!!!!!");
+        }
+    }
+    */
+   
+    int pid_value = pid.somatory(SETPOINT, pos);
+
+    int vel_m1 = VEL_MAX - pid_value;
+    int vel_m2 = VEL_MAX + pid_value;
+
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
+
+    controlMotors(vel_m1, vel_m2);
+
+}
+
+void ZeGuia::markCounter(uint8_t n){
+    if (n != 0){
+        if (!digitalRead(RightSensor) && stateR == 0){
+            rsOn++;
+            stateR = 1;
+           SerialBT.print("Contador de marcas: "); SerialBT.println(rsOn);
+        } else if (digitalRead(RightSensor) && stateR == 1){
+            stateR = 0;
+        }
+        if (rsOn == n){
+            SerialBT.println("Parada Ativa Ativada!");
+            processarComando(RobotCommand::CMD_STOP);
+      }
+    } else {
+        SerialBT.println("Oie, n = 0, então você escolhe quando parar :p");
+    }
 }

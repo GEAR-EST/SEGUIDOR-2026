@@ -211,37 +211,36 @@ void SerialMonitorChecked(RobotCommand cmd)
 
         case CMD_CALIBRATE:
             Serial.println("Robo calibrando");
-            SerialBT.println("Robo calibrando");
+            SerialBT.println("Estado: Calibrando");
             break;
 
         case CMD_START:
             Serial.println("Robo comecando a corrida");
-            SerialBT.println("Robo comecando a corrida");
+            SerialBT.println("Estado: Correndo");
             break;
 
         case CMD_STOP:
             Serial.println("Robo finalizou a corrida");
-            SerialBT.println("Robo finalizou a corrida");
             break;
 
         case CMD_MODE_FOLLOWER:
             Serial.println("Modo selecionado: SEGUIDOR");
-            SerialBT.println("Modo selecionado: SEGUIDOR");
+            SerialBT.println("Modo: Seguidor");
             break;
 
         case CMD_MODE_CHASE:
             Serial.println("Modo selecionado: PERSEGUIDOR");
-            SerialBT.println("Modo selecionado: PERSEGUIDOR");
+            SerialBT.println("Modo: Perseguidor");
             break;
 
         case CMD_STRATEGY_CONSERVATIVE:
             Serial.println("Estrategia selecionada: CONSERVADOR");
-            SerialBT.println("Estrategia selecionada: CONSERVADOR");
+            SerialBT.println("Estrategia: Conservador");
             break;
 
         case CMD_STRATEGY_RISK:
             Serial.println("Estrategia selecionada: ARRISCADO");
-            SerialBT.println("Estrategia selecionada: ARRISCADO");
+            SerialBT.println("Estrategia: Arriscado");
             break;
 
 

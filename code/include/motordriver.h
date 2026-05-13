@@ -23,15 +23,13 @@
 
 // fail safe
 
-const unsigned long failtime = 500;
-extern unsigned long past_fail;
+const uint32_t failtime = 500;
+extern uint32_t past_fail;
 
 extern int VEL_MAX;
-extern int VEL_MAX_BACK; 
 extern L298NX2 motors;
 
 void lineBlack();
-void lineWhite();
 
 void controlMotors(int speedA, int speedB);
 

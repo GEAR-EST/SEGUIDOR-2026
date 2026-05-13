@@ -27,24 +27,6 @@ void setup_side_sensors(){
     pinMode(LeftSensor, INPUT);
 }
 
-void qtr_print(){
-    unsigned long current_time = millis();
-    if (current_time - past_time >= qtr_interval){
-        past_time = current_time;
-        uint16_t position = qtr.readLineWhite(sensorValues);
-
-        //Sensor frontal
-        SerialBT.print("Frontal: ");
-        for (uint8_t i = 0; i < SensorCount; i++) {
-            SerialBT.print(sensorValues[i]);
-            SerialBT.print('\t');
-        }
-        SerialBT.println();
-        SerialBT.print("Pos: ");
-        SerialBT.println(position);
-    }
-}
-
 void side_sensors_print(){
     //Sensores laterais
     readRight = digitalRead(RightSensor);
@@ -59,7 +41,6 @@ void doCalibration(){
     digitalWrite(LED_BUILTIN, HIGH);
     vTaskDelay(pdMS_TO_TICKS(50));
 
-    SerialBT.println("Calibrando");
     //calibrando
     ;
     for (uint16_t i=0; i < 200; i++){
