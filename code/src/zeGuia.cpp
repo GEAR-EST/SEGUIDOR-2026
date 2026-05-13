@@ -6,6 +6,7 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include <Arduino.h>
+#include <Preferences.h>
 
 extern QueueHandle_t commandsQueue;
 
@@ -38,12 +39,60 @@ void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float no
     velDir     = novoVelDir;
     this->novasMarcas = novasMarcas;
     aplicarParametrosPID();
+    salvarParametrosNVS();
 }
 
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
     pid.setTunnings(kp, ki, kd);  
+}
+
+static String nvsKey(const char* mAbbr, const char* sAbbr, const char* param)
+{
+    return String(mAbbr) + "_" + sAbbr + "_" + param;
+}
+
+void ZeGuia::salvarParametrosNVS()
+{
+    if (mode == MODE_NONE || strategy == S_NONE) return;
+    const char* mAbbr = (mode == MODE_FOLLOWER) ? "sf" : "ps";
+    const char* sAbbr = (strategy == S_CONSERVATIVE) ? "co" : "ar";
+
+    Preferences prefs;
+    prefs.begin("params", false);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "v").c_str(),   velMax);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "kp").c_str(),  kp);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "ki").c_str(),  ki);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "kd").c_str(),  kd);
+    prefs.putInt  (nvsKey(mAbbr, sAbbr, "ve").c_str(),  velEsq);
+    prefs.putInt  (nvsKey(mAbbr, sAbbr, "vd").c_str(),  velDir);
+    prefs.putInt  (nvsKey(mAbbr, sAbbr, "mr").c_str(),  novasMarcas);
+    prefs.end();
+}
+
+void ZeGuia::enviarTodosParametros()
+{
+    static const char* mAbbrs[]    = {"sf",          "sf",       "ps",           "ps"};
+    static const char* sAbbrs[]    = {"co",          "ar",       "co",           "ar"};
+    static const char* mNomes[]    = {"Seguidor",    "Seguidor",    "Perseguidor", "Perseguidor"};
+    static const char* sNomes[]    = {"Conservador", "Arriscado",   "Conservador", "Arriscado"};
+
+    Preferences prefs;
+    prefs.begin("params", true);
+    for (int i = 0; i < 4; i++)
+    {
+        float v   = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "v").c_str(),  0.0f);
+        float pkp = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "kp").c_str(), 0.0f);
+        float pki = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "ki").c_str(), 0.0f);
+        float pkd = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "kd").c_str(), 0.0f);
+        int   ve  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "ve").c_str(), 0);
+        int   vd  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "vd").c_str(), 0);
+        int   mr  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "mr").c_str(), 0);
+        SerialBT.printf("PARAMS:%s|%s|%.2f|%.2f|%.2f|%.2f|%d|%d|%d\n",
+            mNomes[i], sNomes[i], v, pkp, pki, pkd, ve, vd, mr);
+    }
+    prefs.end();
 }
 
 void ZeGuia::loop() 
@@ -189,6 +238,9 @@ void ZeGuia::processarComando(RobotCommand cmd)
         break;
     case CMD_SENSOR_STREAM_OFF:
         sensorStreaming = false;
+        break;
+    case CMD_GET_PARAMS:
+        enviarTodosParametros();
         break;
 
     default:
