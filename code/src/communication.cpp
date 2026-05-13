@@ -5,6 +5,7 @@
 extern QueueHandle_t commandsQueue;
 
 BluetoothSerial SerialBT;
+SemaphoreHandle_t btMutex;
 String bt_device = "Ze-Guia_BT";
 
 void BluetoothConnection();
@@ -164,8 +165,10 @@ void callback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 
 void BluetoothConnection()
 {
+    btMutex = xSemaphoreCreateMutex();
+
     Serial.println("Passo 1: Iniciando Bluetooth...");
-     SerialBT.println("Passo 1: Iniciando Bluetooth...");
+    SerialBT.println("Passo 1: Iniciando Bluetooth...");
 
     SerialBT.register_callback(callback);
    
@@ -271,8 +274,10 @@ void send_battery(){
     unsigned long current_time = millis();
     if (current_time - past_time >= bat_interval){
         past_time = current_time;
-        SerialBT.print("BAT"); 
-        SerialBT.println(battery_percentage());
-        
+        if (xSemaphoreTake(btMutex, pdMS_TO_TICKS(10)) == pdTRUE) {
+            SerialBT.print("BAT");
+            SerialBT.println(battery_percentage());
+            xSemaphoreGive(btMutex);
+        }
     }
 }
