@@ -13,10 +13,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
@@ -33,6 +37,7 @@ import java.util.Locale
 import java.util.UUID
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Spinner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 
@@ -40,6 +45,8 @@ import kotlinx.coroutines.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var txtSerial: TextView
+
+    private lateinit var icon_Bluetooth: ImageView
     private lateinit var txtBatteryPercent: TextView
     private lateinit var txtEstadoRobo: TextView
     private lateinit var txtModoRobo: TextView
@@ -64,7 +71,8 @@ class MainActivity : AppCompatActivity() {
     private var modoSelecionado = false
     private lateinit var btAdapter: BluetoothAdapter
     private var btSocket: BluetoothSocket? = null
-    private val address: String = "C0:49:EF:65:16:FE"
+    private var address: String = " "
+    private var savedMacs: MutableSet<String> = mutableSetOf()
     //"C0:49:EF:65:16:FE"
     //"CC:DB:A7:62:8D:96"
 
@@ -115,7 +123,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val btnConfigMac = findViewById<ImageView>(R.id.btnConfigMac)
+        btnConfigMac.setOnClickListener { abrirModalConfigEsp32() }
+
         sharedPreferences = getSharedPreferences("ZeGuiaPrefs", Context.MODE_PRIVATE)
+
+        savedMacs = sharedPreferences.getStringSet("savedMacs", mutableSetOf("C0:49:EF:65:16:FE"))?.toMutableSet() ?: mutableSetOf("C0:49:EF:65:16:FE")
+
+        address = sharedPreferences.getString("selectedMac", "C0:49:EF:65:16:FE") ?: "C0:49:EF:65:16:FE"
 
         txtEstadoRobo = findViewById(R.id.txtEstadoRobo)
         txtModoRobo = findViewById(R.id.txtModoRobo)
@@ -153,8 +168,10 @@ class MainActivity : AppCompatActivity() {
 
         btnExportar = findViewById(R.id.btnExportar)
         btnExportar.setOnClickListener { abrirModalExportar() }
+        icon_Bluetooth = findViewById<ImageView>(R.id.iconBluetooth)
 
         estadoDesconectado()
+        atualizarIconeBluetooth(false)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestPermissions(
@@ -162,6 +179,9 @@ class MainActivity : AppCompatActivity() {
                 1
             )
         }
+
+
+
 
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         btAdapter = bluetoothManager.adapter
@@ -209,8 +229,143 @@ class MainActivity : AppCompatActivity() {
         btnAbrirEdicao.setOnClickListener { mostrarDialogEdicao() }
     }
 
-    // Retorna o prefixo de chave para o modo+estrategia atual, ex: "seguidor_conservador_"
-    // Retorna o prefixo de chave para o modo+estrategia atual, ex: "seguidor_conservador_"
+    private fun abrirModalConfigEsp32() {
+        // ✅ BLOQUEIO: Só permite abrir se estiver desconectado OU finalizado
+        val estadoAtual = txtEstadoRobo.text.toString()
+        val podeEditar = (btSocket == null) || (estadoAtual == "Parado")
+
+        if (!podeEditar) {
+            Toast.makeText(
+                this,
+                "Finalize a corrida ou desconecte o Bluetooth antes de alterar a ESP32",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        val builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.modal_esp32, null)
+        builder.setView(dialogView)
+
+        val dialog = builder.create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val spinnerMacs = dialogView.findViewById<Spinner>(R.id.spinnerMacs)
+        val editNovoMac = dialogView.findViewById<EditText>(R.id.editNovoMac)
+        val btnSalvarEsp = dialogView.findViewById<Button>(R.id.btnSalvarEsp)
+        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharModalEsp)
+
+        // ✅ Garantir que savedMacs não está vazio
+        if (savedMacs.isEmpty()) {
+            savedMacs.add("C0:49:EF:65:16:FE")
+        }
+
+        // Configura a lista (Spinner) com as opções salvas
+        val macList = savedMacs.toList()
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, macList)
+        spinnerMacs.adapter = adapter
+
+        // Seleciona o MAC atual no Spinner
+        val indexAtual = macList.indexOf(address)
+        if (indexAtual >= 0) {
+            spinnerMacs.setSelection(indexAtual)
+        }
+
+        // ✅ TextWatcher para formatar automaticamente com ":"
+        editNovoMac.addTextChangedListener(object : android.text.TextWatcher {
+            private var isFormatting = false
+            private var deletingColon = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                deletingColon = count == 1 && after == 0 && s?.getOrNull(start) == ':'
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (isFormatting) return
+
+                isFormatting = true
+
+                val clean = s.toString().replace(":", "").uppercase()
+
+                val texto = if (deletingColon && clean.length >= 2) {
+                    clean.substring(0, clean.length - 1)
+                } else {
+                    clean
+                }
+
+                val formatted = StringBuilder()
+                texto.forEachIndexed { index, char ->
+                    if (index > 0 && index % 2 == 0) {
+                        formatted.append(":")
+                    }
+                    formatted.append(char)
+                }
+
+                val result = formatted.toString().take(17)
+
+                if (result != s.toString()) {
+                    s?.replace(0, s.length, result)
+                    editNovoMac.setSelection(result.length)
+                }
+
+                isFormatting = false
+                deletingColon = false
+            }
+        })
+
+        btnFechar.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnSalvarEsp.setOnClickListener {
+            val macDigitado = editNovoMac.text.toString().trim()
+
+            // 1. Se o usuário digitou uma NOVA ESP32 no campo de texto
+            if (macDigitado.isNotEmpty()) {
+                val isValid = macDigitado.matches(Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$"))
+
+                if (isValid) {
+                    savedMacs.add(macDigitado)
+                    address = macDigitado
+                    sharedPreferences.edit()
+                        .putStringSet("savedMacs", HashSet(savedMacs))
+                        .putString("selectedMac", address)
+                        .apply()
+                    Toast.makeText(this, "Nova ESP32 cadastrada!", Toast.LENGTH_SHORT).show()
+                    if (btSocket != null) {
+                        findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
+                    }
+
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(this, "MAC incompleto! Digite 12 dígitos (XX:XX:XX:XX:XX:XX)", Toast.LENGTH_LONG).show()
+                }
+            }
+            else {
+                if (spinnerMacs.selectedItem != null) {
+                    val macSelecionado = spinnerMacs.selectedItem.toString()
+
+                    if (address != macSelecionado) {
+                        address = macSelecionado
+                        sharedPreferences.edit().putString("selectedMac", address).apply()
+                        Toast.makeText(this, "ESP32 alterada para $address", Toast.LENGTH_SHORT).show()
+
+                        if (btSocket != null) {
+                            findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
+                        }
+                    }
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(this, "Selecione uma ESP32 ou digite um novo MAC", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
     private fun prefKey(): String {
         return if (modoAtual.isNotEmpty() && estrategiaAtual.isNotEmpty()) {
             "${modoAtual}_${estrategiaAtual}_"
@@ -476,6 +631,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun atualizarIconeBluetooth(conectado: Boolean) {
+        if (conectado) {
+            // Verde quando conectado
+            icon_Bluetooth.setColorFilter(Color.parseColor("#00FF66"))
+        } else {
+            // Roxo quando desconectado
+            icon_Bluetooth.setColorFilter(Color.parseColor("#A066FF"))
+        }
+    }
+
     private fun conectarBluetooth() {
         if (!permissaoBluetooth()) {
             runOnUiThread {
@@ -504,6 +669,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(this, "Conectado ao ZeGuia!", Toast.LENGTH_SHORT).show()
                     estadoConectadoInicial()
+                    atualizarIconeBluetooth(true)
                     enviarComando("Q")
                 }
             } catch (e: IOException) {
@@ -511,6 +677,7 @@ class MainActivity : AppCompatActivity() {
                     findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
                     Toast.makeText(this, "Falha na conexão", Toast.LENGTH_SHORT).show()
                     estadoDesconectado()
+                    atualizarIconeBluetooth(false)
                 }
                 btSocket = null
             }
@@ -528,6 +695,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Desconectado", Toast.LENGTH_SHORT).show()
                 estadoDesconectado()
                 resetarCronometro()
+                atualizarIconeBluetooth(false)
             }
         } catch (e: IOException) {
             e.printStackTrace()
