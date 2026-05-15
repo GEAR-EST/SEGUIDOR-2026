@@ -6,6 +6,7 @@
 #include "motordriver.h"
 #include "sensors.h"
 #include <Arduino.h>
+#include <Preferences.h>
 
 extern QueueHandle_t commandsQueue;
 
@@ -19,7 +20,7 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     if (message.hasPidTunings)
     {
         atualizarPID(message.vMax, message.kp, message.ki, message.kd,
-                     message.velEsq, message.velDir, message.novasMarcas);
+                     message.novasMarcas);
     }
 
     if (message.command != CMD_NONE)
@@ -28,22 +29,69 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     }
 }
 
-void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas)
+void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novasMarcas)
 {
-    velMax     = novaVelMax;
-    kp         = novoKp;
-    ki         = novoKi;
-    kd         = novoKd;
-    velEsq     = novoVelEsq;
-    velDir     = novoVelDir;
+    velMax            = novaVelMax;
+    kp                = novoKp;
+    ki                = novoKi;
+    kd                = novoKd;
     this->novasMarcas = novasMarcas;
     aplicarParametrosPID();
+    salvarParametrosNVS();
 }
 
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
     pid.setTunnings(kp, ki, kd);  
+}
+
+static String nvsKey(const char* mAbbr, const char* sAbbr, const char* param)
+{
+    return String(mAbbr) + "_" + sAbbr + "_" + param;
+}
+
+void ZeGuia::salvarParametrosNVS()
+{
+    if (mode == MODE_NONE || strategy == S_NONE) return;
+    const char* mAbbr = (mode == MODE_FOLLOWER) ? "sf" : "ps";
+    const char* sAbbr = (strategy == S_CONSERVATIVE) ? "co" : "ar";
+
+    Preferences prefs;
+    prefs.begin("params", false);
+    prefs.putInt  (nvsKey(mAbbr, sAbbr, "v").c_str(),   (int)velMax);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "kp").c_str(),  kp);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "ki").c_str(),  ki);
+    prefs.putFloat(nvsKey(mAbbr, sAbbr, "kd").c_str(),  kd);
+    prefs.putInt  (nvsKey(mAbbr, sAbbr, "mr").c_str(),  novasMarcas);
+    prefs.end();
+}
+
+void ZeGuia::enviarTodosParametros()
+{
+    static const char* mAbbrs[]    = {"sf",          "sf",       "ps",           "ps"};
+    static const char* sAbbrs[]    = {"co",          "ar",       "co",           "ar"};
+    static const char* mNomes[]    = {"Seguidor",    "Seguidor",    "Perseguidor", "Perseguidor"};
+    static const char* sNomes[]    = {"Conservador", "Arriscado",   "Conservador", "Arriscado"};
+
+    Preferences prefs;
+    prefs.begin("params", true);
+
+    if (xSemaphoreTake(btMutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+        for (int i = 0; i < 4; i++)
+        {
+            int   v   = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "v").c_str(),  0);
+            float pkp = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "kp").c_str(), 0.0f);
+            float pki = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "ki").c_str(), 0.0f);
+            float pkd = prefs.getFloat(nvsKey(mAbbrs[i], sAbbrs[i], "kd").c_str(), 0.0f);
+            int   mr  = prefs.getInt  (nvsKey(mAbbrs[i], sAbbrs[i], "mr").c_str(), 0);
+            SerialBT.printf("PARAMS:%s|%s|%d|%.2f|%.2f|%.2f|%d\n",
+                mNomes[i], sNomes[i], v, pkp, pki, pkd, mr);
+        }
+        xSemaphoreGive(btMutex);
+    }
+
+    prefs.end();
 }
 
 void ZeGuia::loop() 
@@ -93,11 +141,11 @@ void ZeGuia::loopPerseguidor()
 {
     if (strategy == S_CONSERVATIVE) 
     { 
-        controlMotors(velEsq, velDir);
+        controlMotors((int)velMax, (int)velMax);
     } 
     else if (strategy == S_RISK) 
     {
-        controlMotors(velEsq, velDir);
+        controlMotors((int)velMax, (int)velMax);
     }
 }
 void ZeGuia::calibrarRobo()
@@ -117,6 +165,7 @@ void ZeGuia:: iniciarCorrida()
     while (xQueueReceive(commandsQueue, &stale, 0) == pdTRUE) {}
 
     running = true;
+    rsOn = 0;
 }
 
 void ZeGuia:: terminarCorrida()
@@ -142,18 +191,21 @@ void ZeGuia::enviarLeituraSensores()
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
 
-    // Formato para o app: S,<pos>,<s1>...<s8>,<right>,<left>
-    SerialBT.print("S,");
-    SerialBT.print(position);
-    for (uint8_t i = 0; i < SensorCount; i++)
-    {
+    if (xSemaphoreTake(btMutex, pdMS_TO_TICKS(10)) == pdTRUE) {
+        // Formato para o app: S,<pos>,<s1>...<s8>,<right>,<left>
+        SerialBT.print("S,");
+        SerialBT.print(position);
+        for (uint8_t i = 0; i < SensorCount; i++)
+        {
+            SerialBT.print(',');
+            SerialBT.print(1000 - sensorValues[i]);
+        }
         SerialBT.print(',');
-        SerialBT.print(1000 - sensorValues[i]);
+        SerialBT.print(readRight);
+        SerialBT.print(',');
+        SerialBT.println(readLeft);
+        xSemaphoreGive(btMutex);
     }
-    SerialBT.print(',');
-    SerialBT.print(readRight);
-    SerialBT.print(',');
-    SerialBT.println(readLeft);
 }
 
 
@@ -189,6 +241,9 @@ void ZeGuia::processarComando(RobotCommand cmd)
     case CMD_SENSOR_STREAM_OFF:
         sensorStreaming = false;
         break;
+    case CMD_GET_PARAMS:
+        enviarTodosParametros();
+        break;
 
     default:
         break;
@@ -214,12 +269,15 @@ void ZeGuia::lineWhite(){
     vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
     vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
 
+    if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
+    else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
+
     controlMotors(vel_m1, vel_m2);
 
 }
 
 void ZeGuia::markCounter(uint8_t n){
-    if (n != 0){
+    if (n > 0){
         if (!digitalRead(RightSensor) && stateR == 0){
             rsOn++;
             stateR = 1;
@@ -231,7 +289,5 @@ void ZeGuia::markCounter(uint8_t n){
             SerialBT.println("Parada Ativa Ativada!");
             processarComando(RobotCommand::CMD_STOP);
       }
-    } else {
-        SerialBT.println("Oie, n = 0, então você escolhe quando parar :p");
     }
 }

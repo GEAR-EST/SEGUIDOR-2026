@@ -2,8 +2,10 @@
 #define COMMUNICATION_H
 
 #include <BluetoothSerial.h>
+#include <freertos/semphr.h>
 
 extern BluetoothSerial SerialBT;
+extern SemaphoreHandle_t btMutex;
 
 uint8_t battery_percentage();
 
