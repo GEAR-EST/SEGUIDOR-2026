@@ -42,39 +42,6 @@
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="45dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="6dp"
-            app:cardBackgroundColor="#1A0D2A"
-            app:cardCornerRadius="10dp"
-            app:strokeColor="#2E1A47"
-            app:strokeWidth="1dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="2dp"
-                    app:srcCompat="@drawable/ic_led"
-                    app:tint="#A066FF" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/LED"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:scaleX="0.6"
-                    android:scaleY="0.6"
-                    app:thumbTint="#A066FF"
-                    app:trackTint="#2E1A47" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="45dp"
