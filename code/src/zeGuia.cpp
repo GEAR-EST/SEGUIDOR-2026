@@ -13,6 +13,7 @@ extern QueueHandle_t commandsQueue;
 void ZeGuia::setup() 
 {
     _setup();
+    
 }
 
 void ZeGuia::processarMensagem(const RobotMessage& message)

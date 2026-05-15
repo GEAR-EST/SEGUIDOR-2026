@@ -272,7 +272,7 @@ uint8_t battery_percentage(){
         sum += analogRead(BATTERY_PIN);
     }
     int avg = sum/16;
-    int perc = map(avg, 2539, 3325, 0, 100);
+    int perc = map(avg, 2419, 3024, 0, 100);
     perc = constrain(perc, 0, 100);
     return (uint8_t) perc;
 }
