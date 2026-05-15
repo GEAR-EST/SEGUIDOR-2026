@@ -64,7 +64,10 @@ class MainActivity : AppCompatActivity() {
     private var modoSelecionado = false
     private lateinit var btAdapter: BluetoothAdapter
     private var btSocket: BluetoothSocket? = null
-    private val address: String = "88:57:21:7A:C6:1E"
+    private val address: String = "C0:49:EF:65:16:FE"
+    //"C0:49:EF:65:16:FE"
+    //"CC:DB:A7:62:8D:96"
+
     private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -128,10 +131,15 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        txtParamKp.text     = sharedPreferences.getString("paramKp", "0.0")
-        txtParamKi.text     = sharedPreferences.getString("paramKi", "0.0")
-        txtParamKd.text     = sharedPreferences.getString("paramKd", "0.0")
-        txtCronometro.text  = "0:00:00"
+        txtParamKp.text    = sharedPreferences.getString("paramKp", "--")
+        txtParamKi.text    = sharedPreferences.getString("paramKi", "--")
+        txtParamKd.text    = sharedPreferences.getString("paramKd", "--")
+        txtCronometro.text = "0:00:00"
+
+// ADICIONAR:
+        modoAtual       = sharedPreferences.getString("lastModoAtual", "") ?: ""
+        estrategiaAtual = sharedPreferences.getString("lastEstrategiaAtual", "") ?: ""
+        atualizarDisplayParametros()
 
         btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
         btnCalibrar = findViewById(R.id.calibrate)
@@ -159,17 +167,13 @@ class MainActivity : AppCompatActivity() {
         btAdapter = bluetoothManager.adapter
 
         val swBluetooth = findViewById<SwitchCompat>(R.id.bluetooth)
-        val swLED = findViewById<SwitchCompat>(R.id.LED)
-
-
         swBluetooth.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swBluetooth, isChecked)
-            if (isChecked) conectarBluetooth() else desconectarBluetooth()
-        }
-
-        swLED.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swLED, isChecked)
-            if (isChecked) enviarComando("1") else enviarComando("0")
+            atualizarCoresSwitch(swBluetooth, isChecked) // Aplica sua lógica de cores
+            if (isChecked) {
+                conectarBluetooth()
+            } else {
+                desconectarBluetooth()
+            }
         }
 
         // Cliques so enviam comando; cronometro inicia/para quando chegar mensagem do robo
@@ -191,13 +195,13 @@ class MainActivity : AppCompatActivity() {
         }
         btnStrategyConservative.setOnClickListener {
             estrategiaAtual = "conservador"
-            carregarParametros()
             enviarComando("C")
+            carregarParametros()
         }
         btnStrategyRisk.setOnClickListener {
             estrategiaAtual = "arriscado"
-            carregarParametros()
             enviarComando("A")
+            carregarParametros()
         }
         btnStartRun.setOnClickListener { enviarComando("R") }
         btnStopRun.setOnClickListener { enviarComando("F") }
@@ -217,9 +221,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun atualizarDisplayParametros() {
         val prefix = prefKey()
-        txtParamKp.text = sharedPreferences.getString("${prefix}paramKp", "0.0") ?: "0.0"
-        txtParamKi.text = sharedPreferences.getString("${prefix}paramKi", "0.0") ?: "0.0"
-        txtParamKd.text = sharedPreferences.getString("${prefix}paramKd", "0.0") ?: "0.0"
+        if (prefix.isEmpty()) {
+            txtParamKp.text = "--"
+            txtParamKi.text = "--"
+            txtParamKd.text = "--"
+            return
+        }
+        txtParamKp.text = sharedPreferences.getString("${prefix}paramKp", "--") ?: "--"
+        txtParamKi.text = sharedPreferences.getString("${prefix}paramKi", "--") ?: "--"
+        txtParamKd.text = sharedPreferences.getString("${prefix}paramKd", "--") ?: "--"
     }
 
     // Carrega os parametros do modo+estrategia atual, atualiza a tela e envia para o ESP32
@@ -228,9 +238,7 @@ class MainActivity : AppCompatActivity() {
         val kp     = sharedPreferences.getString("${prefix}paramKp", "0.0") ?: "0.0"
         val ki     = sharedPreferences.getString("${prefix}paramKi", "0.0") ?: "0.0"
         val kd     = sharedPreferences.getString("${prefix}paramKd", "0.0") ?: "0.0"
-        val v      = sharedPreferences.getString("${prefix}paramV", "0.0") ?: "0.0"
-        val velEsq = sharedPreferences.getString("${prefix}paramVelEsq", "0") ?: "0"
-        val velDir = sharedPreferences.getString("${prefix}paramVelDir", "0") ?: "0"
+        val v      = sharedPreferences.getString("${prefix}paramV", "0") ?: "0"
         val marcas = sharedPreferences.getString("${prefix}paramMarcas", "0") ?: "0"
 
         txtParamKp.text = kp
@@ -238,11 +246,15 @@ class MainActivity : AppCompatActivity() {
         txtParamKd.text = kd
 
         // Envia os parametros salvos desta estrategia direto para o ESP32
-        enviarComando("PID:$v|$kp|$ki|$kd|$velEsq|$velDir|$marcas")
+        enviarComando("PID:$v|$kp|$ki|$kd|$marcas")
     }
 
 
     private fun mostrarDialogEdicao() {
+        if (prefKey().isEmpty()) {
+            Toast.makeText(this, "Selecione modo e estratégia antes de editar parâmetros", Toast.LENGTH_SHORT).show()
+            return
+        }
         val dialogView = LayoutInflater.from(this).inflate(R.layout.editar_parametros, null)
         val builder = AlertDialog.Builder(this)
         builder.setView(dialogView)
@@ -251,49 +263,56 @@ class MainActivity : AppCompatActivity() {
         alertDialog.show()
 
         val editV      = dialogView.findViewById<EditText>(R.id.editV)
-        val editVelEsq = dialogView.findViewById<EditText>(R.id.editVelEsq)
-        val editVelDir = dialogView.findViewById<EditText>(R.id.editVelDir)
         val editKp     = dialogView.findViewById<EditText>(R.id.editKp)
         val editKi     = dialogView.findViewById<EditText>(R.id.editKi)
         val editKd     = dialogView.findViewById<EditText>(R.id.editKd)
         val editMarcas = dialogView.findViewById<EditText>(R.id.editMarcas)
 
         val prefix = prefKey()
-        editV.setText(sharedPreferences.getString("${prefix}paramV", "0.0"))
-        editVelEsq.setText(sharedPreferences.getString("${prefix}paramVelEsq", "0"))
-        editVelDir.setText(sharedPreferences.getString("${prefix}paramVelDir", "0"))
-        editKp.setText(sharedPreferences.getString("${prefix}paramKp", "0.0"))
-        editKi.setText(sharedPreferences.getString("${prefix}paramKi", "0.0"))
-        editKd.setText(sharedPreferences.getString("${prefix}paramKd", "0.0"))
-        editMarcas.setText(sharedPreferences.getString("${prefix}paramMarcas", "0"))
 
-        // Stepper para floats (passo 0.1)
+        val vSalvo = sharedPreferences.getString("${prefix}paramV", "0")
+            ?.toFloatOrNull()?.toInt()?.toString() ?: "0"
+        editV.setText(vSalvo)
+
+        fun normFloat(key: String): String {
+            val raw = sharedPreferences.getString("${prefix}$key", "0.0") ?: "0.0"
+            val parsed = raw.replace(",", ".").toFloatOrNull() ?: 0f
+            return String.format(Locale.US, "%.2f", parsed)
+        }
+        editKp.setText(normFloat("paramKp"))
+        editKi.setText(normFloat("paramKi"))
+        editKd.setText(normFloat("paramKd"))
+
+// Marcas: inteiro simples
+        val marcasSalvo = sharedPreferences.getString("${prefix}paramMarcas", "0")
+            ?.toFloatOrNull()?.toInt()?.toString() ?: "0"
+        editMarcas.setText(marcasSalvo)
+
+
         fun configurarStepper(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
             dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
                 val v = editText.text.toString().toFloatOrNull() ?: 0f
-                editText.setText(String.format(Locale.US, "%.1f", v + 0.1f))
+                editText.setText(String.format(Locale.US, "%.2f", v + 0.01f))
             }
             dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
                 val v = editText.text.toString().toFloatOrNull() ?: 0f
-                editText.setText(String.format(Locale.US, "%.1f", v - 0.1f))
+                editText.setText(String.format(Locale.US, "%.2f", v - 0.01f))
             }
         }
 
         // Stepper para inteiros (passo 1)
         fun configurarStepperInt(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
             dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
-                val v = editText.text.toString().toIntOrNull() ?: 0
+                val v = editText.text.toString().toFloatOrNull()?.toInt() ?: 0
                 editText.setText((v + 1).toString())
             }
             dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
-                val v = editText.text.toString().toIntOrNull() ?: 0
+                val v = editText.text.toString().toFloatOrNull()?.toInt() ?: 0
                 editText.setText((v - 1).toString())
             }
         }
 
-        configurarStepper(R.id.btnDiminuirV, R.id.btnAumentarV, editV)
-        configurarStepperInt(R.id.btnDiminuirVelEsq, R.id.btnAumentarVelEsq, editVelEsq)
-        configurarStepperInt(R.id.btnDiminuirVelDir, R.id.btnAumentarVelDir, editVelDir)
+        configurarStepperInt(R.id.btnDiminuirV, R.id.btnAumentarV, editV)
         configurarStepper(R.id.btnDiminuirKp, R.id.btnAumentarKp, editKp)
         configurarStepper(R.id.btnDiminuirKi, R.id.btnAumentarKi, editKi)
         configurarStepper(R.id.btnDiminuirKd, R.id.btnAumentarKd, editKd)
@@ -304,9 +323,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialogView.findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
-            val novoV      = editV.text.toString().ifEmpty { "0.0" }
-            val novoVelEsq = editVelEsq.text.toString().ifEmpty { "0" }
-            val novoVelDir = editVelDir.text.toString().ifEmpty { "0" }
+            val novoV      = editV.text.toString().ifEmpty { "0" }
             val novoKp     = editKp.text.toString().ifEmpty { "0.0" }
             val novoKi     = editKi.text.toString().ifEmpty { "0.0" }
             val novoKd     = editKd.text.toString().ifEmpty { "0.0" }
@@ -319,8 +336,6 @@ class MainActivity : AppCompatActivity() {
 
             sharedPreferences.edit().apply {
                 putString("${prefix}paramV",      novoV)
-                putString("${prefix}paramVelEsq", novoVelEsq)
-                putString("${prefix}paramVelDir", novoVelDir)
                 putString("${prefix}paramKp",     novoKp)
                 putString("${prefix}paramKi",     novoKi)
                 putString("${prefix}paramKd",     novoKd)
@@ -329,7 +344,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Formato firmware: PID:V|Kp|Ki|Kd|VelEsq|VelDir|NovasMarcas
-            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd|$novoVelEsq|$novoVelDir|$novoMarcas")
+            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd|$novoMarcas")
             alertDialog.dismiss()
         }
     }
@@ -489,6 +504,7 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     Toast.makeText(this, "Conectado ao ZeGuia!", Toast.LENGTH_SHORT).show()
                     estadoConectadoInicial()
+                    enviarComando("Q")
                 }
             } catch (e: IOException) {
                 runOnUiThread {
@@ -543,13 +559,32 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         val msgLimpa  = mensagem.trim()
 
-                        if (!msgLimpa.startsWith("BAT") && !msgLimpa.startsWith("S,")) {
+                        if (!msgLimpa.startsWith("BAT") && !msgLimpa.startsWith("S,") && !msgLimpa.startsWith("PARAMS:")) {
                             txtSerial.append("$mensagem\n")
                             val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
                             scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
                         }
 
                         when {
+                            msgLimpa.startsWith("PARAMS:") -> {
+                                val parts = msgLimpa.removePrefix("PARAMS:").split("|")
+                                if (parts.size >= 7) {
+                                    val parModo  = parts[0].lowercase()
+                                    val parStrat = parts[1].lowercase()
+                                    val prefix   = "${parModo}_${parStrat}_"
+                                    sharedPreferences.edit().apply {
+                                        putString("${prefix}paramV",      parts[2])
+                                        putString("${prefix}paramKp",     parts[3])
+                                        putString("${prefix}paramKi",     parts[4])
+                                        putString("${prefix}paramKd",     parts[5])
+                                        putString("${prefix}paramMarcas", parts[6])
+                                        apply()
+                                    }
+                                    if (parModo == modoAtual && parStrat == estrategiaAtual) {
+                                        atualizarDisplayParametros()
+                                    }
+                                }
+                            }
                             msgLimpa.startsWith("BAT") -> {
                                 val valor = msgLimpa.removePrefix("BAT").trim()
                                 val percentual = valor.toIntOrNull()
@@ -597,6 +632,10 @@ class MainActivity : AppCompatActivity() {
                                 estrategiaAtual = ""
                                 modoSelecionado = true
                                 estadoPosModo()
+                                sharedPreferences.edit()
+                                    .putString("lastModoAtual", modoAtual)
+                                    .putString("lastEstrategiaAtual", "")
+                                    .apply()
                             }
 
                             msgLimpa.startsWith("Estrategia: ") -> {
@@ -606,6 +645,9 @@ class MainActivity : AppCompatActivity() {
                                 txtEstrategiaRobo.setTextColor(if (valor == "Conservador") Color.parseColor("#3399FF") else Color.parseColor("#FF8800"))
                                 atualizarDisplayParametros()
                                 estadoPosEstrategia()
+                                sharedPreferences.edit()
+                                    .putString("lastEstrategiaAtual", estrategiaAtual)
+                                    .apply()
                             }
                         }
 
@@ -636,11 +678,11 @@ class MainActivity : AppCompatActivity() {
             // Pega os índices de 6 a 9 para a segunda linha
             val linha2 = "${pad(p.getOrNull(6))} | ${pad(p.getOrNull(7))} | ${pad(p.getOrNull(8))} | ${pad(p.getOrNull(9))}"
 
-            val direito = pad(p.getOrNull(10))
-            val esquerdo = pad(p.getOrNull(11))
+            val dir = pad(p.getOrNull(10))
+            val esq = pad(p.getOrNull(11))
 
             // Retorna exatamente no formato de 4 linhas que você pediu
-            return "POS: $pos\n$linha1\n$linha2\nDIR: $direito | ESQ: $esquerdo"
+            return "POS: $pos\n$linha1\n$linha2\nESQ: $esq | DIR: $dir"
 
     }
 
@@ -676,14 +718,12 @@ class MainActivity : AppCompatActivity() {
         btnFechar.setOnClickListener {
             dialog.dismiss()
         }
-        dialog.show()
-
-        enviarComando("L") // liga stream no firmware
-
         dialog.setOnDismissListener {
             enviarComando("l") // desliga stream no firmware
             txtSensoresModal = null
         }
+        dialog.show()
+        enviarComando("L") // liga stream no firmware
     }
 
     private fun abrirModalExportar() {
@@ -732,14 +772,10 @@ class MainActivity : AppCompatActivity() {
             val seg = partesTempo[1].filter { it.isDigit() }.toIntOrNull() ?: 0
             val cent = partesTempo[2].filter { it.isDigit() }.toIntOrNull() ?: 0
 
-            // Cálculo dos segundos totais
             val totalSegundos = (min * 60.0) + seg + (cent / 100.0)
-
-            // Resultado: "01:59:00 (119.00s)"
-            val segundosFormatados = String.format(Locale.US, "%.2fs", totalSegundos)
-            "$txtTempo ($segundosFormatados)"
+            String.format(Locale.US, "%.2fs", totalSegundos)
         } else {
-            txtTempo // Caso o cronômetro não esteja no formato esperado
+            txtTempo
         }
         val modo = txtModoRobo.text.toString()
         val estrategia = txtEstrategiaRobo.text.toString()
@@ -747,7 +783,7 @@ class MainActivity : AppCompatActivity() {
         val ki = txtParamKi.text.toString()
         val kd = txtParamKd.text.toString()
         val exportPrefix = prefKey()
-        val velMax = sharedPreferences.getString("${exportPrefix}paramV", "0.0")
+        val velMax = sharedPreferences.getString("${exportPrefix}paramV", "0")
         val marcas = sharedPreferences.getString("${exportPrefix}paramMarcas", "0")
 
 

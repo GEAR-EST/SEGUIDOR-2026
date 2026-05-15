@@ -28,8 +28,6 @@ public:
     kp(0.0),
     ki(0.0),
     kd(0.0),
-    velEsq(0),
-    velDir(0),
     novasMarcas(0)
     {}
 
@@ -53,12 +51,12 @@ private:
     bool stateR = 0;
     
     float velMax, kp, ki, kd;
-    int velEsq, velDir, novasMarcas;
+    int novasMarcas;
 
     void calibrarRobo(); 
     void iniciarCorrida();
     void terminarCorrida(); 
-    void atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novoVelEsq, int novoVelDir, int novasMarcas);
+    void atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novasMarcas);
     void aplicarParametrosPID();
     void salvarParametrosNVS();
     void enviarTodosParametros();
