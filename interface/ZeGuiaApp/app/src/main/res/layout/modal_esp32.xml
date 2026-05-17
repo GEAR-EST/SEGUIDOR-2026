@@ -2,105 +2,234 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="320dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
+    android:layout_margin="16dp"
     app:cardBackgroundColor="#130822"
-    app:cardCornerRadius="20dp"
-    app:strokeColor="#A066FF"
-    app:strokeWidth="2dp">
+    app:cardCornerRadius="16dp"
+    app:strokeColor="#2C164D"
+    app:strokeWidth="1.5dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="20dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/btnFecharModalEsp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_esp32"
+                app:tint="#A066FF" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="CONFIGURAR ESP32"
-                android:textColor="#A066FF"
                 android:fontFamily="@font/orbitron"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:text="CONFIGURAR\nESP32"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:lineSpacingMultiplier="0.9" />
+        </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btnFecharModalEsp"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                app:tint="#A09DA5" />
-        </RelativeLayout>
+        <ImageButton
+            android:id="@+id/btnFecharModalEsp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/layoutHeader"
+            android:background="@drawable/bg_close_button"
+            android:src="@drawable/ic_close"
+            app:tint="#A066FF" />
 
         <View
+            android:id="@+id/topDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#2E1A47"
-            android:layout_marginBottom="16dp" />
+            android:layout_below="@id/layoutHeader"
+            android:layout_marginTop="20dp"
+            android:background="#231438" />
+
+        <LinearLayout
+            android:id="@+id/sectionSalvos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/topDivider"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/orbitron"
+                android:text="DISPOSITIVOS SALVOS"
+                android:textColor="#A09DA5"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#3A215C" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/containerSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_below="@id/sectionSalvos"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_custom_spinner_container">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/spinnerArrow"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/txtSelectedMac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="C0:49:EF:65:16:FE"
+                    android:textColor="#00FF66"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    android:layout_marginTop="2dp"/>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/spinnerDivider"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@id/spinnerArrow"
+                android:background="#231438"/>
+
+            <ImageView
+                android:id="@+id/spinnerArrow"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:scaleType="center"
+                android:src="@drawable/ic_seta_baixo"
+                app:tint="#A066FF" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/sectionAdicionar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/containerSpinner"
+            android:layout_marginTop="24dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/orbitron"
+                android:text="ADICIONAR NOVO"
+                android:textColor="#A09DA5"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#3A215C" />
+        </LinearLayout>
 
         <TextView
+            android:id="@+id/lblMac"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SELECIONAR SALVA:"
-            android:textColor="#A09DA5"
-            android:textSize="12sp"
+            android:layout_below="@id/sectionAdicionar"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/orbitron"
-            android:layout_marginBottom="8dp"/>
-
-        <Spinner
-            android:id="@+id/spinnerMacs"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:backgroundTint="#A066FF"
-            android:layout_marginBottom="20dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="OU CADASTRAR NOVA:"
+            android:text="Endereço MAC"
             android:textColor="#A09DA5"
-            android:textSize="12sp"
-            android:fontFamily="@font/orbitron"
-            android:layout_marginBottom="8dp"/>
+            android:textSize="12sp" />
 
-        <EditText
-            android:id="@+id/editNovoMac"
+        <LinearLayout
+            android:id="@+id/layoutMacInputRow"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Ex: C0:49:EF:65:16:FE"
-            android:textColorHint="#4D4D4D"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:fontFamily="monospace"
-            android:gravity="center"
-            android:inputType="textVisiblePassword"
-            android:digits="0123456789ABCDEFabcdef:-"
-            android:maxLength="17"
-            android:background="@android:drawable/editbox_background"
-            android:backgroundTint="#2E1A47"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="52dp"
+            android:layout_below="@id/lblMac"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editNovoMac"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_input_dark"
+                android:digits="0123456789ABCDEFabcdef:-"
+                android:fontFamily="monospace"
+                android:hint="XX:XX:XX:XX:XX:XX"
+                android:inputType="textVisiblePassword"
+                android:maxLength="17"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#433B54"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSalvarEsp"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/orbitron"
+                android:text="+ ADICIONAR"
+                android:textColor="#00FF66"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                app:backgroundTint="#0A2218"
+                app:cornerRadius="10dp"
+                app:strokeColor="#00FF66"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSalvarEsp"
+            android:id="@+id/btnConfirmarSelecao"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="APLICAR"
-            android:textColor="#FFFFFF"
+            android:layout_height="56dp"
+            android:layout_below="@id/layoutMacInputRow"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/orbitron"
-            app:backgroundTint="#A066FF"
-            app:cornerRadius="10dp"/>
+            android:text="CONFIRMAR SELEÇÃO"
+            android:textColor="#EBB3FF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="14dp"
+            app:icon="@drawable/ic_confirm"
+            app:iconGravity="textStart"
+            app:iconSize="20dp"
+            app:iconTint="#EBB3FF"
+            app:strokeColor="#EBB3FF"
+            app:strokeWidth="1.5dp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

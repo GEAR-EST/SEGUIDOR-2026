@@ -53,9 +53,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var txtEstrategiaRobo: TextView
     private lateinit var txtCronometro: TextView
 
+
     private lateinit var txtParamKp: TextView
     private lateinit var txtParamKi: TextView
     private lateinit var txtParamKd: TextView
+
+    private lateinit var txtParamVR: TextView
 
     private lateinit var btnCalibrar: Button
     private lateinit var btnStartRun: Button
@@ -64,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnModeChase: Button
     private lateinit var btnStrategyConservative: Button
     private lateinit var btnStrategyRisk: Button
-    private lateinit var btnAbrirEdicao: RelativeLayout
+    private lateinit var btnAbrirEdicao: LinearLayout
 
     private lateinit var btnExportar: Button
     private var continuarEscutando = false
@@ -123,14 +126,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnConfigMac = findViewById<ImageView>(R.id.btnConfigMac)
-        btnConfigMac.setOnClickListener { abrirModalConfigEsp32() }
+        findViewById<View>(R.id.cardConfigEsp).setOnClickListener { abrirModalConfigEsp32() }
 
         sharedPreferences = getSharedPreferences("ZeGuiaPrefs", Context.MODE_PRIVATE)
 
         savedMacs = sharedPreferences.getStringSet("savedMacs", mutableSetOf("C0:49:EF:65:16:FE"))?.toMutableSet() ?: mutableSetOf("C0:49:EF:65:16:FE")
 
         address = sharedPreferences.getString("selectedMac", "C0:49:EF:65:16:FE") ?: "C0:49:EF:65:16:FE"
+
+        findViewById<TextView>(R.id.txtEspMac).text = address
 
         txtEstadoRobo = findViewById(R.id.txtEstadoRobo)
         txtModoRobo = findViewById(R.id.txtModoRobo)
@@ -143,6 +147,7 @@ class MainActivity : AppCompatActivity() {
         txtParamKp = findViewById(R.id.txtParamKp)
         txtParamKi = findViewById(R.id.txtParamKi)
         txtParamKd = findViewById(R.id.txtParamKd)
+        txtParamVR = findViewById(R.id.txtParamVR)
 
 
 
@@ -377,11 +382,13 @@ class MainActivity : AppCompatActivity() {
     private fun atualizarDisplayParametros() {
         val prefix = prefKey()
         if (prefix.isEmpty()) {
+
             txtParamKp.text = "--"
             txtParamKi.text = "--"
             txtParamKd.text = "--"
             return
         }
+        txtParamVR.text = sharedPreferences.getString("${prefix}paramV", "--") ?: "--"
         txtParamKp.text = sharedPreferences.getString("${prefix}paramKp", "--") ?: "--"
         txtParamKi.text = sharedPreferences.getString("${prefix}paramKi", "--") ?: "--"
         txtParamKd.text = sharedPreferences.getString("${prefix}paramKd", "--") ?: "--"
