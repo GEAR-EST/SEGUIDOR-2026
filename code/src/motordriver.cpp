@@ -5,7 +5,7 @@
 #include "communication.h"
 #include "zeGuia.h"
 
-int VEL_MAX = 0;
+int VEL_MAX = 0; 
 uint32_t past_fail = 0; 
 
 L298NX2 motors(PWMA, AI1, AI2, PWMB, BI1, BI2);

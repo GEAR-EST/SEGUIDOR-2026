@@ -134,6 +134,7 @@ void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop princip
     } 
     else if (strategy == S_RISK) 
     {
+
         lineWhite();
     }
 }
@@ -253,6 +254,7 @@ void ZeGuia::processarComando(RobotCommand cmd)
 
 void ZeGuia::lineWhite(){
     int pos = qtr.readLineWhite(sensorValues);
+
     /*
     if (pos == 0 || pos == 7000){
         if (fail_safe() == true){
@@ -261,20 +263,34 @@ void ZeGuia::lineWhite(){
         }
     }
     */
+
+    if (pos_ant > 2000 && pos_ant < 5000){
+        SerialBT.print("pos_ant: "); SerialBT.println(pos_ant);
+        
+        if (pos == 0 || pos == 7000) {
+            SerialBT.print("pos: "); SerialBT.println(pos);
+            controlMotors(VEL_MAX, VEL_MAX);
+
+        } else {
+
+            int pid_value = pid.somatory(SETPOINT, pos);
+
+            int vel_m1 = VEL_MAX - pid_value;
+            int vel_m2 = VEL_MAX + pid_value;
+
+            vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+            vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
+
+            if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
+            else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
+
+            controlMotors(vel_m1, vel_m2);
    
-    int pid_value = pid.somatory(SETPOINT, pos);
+        }
 
-    int vel_m1 = VEL_MAX - pid_value;
-    int vel_m2 = VEL_MAX + pid_value;
-
-    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
-
-    if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
-    else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
-
-    controlMotors(vel_m1, vel_m2);
-
+    }
+    pos_ant = pos;
+    
 }
 
 void ZeGuia::markCounter(uint8_t n){
