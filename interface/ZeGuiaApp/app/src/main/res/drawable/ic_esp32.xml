@@ -1,0 +1,54 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- Corpo do chip -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M7,7v10h10V7H7zM15,15H9V9h6V15z"/>
+  <!-- Quadrado interno do chip -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M11,11h2v2h-2z"/>
+  <!-- Pinos superiores -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M9,3h1v3h-1z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M11.5,3h1v3h-1z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M14,3h1v3h-1z"/>
+  <!-- Pinos inferiores -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M9,18h1v3h-1z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M11.5,18h1v3h-1z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M14,18h1v3h-1z"/>
+  <!-- Pinos esquerdos -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M3,9h3v1h-3z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M3,11.5h3v1h-3z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M3,14h3v1h-3z"/>
+  <!-- Pinos direitos -->
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M18,9h3v1h-3z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M18,11.5h3v1h-3z"/>
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M18,14h3v1h-3z"/>
+</vector>
