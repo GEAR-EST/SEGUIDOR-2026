@@ -46,7 +46,14 @@ private:
     static const uint32_t SENSOR_SEND_INTERVAL_MS = 120;
     static const uint32_t TIME_BACK_STOP = 500;
     static const uint8_t VEL_MIN = 70;
-    volatile int pos_ant = 0;
+    int pos_ant = 0;
+    
+    unsigned long tempoPerda = 0;
+    bool emGap = false;
+    const unsigned long GAP_TIMEOUT = 100;
+    uint8_t ultimaVel_m1 = 0;
+    uint8_t ultimaVel_m2 = 0;
+    
 
     uint8_t rsOn = 0;
     bool stateR = 0;
