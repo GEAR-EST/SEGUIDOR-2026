@@ -15,13 +15,13 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.ScrollView
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -83,12 +83,26 @@ class MainActivity : AppCompatActivity() {
     private var cronometroRodando = false
     private var tempoInicioMs: Long = 0L
 
-    private var lendoSensores = false
-    private val sensorHandler = Handler(Looper.getMainLooper())
-
-    private var txtSensoresModal: TextView? = null
+    private var sensorModalAberto = false
 
     private lateinit var btnLerSensores: Button
+
+    private var txtPosicao: TextView? = null
+    private var progressPosicao: ProgressBar? = null
+
+    private var txtS1: TextView? = null; private var progressS1: ProgressBar? = null
+    private var txtS2: TextView? = null; private var progressS2: ProgressBar? = null
+    private var txtS3: TextView? = null; private var progressS3: ProgressBar? = null
+    private var txtS4: TextView? = null; private var progressS4: ProgressBar? = null
+    private var txtS5: TextView? = null; private var progressS5: ProgressBar? = null
+    private var txtS6: TextView? = null; private var progressS6: ProgressBar? = null
+    private var txtS7: TextView? = null; private var progressS7: ProgressBar? = null
+    private var txtS8: TextView? = null; private var progressS8: ProgressBar? = null
+
+    private var txtDirEsq: TextView? = null
+    private var txtDirDir: TextView? = null
+
+
 
     // ============ CRONÔMETRO: formato SS.cc (segundos com 2 casas) ============
     private val atualizarCronometro = object : Runnable {
@@ -103,18 +117,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val sensorPollRunnable = object : Runnable {
-        override fun run() {
-            if (!lendoSensores) return
-            enviarComando("L")
-            sensorHandler.postDelayed(this, 180)
-        }
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        SobreNosHelper.setup(this)
 
         findViewById<View>(R.id.cardConfigEsp).setOnClickListener { abrirModalConfigEsp32() }
 
@@ -180,7 +186,6 @@ class MainActivity : AppCompatActivity() {
 
         val swBluetooth = findViewById<SwitchCompat>(R.id.bluetooth)
         swBluetooth.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swBluetooth, isChecked)
             if (isChecked) {
                 conectarBluetooth()
             } else {
@@ -247,14 +252,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun abrirModalConfigEsp32() {
         val estadoAtual = txtEstadoRobo.text.toString()
-        val podeEditar = (btSocket == null) || (estadoAtual == "Parado")
 
-        if (!podeEditar) {
-            Toast.makeText(
-                this,
-                "Finalize a corrida ou desconecte o Bluetooth antes de alterar a ESP32",
-                Toast.LENGTH_LONG
-            ).show()
+        if (estadoAtual == "Correndo") {
+            Toast.makeText(this, "Não é possível alterar durante a corrida", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -265,23 +265,59 @@ class MainActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        val spinnerMacs = dialogView.findViewById<Spinner>(R.id.spinnerMacs)
-        val editNovoMac = dialogView.findViewById<EditText>(R.id.editNovoMac)
-        val btnSalvarEsp = dialogView.findViewById<Button>(R.id.btnSalvarEsp)
-        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharModalEsp)
+        val dropdownSelectedMac = dialogView.findViewById<TextView>(R.id.dropdownSelectedMac)
+        val dropdownHeader      = dialogView.findViewById<View>(R.id.dropdownHeader)
+        val dropdownToggle      = dialogView.findViewById<View>(R.id.dropdownToggle)
+        val dropdownArrow       = dialogView.findViewById<ImageView>(R.id.dropdownArrow)
+        val dropdownListCard    = dialogView.findViewById<View>(R.id.dropdownListCard)
+        val dropdownListContainer = dialogView.findViewById<LinearLayout>(R.id.dropdownListContainer)
+        val editNovoMac         = dialogView.findViewById<EditText>(R.id.editNovoMac)
+        val btnSalvarEsp        = dialogView.findViewById<MaterialButton>(R.id.btnSalvarEsp)
+        val btnConfirmarSelecao = dialogView.findViewById<MaterialButton>(R.id.btnConfirmarSelecao)
+        val btnFechar           = dialogView.findViewById<View>(R.id.btnFecharModalEsp)
 
-        if (savedMacs.isEmpty()) {
-            savedMacs.add("C0:49:EF:65:16:FE")
+        if (savedMacs.isEmpty()) savedMacs.add("C0:49:EF:65:16:FE")
+
+        var macSelecionadoAtual = address
+        dropdownSelectedMac.text = address
+
+        fun atualizarListaDropdown() {
+            dropdownListContainer.removeAllViews()
+            savedMacs.toList().forEach { mac ->
+                val item = TextView(this).apply {
+                    text = mac
+                    textSize = 13f
+                    typeface = android.graphics.Typeface.MONOSPACE
+                    setPadding(40, 28, 40, 28)
+                    setTextColor(
+                        if (mac == macSelecionadoAtual) Color.parseColor("#00FF66")
+                        else Color.parseColor("#CFC9D8")
+                    )
+                    setOnClickListener {
+                        macSelecionadoAtual = mac
+                        dropdownSelectedMac.text = mac
+                        dropdownListCard.visibility = View.GONE
+                        dropdownArrow.animate().rotation(0f).setDuration(200).start()
+                        atualizarListaDropdown()
+                    }
+                }
+                dropdownListContainer.addView(item)
+            }
         }
 
-        val macList = savedMacs.toList()
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, macList)
-        spinnerMacs.adapter = adapter
+        atualizarListaDropdown()
 
-        val indexAtual = macList.indexOf(address)
-        if (indexAtual >= 0) {
-            spinnerMacs.setSelection(indexAtual)
+        val toggleDropdown = View.OnClickListener {
+            if (dropdownListCard.visibility == View.VISIBLE) {
+                dropdownListCard.visibility = View.GONE
+                dropdownArrow.animate().rotation(0f).setDuration(200).start()
+            } else {
+                dropdownListCard.visibility = View.VISIBLE
+                dropdownArrow.animate().rotation(180f).setDuration(200).start()
+            }
         }
+        dropdownHeader.setOnClickListener(toggleDropdown)
+        dropdownToggle.setOnClickListener(toggleDropdown)
 
         editNovoMac.addTextChangedListener(object : android.text.TextWatcher {
             private var isFormatting = false
@@ -298,22 +334,14 @@ class MainActivity : AppCompatActivity() {
                 isFormatting = true
 
                 val clean = s.toString().replace(":", "").uppercase()
-                val texto = if (deletingColon && clean.length >= 2) {
-                    clean.substring(0, clean.length - 1)
-                } else {
-                    clean
-                }
+                val texto = if (deletingColon && clean.length >= 2) clean.substring(0, clean.length - 1) else clean
 
                 val formatted = StringBuilder()
                 texto.forEachIndexed { index, char ->
-                    if (index > 0 && index % 2 == 0) {
-                        formatted.append(":")
-                    }
+                    if (index > 0 && index % 2 == 0) formatted.append(":")
                     formatted.append(char)
                 }
-
                 val result = formatted.toString().take(17)
-
                 if (result != s.toString()) {
                     s?.replace(0, s.length, result)
                     editNovoMac.setSelection(result.length)
@@ -326,47 +354,41 @@ class MainActivity : AppCompatActivity() {
 
         btnFechar.setOnClickListener { dialog.dismiss() }
 
+        val podeConfirmar = btSocket == null || txtEstadoRobo.text.toString() == "Parado"
+        btnConfirmarSelecao.isEnabled = podeConfirmar
+        btnConfirmarSelecao.alpha = if (podeConfirmar) 1.0f else 0.4f
+
         btnSalvarEsp.setOnClickListener {
             val macDigitado = editNovoMac.text.toString().trim()
-
-            if (macDigitado.isNotEmpty()) {
-                val isValid = macDigitado.matches(Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$"))
-
-                if (isValid) {
-                    savedMacs.add(macDigitado)
-                    address = macDigitado
-                    sharedPreferences.edit()
-                        .putStringSet("savedMacs", HashSet(savedMacs))
-                        .putString("selectedMac", address)
-                        .apply()
-                    txtEspMac.text = address
-                    Toast.makeText(this, "Nova ESP32 cadastrada!", Toast.LENGTH_SHORT).show()
-                    if (btSocket != null) {
-                        findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
-                    }
-                    dialog.dismiss()
-                } else {
-                    Toast.makeText(this, "MAC incompleto! Digite 12 dígitos (XX:XX:XX:XX:XX:XX)", Toast.LENGTH_LONG).show()
-                }
+            if (macDigitado.isEmpty()) {
+                Toast.makeText(this, "Digite um endereço MAC para adicionar", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val isValid = macDigitado.matches(Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$"))
+            if (isValid) {
+                savedMacs.add(macDigitado)
+                macSelecionadoAtual = macDigitado
+                sharedPreferences.edit().putStringSet("savedMacs", HashSet(savedMacs)).apply()
+                dropdownSelectedMac.text = macDigitado
+                editNovoMac.setText("")
+                atualizarListaDropdown()
+                Toast.makeText(this, "Nova ESP32 cadastrada!", Toast.LENGTH_SHORT).show()
             } else {
-                if (spinnerMacs.selectedItem != null) {
-                    val macSelecionado = spinnerMacs.selectedItem.toString()
+                Toast.makeText(this, "MAC inválido! Use o formato XX:XX:XX:XX:XX:XX", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-                    if (address != macSelecionado) {
-                        address = macSelecionado
-                        sharedPreferences.edit().putString("selectedMac", address).apply()
-                        txtEspMac.text = address
-                        Toast.makeText(this, "ESP32 alterada para $address", Toast.LENGTH_SHORT).show()
-
-                        if (btSocket != null) {
-                            findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
-                        }
-                    }
-                    dialog.dismiss()
-                } else {
-                    Toast.makeText(this, "Selecione uma ESP32 ou digite um novo MAC", Toast.LENGTH_SHORT).show()
+        btnConfirmarSelecao.setOnClickListener {
+            if (address != macSelecionadoAtual) {
+                address = macSelecionadoAtual
+                sharedPreferences.edit().putString("selectedMac", address).apply()
+                txtEspMac.text = address
+                Toast.makeText(this, "ESP32 alterada para $address", Toast.LENGTH_SHORT).show()
+                if (btSocket != null) {
+                    findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
                 }
             }
+            dialog.dismiss()
         }
 
         dialog.show()
@@ -477,6 +499,10 @@ class MainActivity : AppCompatActivity() {
         configurarStepper(R.id.btnDiminuirKi, R.id.btnAumentarKi, editKi)
         configurarStepper(R.id.btnDiminuirKd, R.id.btnAumentarKd, editKd)
         configurarStepperInt(R.id.btnDiminuirMarcas, R.id.btnAumentarMarcas, editMarcas)
+
+        dialogView.findViewById<ImageButton>(R.id.btnFechar).setOnClickListener {
+            alertDialog.dismiss()
+        }
 
         dialogView.findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
             alertDialog.dismiss()
@@ -643,15 +669,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun atualizarCoresSwitch(switchCompat: SwitchCompat, isChecked: Boolean) {
-        if (isChecked) {
-            switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#00FF66"))
-            switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#1F4D2A"))
-        } else {
-            switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#A066FF"))
-            switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#2E1A47"))
-        }
-    }
 
     private fun conectarBluetooth() {
         if (!permissaoBluetooth()) {
@@ -699,6 +716,10 @@ class MainActivity : AppCompatActivity() {
     private fun desconectarBluetooth() {
         try {
             continuarEscutando = false
+            if (sensorModalAberto) {
+                try { btSocket?.outputStream?.write("l\n".toByteArray()) } catch (_: Exception) {}
+                sensorModalAberto = false
+            }
             btSocket?.close()
             btSocket = null
             modoAtual = ""
@@ -765,12 +786,13 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     val corInativa = Color.parseColor("#2E1A47")
                                     txtBatteryPercent.setTextColor(corAtiva)
-                                    val barrasAcesas = Math.ceil((percentual / 100.0) * 6).toInt()
+                                    val barrasAcesas = Math.round(percentual / 10.0).toInt().coerceIn(0, 10)
                                     val layoutBarras = findViewById<LinearLayout>(R.id.layoutBarrasBateria)
                                     if (layoutBarras != null) {
-                                        for (i in 0 until 6) {
-                                            layoutBarras.getChildAt(i).setBackgroundColor(
-                                                if (i < barrasAcesas) corAtiva else corInativa
+                                        for (i in 0 until 10) {
+                                            val acesa = i < barrasAcesas
+                                            layoutBarras.getChildAt(i)?.setBackgroundColor(
+                                                if (acesa) corAtiva else corInativa
                                             )
                                         }
                                     }
@@ -778,7 +800,23 @@ class MainActivity : AppCompatActivity() {
                             }
 
                             msgLimpa.startsWith("S,") -> {
-                                txtSensoresModal?.text = formatarSensoresBonito(mensagem)
+                                val p = msgLimpa.split(",").map { it.trim() }
+                                if (p.size >= 10) {
+                                    val posVal = p.getOrNull(1)?.toIntOrNull() ?: 0
+                                    txtPosicao?.text = posVal.toString()
+                                    progressPosicao?.progress = posVal
+
+                                    val sVals = (2..9).map { p.getOrNull(it)?.toIntOrNull() ?: 0 }
+                                    val txts = listOf(txtS1, txtS2, txtS3, txtS4, txtS5, txtS6, txtS7, txtS8)
+                                    val progs = listOf(progressS1, progressS2, progressS3, progressS4, progressS5, progressS6, progressS7, progressS8)
+                                    sVals.forEachIndexed { i, v ->
+                                        txts[i]?.text = v.toString()
+                                        progs[i]?.progress = v
+                                    }
+
+                                    txtDirEsq?.text = p.getOrNull(11) ?: "0"
+                                    txtDirDir?.text = p.getOrNull(10) ?: "0"
+                                }
                             }
 
                             msgLimpa.startsWith("Estado: ") -> {
@@ -831,25 +869,6 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun formatarSensoresBonito(mensagem: String): String {
-        val p = mensagem.trim().split(",").map { it.trim() }
-        if (p.size < 10 || p[0] != "S") return "Aguardando sensores..."
-
-        val pos = p.getOrNull(1) ?: "-"
-
-        fun pad(valor: String?): String {
-            return (valor ?: "-").padStart(4, ' ')
-        }
-
-        val linha1 = "${pad(p.getOrNull(2))} | ${pad(p.getOrNull(3))} | ${pad(p.getOrNull(4))} | ${pad(p.getOrNull(5))}"
-        val linha2 = "${pad(p.getOrNull(6))} | ${pad(p.getOrNull(7))} | ${pad(p.getOrNull(8))} | ${pad(p.getOrNull(9))}"
-        val dir = pad(p.getOrNull(10))
-        val esq = pad(p.getOrNull(11))
-
-        return "POS: $pos\n$linha1\n$linha2\nESQ: $esq | DIR: $dir"
-    }
-
-
     private fun enviarComando(sinal: String) {
         if (btSocket == null) {
             Toast.makeText(this, "Não está conectado!", Toast.LENGTH_SHORT).show()
@@ -869,20 +888,38 @@ class MainActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.modal_sensores, null)
         builder.setView(dialogView)
 
-        txtSensoresModal = dialogView.findViewById(R.id.txtValoresSensores)
+        txtPosicao    = dialogView.findViewById(R.id.txtPosicaoValor)
+        progressPosicao = dialogView.findViewById(R.id.progressPosicao)
+        txtS1 = dialogView.findViewById(R.id.txtS1); progressS1 = dialogView.findViewById(R.id.progressS1)
+        txtS2 = dialogView.findViewById(R.id.txtS2); progressS2 = dialogView.findViewById(R.id.progressS2)
+        txtS3 = dialogView.findViewById(R.id.txtS3); progressS3 = dialogView.findViewById(R.id.progressS3)
+        txtS4 = dialogView.findViewById(R.id.txtS4); progressS4 = dialogView.findViewById(R.id.progressS4)
+        txtS5 = dialogView.findViewById(R.id.txtS5); progressS5 = dialogView.findViewById(R.id.progressS5)
+        txtS6 = dialogView.findViewById(R.id.txtS6); progressS6 = dialogView.findViewById(R.id.progressS6)
+        txtS7 = dialogView.findViewById(R.id.txtS7); progressS7 = dialogView.findViewById(R.id.progressS7)
+        txtS8 = dialogView.findViewById(R.id.txtS8); progressS8 = dialogView.findViewById(R.id.progressS8)
+        txtDirEsq = dialogView.findViewById(R.id.txtDirecaoEsquerdaValor)
+        txtDirDir = dialogView.findViewById(R.id.txtDirecaoDireitaValor)
 
         val dialog = builder.create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        txtSensoresModal?.text = "Aguardando sensores..."
 
-        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharSensores)
+        val btnFechar = dialogView.findViewById<ImageButton>(R.id.btnFecharSensores)
         btnFechar.setOnClickListener { dialog.dismiss() }
+
         dialog.setOnDismissListener {
+            sensorModalAberto = false
             enviarComando("l")
-            txtSensoresModal = null
+            txtPosicao = null; progressPosicao = null
+            txtS1 = null; progressS1 = null; txtS2 = null; progressS2 = null
+            txtS3 = null; progressS3 = null; txtS4 = null; progressS4 = null
+            txtS5 = null; progressS5 = null; txtS6 = null; progressS6 = null
+            txtS7 = null; progressS7 = null; txtS8 = null; progressS8 = null
+            txtDirEsq = null; txtDirDir = null
         }
-        dialog.show()
+        sensorModalAberto = true
         enviarComando("L")
+        dialog.show()
     }
 
     private fun abrirModalExportar() {
@@ -892,6 +929,8 @@ class MainActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
+        val txtResumoData = dialogView.findViewById<TextView>(R.id.txtResumoData)
+        val txtResumoRobo = dialogView.findViewById<TextView>(R.id.txtResumoRobo)
         val txtResumoTempo = dialogView.findViewById<TextView>(R.id.txtResumoTempo)
         val txtResumoMac = dialogView.findViewById<TextView>(R.id.txtResumoMac)
         val txtResumoModo = dialogView.findViewById<TextView>(R.id.txtResumoModo)
@@ -905,36 +944,35 @@ class MainActivity : AppCompatActivity() {
         val btnParcial = dialogView.findViewById<MaterialButton>(R.id.btnStatusParcial)
         val editObservacoes = dialogView.findViewById<EditText>(R.id.editObservacoes)
         val btnCopiarResumo = dialogView.findViewById<MaterialButton>(R.id.btnCopiarResumo)
-        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharExportar)
+        val btnFechar = dialogView.findViewById<ImageButton>(R.id.btnFecharExportar)
 
         btnCopiarResumo.isEnabled = false
         btnCopiarResumo.alpha = 0.4f
 
         var statusCorridaSelecionado = ""
 
-        fun configurarSelecaoStatus(botaoAtivo: MaterialButton, botaoInativo: MaterialButton, statusTexto: String) {
+        fun configurarSelecaoStatus(botaoAtivo: MaterialButton, botaoInativo: MaterialButton, statusTexto: String, corHex: String) {
             btnCopiarResumo.isEnabled = true
             btnCopiarResumo.alpha = 1.0f
             statusCorridaSelecionado = statusTexto
 
-            // Botão selecionado ativa borda neon e texto lilás
-            botaoAtivo.setStrokeColorResource(android.R.color.holo_purple)
-            botaoAtivo.setTextColor(Color.parseColor("#EBB3FF"))
+            val corAtiva = Color.parseColor(corHex)
+            botaoAtivo.strokeColor = ColorStateList.valueOf(corAtiva)
+            botaoAtivo.setTextColor(corAtiva)
 
-            // Botão não selecionado reseta para cinza apagado
-            botaoInativo.setStrokeColorResource(android.R.color.transparent)
+            botaoInativo.strokeColor = ColorStateList.valueOf(Color.parseColor("#2C164D"))
             botaoInativo.setTextColor(Color.parseColor("#A09DA5"))
         }
 
         btnCompleta.setOnClickListener {
-            configurarSelecaoStatus(btnCompleta, btnParcial, "Completa")
+            configurarSelecaoStatus(btnCompleta, btnParcial, "Completa", "#00FF66")
         }
 
         btnParcial.setOnClickListener {
-            configurarSelecaoStatus(btnParcial, btnCompleta, "Parcial")
+            configurarSelecaoStatus(btnParcial, btnCompleta, "Parcial", "#FF8800")
         }
 
-        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy\nHH:mm", java.util.Locale.getDefault())
         val dataHora = dateFormat.format(java.util.Date())
 
         val txtTempo = txtCronometro.text.toString()
@@ -950,7 +988,8 @@ class MainActivity : AppCompatActivity() {
         val velMax = sharedPreferences.getString("${exportPrefix}paramV", "0")
         val marcas = sharedPreferences.getString("${exportPrefix}paramMarcas", "0")
 
-        // Alimenta os campos textuais estáticos do topo do seu layout cyberpunk
+        txtResumoData?.text = dataHora
+        txtResumoRobo?.text = "Zé-Guia"
         txtResumoTempo?.text = tempoFormatadoParaExportar
         txtResumoMac?.text = address
         txtResumoModo?.text = modo
@@ -999,6 +1038,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        SobreNosHelper.onDestroy()
         continuarEscutando = false
         pararCronometro()
         btSocket?.close()

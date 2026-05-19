@@ -39,7 +39,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentEnd="true"
-        android:layout_topToTop="@id/layoutHeader"
+        app:layout_constraintTop_toTopOf="@+id/layoutHeader"
         android:background="@drawable/bg_close_button"
         android:contentDescription="Fechar"
         android:src="@drawable/ic_close"

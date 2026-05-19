@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardBackgroundColor="#0D0618"
+    app:cardCornerRadius="16dp"
+    app:strokeColor="#2C164D"
+    app:strokeWidth="1.5dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="14dp">
+
+            <!-- Botão fechar -->
+            <ImageView
+                android:id="@+id/btnFecharModal"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_close"
+                android:tint="#EBB3FF"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/bg_close_button"
+                android:padding="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!-- Logos: GEAR + UEA — altura fixa para o divisor ficar centralizado -->
+            <LinearLayout
+                android:id="@+id/layoutLogos"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingEnd="8dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/gear_logo"
+                        android:scaleType="fitCenter"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Grupo de Estudos Aplicados à Robótica"
+                        android:textColor="#A09DA5"
+                        android:textSize="8sp"
+                        android:gravity="center"
+                        android:fontFamily="@font/sourcecodepro_bold"
+                        android:layout_marginTop="3dp"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#2C164D"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:paddingStart="8dp">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/logo_uea"
+                        android:scaleType="fitCenter"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Universidade do\nEstado do Amazonas"
+                        android:textColor="#A09DA5"
+                        android:textSize="8sp"
+                        android:gravity="center"
+                        android:fontFamily="@font/sourcecodepro_bold"
+                        android:layout_marginTop="3dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Divisor horizontal -->
+            <View
+                android:id="@+id/topDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#231438"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutLogos"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!-- Luzes animadas -->
+            <LinearLayout
+                android:id="@+id/layoutLuzes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_inner_panel"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/topDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <View android:id="@+id/luz1" android:layout_width="14dp" android:layout_height="14dp" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_luz_apagada"/>
+                <View android:id="@+id/luz2" android:layout_width="14dp" android:layout_height="14dp" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_luz_apagada"/>
+                <View android:id="@+id/luz3" android:layout_width="14dp" android:layout_height="14dp" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_luz_apagada"/>
+                <View android:id="@+id/luz4" android:layout_width="14dp" android:layout_height="14dp" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_luz_apagada"/>
+                <View android:id="@+id/luz5" android:layout_width="14dp" android:layout_height="14dp" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_luz_apagada"/>
+            </LinearLayout>
+
+            <!-- Título + Subtítulo -->
+            <LinearLayout
+                android:id="@+id/layoutTitulos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutLuzes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/txtTituloModal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GRID DE LARGADA"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/orbitron"/>
+
+                <TextView
+                    android:id="@+id/txtSubtituloModal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OS CRIADORES"
+                    android:textColor="#A066FF"
+                    android:textSize="9sp"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="@font/orbitron"
+                    android:layout_marginTop="1dp"/>
+            </LinearLayout>
+
+            <!-- Label POSIÇÕES -->
+            <LinearLayout
+                android:id="@+id/sectionPosicoes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="14dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutTitulos"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="POSIÇÕES"
+                    android:textColor="#A09DA5"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/sourcecodepro_bold"
+                    android:layout_marginEnd="8dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#3A215C"/>
+            </LinearLayout>
+
+            <!-- Cards de membros -->
+            <LinearLayout
+                android:id="@+id/layoutMembros"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/sectionPosicoes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <!-- P1 — esquerda -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start" android:layout_marginBottom="4dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.62" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P1" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Célio Benjamim" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="1dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LÍDER &amp; MECÂNICA" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05"/>
+                    </LinearLayout>
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.38"/>
+                </LinearLayout>
+
+                <!-- P2 — direita -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="4dp">
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.28"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.72" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P2" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:gravity="end"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Fernanda Cabral" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:gravity="end" android:layout_marginTop="1dp"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="GESTÃO &amp; DESIGN" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05" android:gravity="end"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- P3 — esquerda -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start" android:layout_marginBottom="4dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.62" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P3" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Leandra Matos" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="1dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DEV APP" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05"/>
+                    </LinearLayout>
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.38"/>
+                </LinearLayout>
+
+                <!-- P4 — direita -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="4dp">
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.28"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.72" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P4" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:gravity="end"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Matheus Amazonas" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:gravity="end" android:layout_marginTop="1dp"/>
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="DEV FIRMWARE" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05" android:gravity="end"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- P5 — esquerda -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.62" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P5" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Luan Maciel" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="1dp"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ELETRÔNICA" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05"/>
+                    </LinearLayout>
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.38"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Seção QR Code -->
+            <LinearLayout
+                android:id="@+id/sectionQr"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="14dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutMembros"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ESCANEIE O QR CODE"
+                    android:textColor="#A09DA5"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/sourcecodepro_bold"
+                    android:layout_marginEnd="8dp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#3A215C"/>
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardQrCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="4dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="10dp"
+                app:strokeColor="#A066FF"
+                app:strokeWidth="2dp"
+                app:cardElevation="4dp"
+                app:layout_constraintTop_toBottomOf="@id/sectionQr"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <ImageView
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:padding="6dp"
+                    android:src="@drawable/qrcode_foto"
+                    android:scaleType="fitCenter"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

@@ -1,22 +1,55 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-  <!-- Botão superior do cronômetro -->
+    android:width="42dp"
+    android:height="42dp"
+    android:viewportWidth="42"
+    android:viewportHeight="42">
   <path
-      android:fillColor="@android:color/white"
-      android:pathData="M10,1h4v2h-4z"/>
-  <!-- Hastes laterais ao botão -->
+      android:pathData="M24.281,1.969H17.719C16.631,1.969 15.75,2.85 15.75,3.938C15.75,5.025 16.631,5.906 17.719,5.906H24.281C25.369,5.906 26.25,5.025 26.25,3.938C26.25,2.85 25.369,1.969 24.281,1.969Z"
+      android:strokeWidth="1.5"
+      android:fillColor="#1A061A"
+      android:strokeColor="#BF60F0"/>
   <path
-      android:fillColor="@android:color/white"
-      android:pathData="M11,4h2v2h-2z"/>
-  <!-- Corpo circular do cronômetro -->
+      android:pathData="M21,39.375C28.974,39.375 35.438,32.911 35.438,24.938C35.438,16.964 28.974,10.5 21,10.5C13.026,10.5 6.563,16.964 6.563,24.938C6.563,32.911 13.026,39.375 21,39.375Z"
+      android:strokeWidth="1.8"
+      android:fillColor="#1A061A"
+      android:strokeColor="#BF60F0"/>
   <path
-      android:fillColor="@android:color/white"
-      android:pathData="M12,7C7.58,7 4,10.58 4,15s3.58,8 8,8 8,-3.58 8,-8 -3.58,-8 -8,-8zM12,21c-3.31,0 -6,-2.69 -6,-6s2.69,-6 6,-6 6,2.69 6,6 -2.69,6 -6,6z"/>
-  <!-- Ponteiro -->
+      android:pathData="M21,12.469V15.094"
+      android:strokeWidth="1.2"
+      android:fillColor="#00000000"
+      android:strokeColor="#A040D8"
+      android:strokeLineCap="round"/>
   <path
-      android:fillColor="@android:color/white"
-      android:pathData="M11,11h2v5h-2z"/>
+      android:pathData="M21,34.781V37.406"
+      android:strokeWidth="1.2"
+      android:fillColor="#00000000"
+      android:strokeColor="#A040D8"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M7.875,24.938H10.5"
+      android:strokeWidth="1.2"
+      android:fillColor="#00000000"
+      android:strokeColor="#A040D8"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M31.5,24.938H34.125"
+      android:strokeWidth="1.2"
+      android:fillColor="#00000000"
+      android:strokeColor="#A040D8"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M21,24.46L18,17"
+      android:strokeWidth="1.6"
+      android:fillColor="#00000000"
+      android:strokeColor="#D060E8"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M21,24.938L27.563,27.878"
+      android:strokeWidth="1.4"
+      android:fillColor="#00000000"
+      android:strokeColor="#BF60F0"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M21,26.513C21.87,26.513 22.575,25.807 22.575,24.938C22.575,24.068 21.87,23.362 21,23.362C20.13,23.362 19.425,24.068 19.425,24.938C19.425,25.807 20.13,26.513 21,26.513Z"
+      android:fillColor="#D060E8"/>
 </vector>

@@ -11,7 +11,7 @@
     <View
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
-        android:layout_height="58dp"
+        android:layout_height="50dp"
         android:background="#130822"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,25 +28,26 @@
 
     <ImageView
         android:id="@+id/btnLogo"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="8dp"
         android:src="@drawable/gear_logo"
         android:scaleType="fitCenter"
         android:background="@drawable/bg_logo_gradient"
         android:clickable="true"
         android:focusable="true"
-        android:padding="5dp"
+        android:padding="4dp"
         app:layout_constraintTop_toTopOf="@id/headerBackground"
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- ZÉ-GUIA: mais visível -->
     <TextView
         android:id="@+id/titleApp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="ZÉ-GUIA"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:letterSpacing="0.12"
@@ -54,17 +55,17 @@
         android:layout_marginStart="8dp"
         app:layout_constraintTop_toTopOf="@id/headerBackground"
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
-        app:layout_constraintStart_toEndOf="@id/btnLogo" />
+        app:layout_constraintStart_toEndOf="@id/btnLogo"
+        app:layout_constraintEnd_toStartOf="@id/cardConfigEsp" />
 
-    <!-- Badge ESP32 -->
+    <!-- Badge ESP32: só ícone + bolinha de status, sem texto -->
     <LinearLayout
         android:id="@+id/cardConfigEsp"
-        android:layout_width="wrap_content"
-        android:layout_height="44dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="10dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginEnd="6dp"
         android:background="@drawable/bg_esp32_badge"
         android:clickable="true"
         android:focusable="true"
@@ -73,50 +74,24 @@
         app:layout_constraintEnd_toStartOf="@id/cardBluetoothToggle">
 
         <ImageView
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:layout_marginEnd="8dp"
-            app:srcCompat="@drawable/ic_esp32"
-            app:tint="#A066FF"/>
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            app:srcCompat="@drawable/ic_esp32"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <!-- txtEspStatus e txtEspMac mantidos no layout mas invisíveis, para o código não quebrar -->
+        <TextView
+            android:id="@+id/txtEspStatus"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:text="ESP32 ATIVO"/>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="5dp"
-                    android:background="@drawable/bg_dot_green"
-                    android:layout_marginEnd="4dp"/>
-
-                <TextView
-                    android:id="@+id/txtEspStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ESP32 ATIVO"
-                    android:textColor="#00FF66"
-                    android:textSize="8sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05"
-                    android:fontFamily="@font/orbitron"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtEspMac"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="C0:49:EF:65:16:FE"
-                android:textColor="#CFC9D8"
-                android:textSize="8sp"
-                android:fontFamily="@font/sourcecodepro_bold"/>
-        </LinearLayout>
+        <TextView
+            android:id="@+id/txtEspMac"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:text="C0:49:EF:65:16:FE"/>
 
         <ImageView
             android:id="@+id/btnConfigMac"
@@ -125,11 +100,11 @@
             android:visibility="gone"/>
     </LinearLayout>
 
-    <!-- Bluetooth: ícone + bolinha indicadora + SWITCH visível ao lado -->
+    <!-- Bluetooth: ícone + switch menor -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardBluetoothToggle"
         android:layout_width="wrap_content"
-        android:layout_height="44dp"
+        android:layout_height="36dp"
         android:layout_marginEnd="10dp"
         app:cardBackgroundColor="#1A0D2A"
         app:cardCornerRadius="10dp"
@@ -145,24 +120,22 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="8dp"
-            android:paddingEnd="4dp">
+            android:paddingStart="4dp"
+            android:paddingEnd="0dp">
 
             <ImageView
                 android:id="@+id/iconBluetooth"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                app:srcCompat="@drawable/ic_bluetooth"
-                app:tint="#A066FF" />
-
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                app:srcCompat="@drawable/ic_bluetooth" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/bluetooth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:scaleX="0.75"
-                android:scaleY="0.75"
+                android:layout_marginStart="-4dp"
+                android:scaleX="0.60"
+                android:scaleY="0.60"
                 app:thumbTint="#A066FF"
                 app:trackTint="#2E1A47"/>
         </LinearLayout>
@@ -174,7 +147,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         app:cardBackgroundColor="#130822"
         app:strokeColor="#2E1A47"
         app:strokeWidth="1dp"
@@ -188,9 +161,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="7dp">
 
-            <!-- Título + botão EXPORTAR -->
+            <!-- Título + botão EXPORTAR (só ícone) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -208,26 +181,25 @@
                     android:letterSpacing="0.1"
                     android:fontFamily="@font/orbitron"/>
 
+                <!-- Botão exportar: só ícone, sem texto -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnExportar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="26dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
-                    android:paddingHorizontal="10dp"
-                    android:text="EXPORTAR"
-                    android:textSize="8sp"
-                    android:textColor="#FFFFFF"
-                    android:letterSpacing="0.08"
-                    android:fontFamily="@font/orbitron"
+                    android:padding="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text=""
                     app:backgroundTint="@null"
                     android:background="@drawable/bg_btn_export_gradient"
                     app:icon="@drawable/ic_export"
-                    app:iconSize="12dp"
+                    app:iconSize="22dp"
                     app:iconTint="#FFFFFF"
-                    app:iconPadding="4dp"
-                    app:cornerRadius="10dp"
-                    app:rippleColor="#FFFFFF"
+                    app:iconPadding="0dp"
+                    app:iconGravity="textStart"
+                    app:cornerRadius="8dp"
                     android:stateListAnimator="@null"
                     android:elevation="0dp"/>
             </LinearLayout>
@@ -236,23 +208,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#2E1A47"
-                android:layout_marginVertical="6dp"/>
+                android:layout_marginVertical="5dp"/>
 
-            <!-- ============ Linha: CRONÔMETRO (esquerda) | PARÂMETROS + INFORMAÇÕES (direita) ============ -->
+            <!-- Linha: CRONÔMETRO | PARÂMETROS + INFORMAÇÕES -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:baselineAligned="false">
 
-                <!-- ============ CRONÔMETRO (cresce verticalmente até a altura da coluna direita) ============ -->
+                <!-- CRONÔMETRO -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:background="@drawable/bg_inner_panel"
-                    android:padding="8dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
                     android:gravity="center_horizontal">
 
                     <TextView
@@ -265,24 +239,23 @@
                         android:fontFamily="@font/orbitron"/>
 
                     <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="62dp"
+                        android:layout_height="62dp"
                         android:layout_marginTop="6dp"
-                        app:srcCompat="@drawable/ic_clock"
-                        app:tint="#A066FF"/>
+                        app:srcCompat="@drawable/ic_clock"/>
 
-                    <!-- Cronômetro: largura fixa e gravity=center pra não pular horizontalmente -->
                     <TextView
                         android:id="@+id/txtCronometro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|bottom"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="6dp"
                         android:text="0.00"
                         android:textColor="#00FF66"
-                        android:textSize="26sp"
+                        android:textSize="32sp"
                         android:fontFamily="@font/orbitron"
                         android:textStyle="bold"
-                        android:gravity="center"
+                        android:gravity="center_horizontal"
                         android:shadowColor="#9900FF66"
                         android:shadowDx="0"
                         android:shadowDy="0"
@@ -291,29 +264,28 @@
                         android:singleLine="true"
                         android:fontFeatureSettings="tnum"
                         android:includeFontPadding="false"
-                        android:minEms="5"
-                        android:paddingTop="8dp"/>
+                        android:minEms="4"/>
                 </LinearLayout>
 
                 <Space
-                    android:layout_width="8dp"
+                    android:layout_width="7dp"
                     android:layout_height="match_parent"/>
 
-                <!-- ============ COLUNA DIREITA ============ -->
+                <!-- COLUNA DIREITA -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.15"
                     android:orientation="vertical">
 
-                    <!-- PARÂMETROS (com ícone do lápis controlado dinamicamente) -->
+                    <!-- PARÂMETROS -->
                     <LinearLayout
                         android:id="@+id/btnAbrirEdicao"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@drawable/bg_inner_panel"
-                        android:padding="6dp"
+                        android:padding="5dp"
                         android:clickable="true"
                         android:focusable="true">
 
@@ -346,12 +318,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:layout_marginTop="4dp">
+                            android:layout_marginTop="3dp">
 
                             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Kp" android:textColor="#CFC9D8" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold"/>
                             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Ki" android:textColor="#CFC9D8" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold"/>
                             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Kd" android:textColor="#CFC9D8" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="VM" android:textColor="#CFC9D8" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold"/>
+                            <!-- VM → Vm -->
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Vm" android:textColor="#CFC9D8" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -367,9 +340,7 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="5dp"/>
+                    <Space android:layout_width="match_parent" android:layout_height="4dp"/>
 
                     <!-- INFORMAÇÕES -->
                     <LinearLayout
@@ -377,7 +348,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@drawable/bg_inner_panel"
-                        android:padding="6dp">
+                        android:padding="5dp">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -389,7 +360,7 @@
                             android:letterSpacing="0.08"
                             android:fontFamily="@font/orbitron"/>
 
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="3dp">
                             <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estado" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold"/>
                             <TextView android:id="@+id/txtEstadoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold"/>
                         </LinearLayout>
@@ -407,30 +378,33 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- BATERIA -->
+            <!-- BATERIA: título centralizado + percentual + barras -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/bg_inner_panel"
-                android:padding="7dp"
-                android:layout_marginTop="6dp">
+                android:paddingHorizontal="7dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:layout_marginTop="5dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="BATERIA"
                     android:textColor="#A09DA5"
                     android:textSize="8sp"
                     android:letterSpacing="0.08"
-                    android:fontFamily="@font/orbitron"/>
+                    android:fontFamily="@font/orbitron"
+                    android:gravity="center"
+                    android:layout_marginBottom="3dp"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="5dp">
+                    android:gravity="center_vertical">
 
                     <TextView
                         android:id="@+id/txtBatteryPercent"
@@ -438,7 +412,7 @@
                         android:layout_height="wrap_content"
                         android:text="100%"
                         android:textColor="#00E5FF"
-                        android:textSize="11sp"
+                        android:textSize="10sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/orbitron"
                         android:layout_marginEnd="8dp"/>
@@ -446,26 +420,23 @@
                     <LinearLayout
                         android:id="@+id/layoutBarrasBateria"
                         android:layout_width="0dp"
-                        android:layout_height="14dp"
+                        android:layout_height="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_battery_track"
-                        android:padding="2dp"
-                        android:weightSum="6">
+                        android:padding="1dp"
+                        android:weightSum="10">
 
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="2dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp"/>
                         <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on"/>
                     </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_marginStart="8dp"
-                        app:srcCompat="@drawable/ic_battery"
-                        app:tint="#A066FF"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -483,7 +454,7 @@
         android:textStyle="bold"
         android:letterSpacing="0.15"
         android:fontFamily="@font/orbitron"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toBottomOf="@id/mainStatusCard"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -500,7 +471,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- CALIBRAR + SENSORES (botões maiores: 52dp) -->
+        <!-- CALIBRAR + SENSORES -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -510,7 +481,7 @@
                 android:id="@+id/calibrate"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="52dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
                 android:text="CALIBRAR"
@@ -518,14 +489,14 @@
                 android:letterSpacing="0.1"
                 app:icon="@drawable/ic_calibrar"
                 app:iconTint="#F39200"
-                app:iconSize="18dp"
-                app:iconPadding="8dp"
+                app:iconSize="16dp"
+                app:iconPadding="6dp"
                 app:strokeColor="#F39200"
                 app:strokeWidth="1dp"
                 app:backgroundTint="#1A0F00"
                 app:cornerRadius="12dp"
                 android:textStyle="bold"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:fontFamily="@font/orbitron"
                 app:rippleColor="#F39200"/>
 
@@ -533,7 +504,7 @@
                 android:id="@+id/btnLerSensores"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="52dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
                 android:text="SENSORES"
@@ -541,23 +512,21 @@
                 android:letterSpacing="0.1"
                 app:icon="@drawable/ic_sensor"
                 app:iconTint="#FFEB3B"
-                app:iconSize="18dp"
-                app:iconPadding="8dp"
+                app:iconSize="22dp"
+                app:iconPadding="6dp"
                 app:strokeColor="#FFEB3B"
-                app:strokeWidth="1dp"
-                app:backgroundTint="#1A1900"
                 app:cornerRadius="12dp"
                 android:textStyle="bold"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:fontFamily="@font/orbitron"
                 app:rippleColor="#FFEB3B"/>
         </LinearLayout>
 
-        <!-- Card MODO + ESTRATÉGIA (botões internos: 46dp) -->
+        <!-- Card MODO + ESTRATÉGIA -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="7dp"
             app:cardBackgroundColor="#0D0614"
             app:strokeColor="#2E1A47"
             app:strokeWidth="1dp"
@@ -568,19 +537,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp">
+                android:padding="7dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:layout_marginEnd="6dp"
+                        android:layout_width="13dp"
+                        android:layout_height="13dp"
+                        android:layout_marginEnd="5dp"
                         app:srcCompat="@drawable/modo"
                         app:tint="#00E5FF"/>
 
@@ -604,7 +573,7 @@
                         android:id="@+id/follower"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="46dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginEnd="4dp"
                         android:text="SEGUIDOR"
@@ -623,7 +592,7 @@
                         android:id="@+id/chase"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="46dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginStart="4dp"
                         android:text="PERSEGUIDOR"
@@ -644,13 +613,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="6dp">
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:layout_marginEnd="6dp"
+                        android:layout_width="13dp"
+                        android:layout_height="13dp"
+                        android:layout_marginEnd="5dp"
                         app:srcCompat="@drawable/ic_estrategia"
                         app:tint="#E020FF"/>
 
@@ -674,7 +643,7 @@
                         android:id="@+id/conservative"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="46dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginEnd="4dp"
                         android:text="CONSERVADOR"
@@ -693,7 +662,7 @@
                         android:id="@+id/risk"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="46dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginStart="4dp"
                         android:text="ARRISCADO"
@@ -711,18 +680,18 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- COMEÇAR + FINALIZAR (botões maiores: 60dp) -->
+        <!-- COMEÇAR + FINALIZAR -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="8dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/run"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="5dp"
                 android:text="COMEÇAR\nCORRIDA"
@@ -731,8 +700,8 @@
                 android:lineSpacingExtra="-2dp"
                 app:icon="@drawable/ic_play"
                 app:iconTint="#00FF66"
-                app:iconSize="18dp"
-                app:iconPadding="8dp"
+                app:iconSize="16dp"
+                app:iconPadding="6dp"
                 app:iconGravity="textStart"
                 app:strokeColor="#00FF66"
                 app:strokeWidth="1dp"
@@ -747,7 +716,7 @@
                 android:id="@+id/stop"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginStart="5dp"
                 android:text="FINALIZAR\nCORRIDA"
@@ -756,8 +725,8 @@
                 android:lineSpacingExtra="-2dp"
                 app:icon="@drawable/ic_stop"
                 app:iconTint="#FF2A55"
-                app:iconSize="18dp"
-                app:iconPadding="8dp"
+                app:iconSize="16dp"
+                app:iconPadding="6dp"
                 app:iconGravity="textStart"
                 app:strokeColor="#FF2A55"
                 app:strokeWidth="1dp"
@@ -770,14 +739,14 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- ============================== LABEL TERMINAL ============================== -->
+    <!-- ============================== LABEL TERMINAL (mais visível) ============================== -->
     <LinearLayout
         android:id="@+id/terminalLabelContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toBottomOf="@id/controlsContainer"
         app:layout_constraintStart_toStartOf="parent">
@@ -788,25 +757,26 @@
             android:background="@drawable/bg_dot"
             android:layout_marginEnd="6dp"/>
 
+        <!-- TERMINAL: cor mais brilhante e maior para ficar mais visível -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TERMINAL"
-            android:textColor="#A09DA5"
-            android:textSize="10sp"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
             android:letterSpacing="0.15"
             android:fontFamily="@font/orbitron"
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- ============================== TERMINAL ============================== -->
+    <!-- ============================== TERMINAL: ocupa todo o espaço restante sem sobreposição ============================== -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/terminalCard"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="3dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="10dp"
         app:cardBackgroundColor="#0A0410"
         app:strokeColor="#2E1A47"
         app:strokeWidth="1dp"
@@ -816,7 +786,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_min="120dp">
+        app:layout_constraintHeight_min="80dp">
 
         <ScrollView
             android:id="@+id/scrollMonitor"
@@ -835,5 +805,6 @@
                 android:lineSpacingExtra="3dp" />
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

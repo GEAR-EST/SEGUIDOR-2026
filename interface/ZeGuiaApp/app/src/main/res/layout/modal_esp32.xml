@@ -35,8 +35,7 @@
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_gravity="center"
-                    app:srcCompat="@drawable/ic_esp32"
-                    app:tint="#A066FF"/>
+                    app:srcCompat="@drawable/ic_esp32"/>
             </FrameLayout>
 
             <!-- Título em 2 linhas -->
