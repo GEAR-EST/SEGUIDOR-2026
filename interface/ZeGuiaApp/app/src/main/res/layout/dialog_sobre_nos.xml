@@ -26,7 +26,6 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:src="@drawable/ic_close"
-                android:tint="#EBB3FF"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="@drawable/bg_close_button"
@@ -34,7 +33,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Logos: GEAR + UEA — altura fixa para o divisor ficar centralizado -->
+            <!-- Logos: GEAR + UEA -->
             <LinearLayout
                 android:id="@+id/layoutLogos"
                 android:layout_width="0dp"
@@ -163,9 +162,9 @@
                     android:layout_height="wrap_content"
                     android:text="OS CRIADORES"
                     android:textColor="#A066FF"
-                    android:textSize="9sp"
+                    android:textSize="15sp"
                     android:letterSpacing="0.15"
-                    android:fontFamily="@font/orbitron"
+                    android:fontFamily="@font/sourcecodepro_bold"
                     android:layout_marginTop="1dp"/>
             </LinearLayout>
 
@@ -208,55 +207,81 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <!-- P1 — esquerda -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start" android:layout_marginBottom="4dp">
-                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.62" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P1" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Célio Benjamim" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="1dp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LÍDER &amp; MECÂNICA" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05"/>
+                <!-- P1 — esquerda: card+linha ocupam metade esquerda do modal -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_member_card" android:layout_marginTop="9dp" android:paddingStart="12dp" android:paddingEnd="18dp" android:paddingTop="5dp" android:paddingBottom="6dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Célio Benjamim" android:textColor="#E0AAFF" android:textSize="13sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LÍDER &amp; MECÂNICA" android:textColor="#A09DA5" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold" android:letterSpacing="0.05"/>
+                            </LinearLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P1" android:textColor="#00BFFF" android:textSize="7sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:background="#0D0614" android:paddingStart="3dp" android:paddingEnd="3dp" android:layout_marginStart="6dp" android:layout_marginTop="4dp" android:layout_gravity="top|start"/>
+                        </FrameLayout>
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:background="#4A2870"/>
                     </LinearLayout>
-                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.38"/>
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
                 </LinearLayout>
 
-                <!-- P2 — direita -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="4dp">
-                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.28"/>
-                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.72" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P2" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:gravity="end"/>
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Fernanda Cabral" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:gravity="end" android:layout_marginTop="1dp"/>
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="GESTÃO &amp; DESIGN" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05" android:gravity="end"/>
+                <!-- P2 — direita: linha+card ocupam metade direita do modal -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:background="#4A2870"/>
+                        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_member_card" android:layout_marginTop="9dp" android:paddingStart="18dp" android:paddingEnd="12dp" android:paddingTop="5dp" android:paddingBottom="6dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fernanda Cabral" android:textColor="#E0AAFF" android:textSize="13sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="GESTÃO &amp; DESIGN" android:textColor="#A09DA5" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold" android:letterSpacing="0.05" android:gravity="end"/>
+                            </LinearLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P2" android:textColor="#00BFFF" android:textSize="7sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:background="#0D0614" android:paddingStart="3dp" android:paddingEnd="3dp" android:layout_marginEnd="6dp" android:layout_marginTop="4dp" android:layout_gravity="top|end"/>
+                        </FrameLayout>
                     </LinearLayout>
                 </LinearLayout>
 
                 <!-- P3 — esquerda -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start" android:layout_marginBottom="4dp">
-                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.62" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P3" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Leandra Matos" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="1dp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DEV APP" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_member_card" android:layout_marginTop="9dp" android:paddingStart="12dp" android:paddingEnd="18dp" android:paddingTop="5dp" android:paddingBottom="6dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Leandra Matos" android:textColor="#E0AAFF" android:textSize="13sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DEV APP" android:textColor="#A09DA5" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold" android:letterSpacing="0.05"/>
+                            </LinearLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P3" android:textColor="#00BFFF" android:textSize="7sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:background="#0D0614" android:paddingStart="3dp" android:paddingEnd="3dp" android:layout_marginStart="6dp" android:layout_marginTop="4dp" android:layout_gravity="top|start"/>
+                        </FrameLayout>
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:background="#4A2870"/>
                     </LinearLayout>
-                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.38"/>
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
                 </LinearLayout>
 
                 <!-- P4 — direita -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="end" android:layout_marginBottom="4dp">
-                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.28"/>
-                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.72" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="P4" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:gravity="end"/>
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Matheus Amazonas" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:gravity="end" android:layout_marginTop="1dp"/>
-                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="DEV FIRMWARE" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05" android:gravity="end"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:background="#4A2870"/>
+                        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_member_card" android:layout_marginTop="9dp" android:paddingStart="18dp" android:paddingEnd="12dp" android:paddingTop="5dp" android:paddingBottom="6dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Matheus Eduardo" android:textColor="#E0AAFF" android:textSize="13sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="DEV FIRMWARE" android:textColor="#A09DA5" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold" android:letterSpacing="0.05" android:gravity="end"/>
+                            </LinearLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P4" android:textColor="#00BFFF" android:textSize="7sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:background="#0D0614" android:paddingStart="3dp" android:paddingEnd="3dp" android:layout_marginEnd="6dp" android:layout_marginTop="4dp" android:layout_gravity="top|end"/>
+                        </FrameLayout>
                     </LinearLayout>
                 </LinearLayout>
 
                 <!-- P5 — esquerda -->
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="start">
-                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.62" android:orientation="vertical" android:background="@drawable/bg_inner_panel" android:padding="6dp">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P5" android:textColor="#A066FF" android:textSize="9sp" android:fontFamily="@font/orbitron" android:textStyle="bold"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Luan Maciel" android:textColor="#FFFFFF" android:textSize="12sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="1dp"/>
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ELETRÔNICA" android:textColor="#A09DA5" android:textSize="8sp" android:fontFamily="@font/orbitron" android:letterSpacing="0.05"/>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+                        <FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_member_card" android:layout_marginTop="9dp" android:paddingStart="12dp" android:paddingEnd="18dp" android:paddingTop="5dp" android:paddingBottom="6dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Luan Maciel" android:textColor="#E0AAFF" android:textSize="13sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ELETRÔNICA" android:textColor="#A09DA5" android:textSize="9sp" android:fontFamily="@font/sourcecodepro_bold" android:letterSpacing="0.05"/>
+                            </LinearLayout>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="P5" android:textColor="#00BFFF" android:textSize="7sp" android:fontFamily="@font/orbitron" android:textStyle="bold" android:background="#0D0614" android:paddingStart="3dp" android:paddingEnd="3dp" android:layout_marginStart="6dp" android:layout_marginTop="4dp" android:layout_gravity="top|start"/>
+                        </FrameLayout>
+                        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" android:background="#4A2870"/>
                     </LinearLayout>
-                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="0.38"/>
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Seção QR Code -->

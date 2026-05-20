@@ -76,7 +76,8 @@
         <ImageView
             android:layout_width="22dp"
             android:layout_height="22dp"
-            app:srcCompat="@drawable/ic_esp32"/>
+            app:srcCompat="@drawable/ic_esp32"
+            />
 
         <!-- txtEspStatus e txtEspMac mantidos no layout mas invisíveis, para o código não quebrar -->
         <TextView
@@ -100,46 +101,34 @@
             android:visibility="gone"/>
     </LinearLayout>
 
-    <!-- Bluetooth: ícone + switch menor -->
-    <com.google.android.material.card.MaterialCardView
+    <!-- Bluetooth: ícone + ponto indicador de conexão -->
+    <FrameLayout
         android:id="@+id/cardBluetoothToggle"
-        android:layout_width="wrap_content"
+        android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginEnd="10dp"
-        app:cardBackgroundColor="#1A0D2A"
-        app:cardCornerRadius="10dp"
-        app:strokeColor="#2E1A47"
-        app:strokeWidth="1dp"
-        app:cardElevation="0dp"
+        android:background="@drawable/bg_esp32_badge"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintTop_toTopOf="@id/headerBackground"
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="4dp"
-            android:paddingEnd="0dp">
+        <ImageView
+            android:id="@+id/iconBluetooth"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_bluetooth"/>
 
-            <ImageView
-                android:id="@+id/iconBluetooth"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:srcCompat="@drawable/ic_bluetooth" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/bluetooth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="-4dp"
-                android:scaleX="0.60"
-                android:scaleY="0.60"
-                app:thumbTint="#A066FF"
-                app:trackTint="#2E1A47"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/bluetooth"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:thumbTint="#A066FF"
+            app:trackTint="#2E1A47"/>
+    </FrameLayout>
 
     <!-- ============================== CARD QUADRO GERAL ============================== -->
     <com.google.android.material.card.MaterialCardView
@@ -181,9 +170,10 @@
                     android:letterSpacing="0.1"
                     android:fontFamily="@font/orbitron"/>
 
-                <!-- Botão exportar: só ícone, sem texto -->
+                <!-- Botão exportar: outlined, ícone roxo, fundo escuro -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnExportar"
+                    style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:minWidth="0dp"
@@ -192,14 +182,16 @@
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
                     android:text=""
-                    app:backgroundTint="@null"
-                    android:background="@drawable/bg_btn_export_gradient"
+                    app:backgroundTint="#0C0411"
                     app:icon="@drawable/ic_export"
                     app:iconSize="22dp"
-                    app:iconTint="#FFFFFF"
+                    app:iconTint="#A066FF"
                     app:iconPadding="0dp"
                     app:iconGravity="textStart"
+                    app:strokeColor="#A066FF"
+                    app:strokeWidth="1dp"
                     app:cornerRadius="8dp"
+                    app:rippleColor="#A066FF"
                     android:stateListAnimator="@null"
                     android:elevation="0dp"/>
             </LinearLayout>
@@ -253,7 +245,7 @@
                         android:text="0.00"
                         android:textColor="#00FF66"
                         android:textSize="32sp"
-                        android:fontFamily="@font/orbitron"
+                        android:fontFamily="@font/sourcecodepro_bold"
                         android:textStyle="bold"
                         android:gravity="center_horizontal"
                         android:shadowColor="#9900FF66"
@@ -311,7 +303,7 @@
                                 android:layout_width="12dp"
                                 android:layout_height="12dp"
                                 app:srcCompat="@drawable/ic_edit_pencil"
-                                app:tint="#5A4470"/>
+                               />
                         </LinearLayout>
 
                         <LinearLayout
@@ -333,10 +325,10 @@
                             android:orientation="horizontal"
                             android:layout_marginTop="2dp">
 
-                            <TextView android:id="@+id/txtParamKp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
-                            <TextView android:id="@+id/txtParamKi" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
-                            <TextView android:id="@+id/txtParamKd" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
-                            <TextView android:id="@+id/txtParamVR" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                            <TextView android:id="@+id/txtParamKp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                            <TextView android:id="@+id/txtParamKi" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                            <TextView android:id="@+id/txtParamKd" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
+                            <TextView android:id="@+id/txtParamVR" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold"/>
                         </LinearLayout>
                     </LinearLayout>
 
@@ -414,7 +406,7 @@
                         android:textColor="#00E5FF"
                         android:textSize="10sp"
                         android:textStyle="bold"
-                        android:fontFamily="@font/orbitron"
+                        android:fontFamily="@font/sourcecodepro_bold"
                         android:layout_marginEnd="8dp"/>
 
                     <LinearLayout

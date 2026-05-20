@@ -193,6 +193,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<android.view.View>(R.id.cardBluetoothToggle).setOnClickListener {
+            swBluetooth.isChecked = !swBluetooth.isChecked
+        }
+
         btnCalibrar.setOnClickListener { enviarComando("K") }
 
         btnLerSensores.setOnClickListener {
@@ -383,10 +387,12 @@ class MainActivity : AppCompatActivity() {
                 address = macSelecionadoAtual
                 sharedPreferences.edit().putString("selectedMac", address).apply()
                 txtEspMac.text = address
-                Toast.makeText(this, "ESP32 alterada para $address", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "ESP32 selecionada: $address", Toast.LENGTH_SHORT).show()
                 if (btSocket != null) {
                     findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
                 }
+            } else {
+                Toast.makeText(this, "ESP32 já ativa: $address", Toast.LENGTH_SHORT).show()
             }
             dialog.dismiss()
         }
@@ -974,6 +980,7 @@ class MainActivity : AppCompatActivity() {
 
         val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy\nHH:mm", java.util.Locale.getDefault())
         val dataHora = dateFormat.format(java.util.Date())
+        val dataHoraExport = dataHora.replace("\n", " ")
 
         val txtTempo = txtCronometro.text.toString()
         val tempoFloat = txtTempo.replace(",", ".").toFloatOrNull() ?: 0f
@@ -1002,7 +1009,7 @@ class MainActivity : AppCompatActivity() {
         btnCopiarResumo.setOnClickListener {
             val resumoFinal = """
             [FEEDBACK DE CORRIDA - ZÉ-GUIA]
-            Data/Hora: $dataHora
+            Data/Hora: $dataHoraExport
             Status da Conclusão: $statusCorridaSelecionado
             Tempo Final: $tempoFormatadoParaExportar
             
