@@ -256,42 +256,46 @@ void ZeGuia::processarComando(RobotCommand cmd)
 void ZeGuia::lineWhite() {
     int pos = qtr.readLineWhite(sensorValues);
 
-    bool semLinha = (pos == 0 || pos == 7000);
+    bool linhaPerdida = ((pos == 0) || (pos == 7000));
 
-    if (semLinha && !emGap) {
-        tempoPerda = millis();
-        emGap = true;
-    }
-    if (!semLinha) emGap = false;
+    static uint32_t tempoInicioTracejado = 0;
+    static bool emTracejado = false;
 
-    if (semLinha) {
-        SerialBT.print("pos: "); SerialBT.println(pos);
-
-        if (emGap && (millis() - tempoPerda < GAP_TIMEOUT)) {
-            controlMotors(ultimaVel_m1, ultimaVel_m2); // continua a curva
-        } else {
-            controlMotors(0, 0);
+    if (linhaPerdida) {
+        if (!emTracejado) {
+            tempoInicioTracejado = millis();
+            emTracejado = true;
+            SerialBT.println("Em tracejado!");
         }
-
+            
+        uint32_t tempo = millis() - tempoInicioTracejado;
+        if (tempo < 80) {
+            SerialBT.println("Frentee!");
+            controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
+            return; 
+        } else {
+            if (pos == 0)    controlMotors(-1.2*VEL_MAX, 1.2*VEL_MAX);
+            if (pos == 7000) controlMotors(1.2*VEL_MAX, -1.2*VEL_MAX);
+        }
+        
     } else {
-        int pid_value = pid.somatory(SETPOINT, pos);
-
-        int vel_m1 = VEL_MAX - pid_value;
-        int vel_m2 = VEL_MAX + pid_value;
-
-        vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
-        vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
-
-        if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
-        else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
-
-        ultimaVel_m1 = vel_m1; // salva
-        ultimaVel_m2 = vel_m2; // salva
-
-        controlMotors(vel_m1, vel_m2);
+        emTracejado = false;
     }
 
-    pos_ant = pos;
+    pos_ant = pos; 
+    
+    int pid_value = pid.somatory(SETPOINT, pos);
+
+    int vel_m1 = VEL_MAX - pid_value;
+    int vel_m2 = VEL_MAX + pid_value;
+
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
+
+    if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
+    else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
+
+    controlMotors(vel_m1, vel_m2);
 }
 
 void ZeGuia::markCounter(uint8_t n){
