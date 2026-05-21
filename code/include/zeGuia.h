@@ -72,6 +72,7 @@ private:
     void loopPerseguidor();
     void enviarLeituraSensores();
     void lineWhite();
+    void lineBlack();
     void markCounter(uint8_t n);
 
 };

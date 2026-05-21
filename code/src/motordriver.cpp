@@ -36,28 +36,6 @@ void controlMotors(int speedA, int speedB){
 
 }
 
-void lineBlack(){
-    int pos = qtr.readLineBlack(sensorValues);
-    int pid_value = pid.somatory(SETPOINT, pos);
-    /*
-    if (pos == 0){
-        if (fail_safe() == true){
-            controlMotors(0, 0);
-            digitalWrite(STBY, LOW);
-        }
-    }
-    */
-
-    int vel_m1 = VEL_MAX - pid_value;
-    int vel_m2 = VEL_MAX + pid_value;
-
-    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
-    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
-
-    controlMotors(vel_m1, vel_m2);
-
-}
-
 void pinModeMotors(){
     analogWriteFrequency(20000);
     pinMode(PWMA, OUTPUT); pinMode(PWMB, OUTPUT);
