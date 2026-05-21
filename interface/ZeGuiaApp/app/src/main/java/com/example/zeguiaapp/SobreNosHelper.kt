@@ -34,12 +34,15 @@ object SobreNosHelper {
             ?.let { (it as? android.view.ViewGroup)?.getChildAt(0) }
             ?: return
 
-        var visible = true
+        dot.visibility = View.VISIBLE
+        dot.alpha = 1.0f
+
+        var aceso = true
         dotRunnable = object : Runnable {
             override fun run() {
-                visible = !visible
-                dot.visibility = if (visible) View.VISIBLE else View.INVISIBLE
-                handler.postDelayed(this, 900)          // pisca a cada 900 ms
+                aceso = !aceso
+                dot.alpha = if (aceso) 1.0f else 0.3f
+                handler.postDelayed(this, 900)
             }
         }
         handler.post(dotRunnable!!)
@@ -54,6 +57,13 @@ object SobreNosHelper {
 
         // Clique no logo abre o modal
         activity.findViewById<View>(R.id.btnLogo)?.setOnClickListener {
+            it.animate()
+                .scaleX(0.78f).scaleY(0.78f)
+                .setDuration(90)
+                .withEndAction {
+                    it.animate().scaleX(1f).scaleY(1f).setDuration(110).start()
+                }
+                .start()
             showModal(activity)
         }
     }

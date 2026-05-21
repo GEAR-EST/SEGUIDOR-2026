@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -122,7 +123,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         SobreNosHelper.setup(this)
 
-        findViewById<View>(R.id.cardConfigEsp).setOnClickListener { abrirModalConfigEsp32() }
+        findViewById<View>(R.id.cardConfigEsp).setOnClickListener {
+            it.animate()
+                .scaleX(0.78f).scaleY(0.78f)
+                .setDuration(90)
+                .withEndAction {
+                    it.animate().scaleX(1f).scaleY(1f).setDuration(110).start()
+                }
+                .start()
+            abrirModalConfigEsp32()
+        }
 
         sharedPreferences = getSharedPreferences("ZeGuiaPrefs", Context.MODE_PRIVATE)
 
@@ -194,6 +204,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<android.view.View>(R.id.cardBluetoothToggle).setOnClickListener {
+            it.animate()
+                .scaleX(0.78f).scaleY(0.78f)
+                .setDuration(90)
+                .withEndAction {
+                    it.animate().scaleX(1f).scaleY(1f).setDuration(110).start()
+                }
+                .start()
             swBluetooth.isChecked = !swBluetooth.isChecked
         }
 
@@ -667,12 +684,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun atualizarCardBluetooth(corHex: String) {
+        val cor = Color.parseColor(corHex)
+        val density = resources.displayMetrics.density
+        val drawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 10f * density
+            setStroke((1f * density).toInt(), Color.argb(80, Color.red(cor), Color.green(cor), Color.blue(cor)))
+            setColor(Color.argb(20, Color.red(cor), Color.green(cor), Color.blue(cor)))
+        }
+        findViewById<View>(R.id.cardBluetoothToggle).background = drawable
+    }
+
     private fun atualizarIconeBluetooth(conectado: Boolean) {
         if (conectado) {
             icon_Bluetooth.setColorFilter(Color.parseColor("#00FF66"))
+            atualizarCardBluetooth("#00FF66")
         } else {
             icon_Bluetooth.setColorFilter(Color.parseColor("#A066FF"))
+            atualizarCardBluetooth("#A066FF")
         }
+    }
+
+    private fun atualizarIconeBluetoothConectando() {
+        icon_Bluetooth.setColorFilter(Color.parseColor("#FFA500"))
+        atualizarCardBluetooth("#FFA500")
     }
 
 
@@ -690,6 +726,8 @@ class MainActivity : AppCompatActivity() {
             findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
             return
         }
+
+        atualizarIconeBluetoothConectando()
 
         Thread {
             try {
@@ -1012,12 +1050,13 @@ class MainActivity : AppCompatActivity() {
             Data/Hora: $dataHoraExport
             Status da Conclusão: $statusCorridaSelecionado
             Tempo Final: $tempoFormatadoParaExportar
-            
+
             > Configurações:
+            ESP32 MAC: $address
             Modo: $modo
             Estratégia: $estrategia
             Qtd. Marcas: $marcas
-            
+
             > Parâmetros PID:
             Vel. Máx: $velMax
             Kp: $kp | Ki: $ki | Kd: $kd
