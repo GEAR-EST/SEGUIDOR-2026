@@ -22,8 +22,13 @@
 
 //14, 27, 26, 25, 33, 32, 35, 34
 
+const uint8_t SensorCount = 8;
+
 extern Preferences preferences;
 extern QTRSensors qtr;
+extern uint16_t sensorValues[SensorCount];
+extern uint16_t readRight;
+extern uint16_t readLeft;
 
 void setup_qtr();
 

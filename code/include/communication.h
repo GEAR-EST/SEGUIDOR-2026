@@ -4,6 +4,8 @@
 #include <BluetoothSerial.h>
 #include <freertos/semphr.h>
 
+#define BATTERY_PIN 13
+
 extern BluetoothSerial SerialBT;
 extern SemaphoreHandle_t btMutex;
 

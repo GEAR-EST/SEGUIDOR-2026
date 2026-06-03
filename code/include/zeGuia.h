@@ -1,5 +1,6 @@
 #pragma once
 #include "commands.h"
+#include "pid.h"
 
 class ZeGuia
 {
@@ -53,6 +54,8 @@ private:
     
     float velMax, kp, ki, kd;
     int novasMarcas;
+
+    PID pid;
 
     void calibrarRobo(); 
     void iniciarCorrida();
