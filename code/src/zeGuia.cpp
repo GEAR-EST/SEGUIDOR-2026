@@ -330,7 +330,7 @@ bool ZeGuia::handleDashed(int pos) {
         if (tempo < 80) {
             SerialBT.println("Frentee!");
             controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
-            return true; // já controlou, interrompe o fluxo pai
+            return true; 
         } else {
             if (pos == 0)    controlMotors(-1.2*VEL_MAX,  1.2*VEL_MAX);
             if (pos == 7000) controlMotors( 1.2*VEL_MAX, -1.2*VEL_MAX);
@@ -340,5 +340,5 @@ bool ZeGuia::handleDashed(int pos) {
         inDashed = false;
     }
 
-    return false; // não tratou, continua o fluxo pai
+    return false;
 }

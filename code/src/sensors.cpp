@@ -11,8 +11,8 @@ uint16_t readRight = 0;
 uint16_t readLeft = 0;
 
 void setup_qtr(){
-    //configuração do QTR-8A
-    qtr.setTypeAnalog(); //tipo de sensor é analogico
+    // Configuração do QTR-8A
+    qtr.setTypeAnalog(); // Tipo de sensor é analógico
 
     // qtr.setSensorPins((const uint8_t[]){14, 27, 26, 25, 33, 32, 35, 34}, SensorCount);
     qtr.setSensorPins((const uint8_t[]){D8_PIN, D7_PIN, D6_PIN, D5_PIN, D4_PIN, D3_PIN, D2_PIN, D1_PIN}, SensorCount);
@@ -22,13 +22,13 @@ void setup_qtr(){
 }
 
 void setup_side_sensors(){
-    //configuração dos sensores laterais
+    // Configuração dos sensores laterais
     pinMode(RightSensor, INPUT);
     pinMode(LeftSensor, INPUT);
 }
 
 void side_sensors_print(){
-    //Sensores laterais
+    // Sensores laterais
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
     SerialBT.print("Direito: "); SerialBT.print(readRight);
@@ -40,13 +40,13 @@ void doCalibration(){
 
     vTaskDelay(pdMS_TO_TICKS(50));
 
-    //calibrando
+    // Calibrando
     
     for (uint16_t i=0; i < 200; i++){
         qtr.calibrate();
     }
 
-    //para depuração, os valores máximo e mínimos na calibração
+    // Para depuração, os valores máximo e mínimos na calibração
     uint16_t max_values[8];
     uint16_t min_values[8];
 
