@@ -258,19 +258,19 @@ void ZeGuia::processarComando(RobotCommand cmd)
 void ZeGuia::lineWhite() {
     int pos = qtr.readLineWhite(sensorValues);
 
-    bool linhaPerdida = ((pos == 0) || (pos == 7000));
+    bool lineLost = ((pos == 0) || (pos == 7000));
 
-    static uint32_t tempoInicioTracejado = 0;
-    static bool emTracejado = false;
+    static uint32_t timeStartDashed = 0;
+    static bool inDashed = false;
 
-    if (linhaPerdida) {
-        if (!emTracejado) {
-            tempoInicioTracejado = millis();
-            emTracejado = true;
+    if (lineLost) {
+        if (!inDashed) {
+            timeStartDashed = millis();
+            inDashed = true;
             SerialBT.println("Em tracejado!");
         }
             
-        uint32_t tempo = millis() - tempoInicioTracejado;
+        uint32_t tempo = millis() - timeStartDashed;
         if (tempo < 80) {
             SerialBT.println("Frentee!");
             controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
@@ -281,7 +281,7 @@ void ZeGuia::lineWhite() {
         }
         
     } else {
-        emTracejado = false;
+        inDashed = false;
     }
 
     pos_ant = pos; 
@@ -303,19 +303,19 @@ void ZeGuia::lineWhite() {
 void ZeGuia::lineBlack(){
     int pos = qtr.readLineBlack(sensorValues);
 
-    bool linhaPerdida = ((pos == 0) || (pos == 7000));
+    bool lineLost = ((pos == 0) || (pos == 7000));
 
-    static uint32_t tempoInicioTracejado = 0;
-    static bool emTracejado = false;
+    static uint32_t timeStartDashed = 0;
+    static bool inDashed = false;
 
-    if (linhaPerdida) {
-        if (!emTracejado) {
-            tempoInicioTracejado = millis();
-            emTracejado = true;
+    if (lineLost) {
+        if (!inDashed) {
+            timeStartDashed = millis();
+            inDashed = true;
             SerialBT.println("Em tracejado!");
         }
             
-        uint32_t tempo = millis() - tempoInicioTracejado;
+        uint32_t tempo = millis() - timeStartDashed;
         if (tempo < 80) {
             SerialBT.println("Frentee!");
             controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
@@ -326,7 +326,7 @@ void ZeGuia::lineBlack(){
         }
         
     } else {
-        emTracejado = false;
+        inDashed = false;
     }
 
     pos_ant = pos; 
