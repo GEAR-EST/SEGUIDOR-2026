@@ -1,19 +1,18 @@
 #include "commands.h"
 #include "communication.h"
-#include "zeGuia.h"
 #include "controls.h"
-#include "globals.h"
 #include "motordriver.h"
 #include "sensors.h"
-#include <Arduino.h>
-#include <Preferences.h>
+#include "zeGuia.h"
 
 extern QueueHandle_t commandsQueue;
 
 void ZeGuia::setup() 
 {
-    _setup();
-    
+    setup_qtr();
+    setup_side_sensors();
+    readCalibration();
+    pinModeMotors();
 }
 
 void ZeGuia::processarMensagem(const RobotMessage& message)
