@@ -100,7 +100,7 @@ O MOSFET IRLZ44N é utilizado para controlar o acionamento do motor coreless res
 
 ### Regulador de Tensão Mini360
 
-<img src="/misc/estudos/media/img/Pinout_Regulador_Tensão Mini 360.png" height="350">
+<img src="/misc/estudos/media/img/Pinout_Regulador_Tensão.png" height="350">
 
 O módulo Mini360 é um conversor DC-DC do tipo buck responsável por reduzir a tensão da bateria LiPo para um nível adequado para alimentação da ESP32 e dos demais componentes eletrônicos do sistema.
 
@@ -142,7 +142,7 @@ O switch é utilizado para ligar e desligar o sistema eletrônico do robô, cont
 
 ### Capacitores (Eletrolítico e Cerâmico)
 
-
+<img src="/misc/estudos/media/img/Pinout_Capacitores.png" height="350">
 
 ### Capacitores dos motores
 
@@ -172,45 +172,90 @@ Para permitir diferentes formas de prototipagem e fabricação, o projeto da PCB
 | Fabricação industrial | JLCPCB |
 | Versão alternativa | PCB usinada em CNC |
 
-## PCB para Fabricação Industrial Versão final
-
-<p align="left">
-  <img src="pcb/PCB_TOP.png" width="35%">
-  <img src="pcb/PCB_BOTTOM.png" width="35%">
-</p>
-
-Layout da placa projetada para fabricação industrial em dupla camada.
-
-### PCB para Fabricação em CNC (possível versão final)
-
-<img src="pcb/PCB_CNC_V2.png" height="400">
-
-Versão da placa adaptada para fabricação em máquina CNC.
-
-### Esquemático Eletrônico
+## Esquemático Eletrônico
 
 O esquemático eletrônico do circuito foi desenvolvido no EasyEDA e representa todas as conexões elétricas entre os componentes do robô, incluindo a alimentação, controle dos motores, sensores e circuito de acionamento da turbina de sucção.
 
-<img src="/electronics/img/Esquemático_PCB_V1.png" width="800">
+<img src="/misc/estudos/media/img/Esquema_Elétrico_EASYEDA.png" height="350">
 
-### Evolução da PCB
+## Evolução da PCB
 
-Durante o desenvolvimento do projeto foram realizadas diversas iterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
+Durante o desenvolvimento do projeto foram realizadas diversas alterações no layout da placa, buscando melhorar o posicionamento dos componentes, otimizar o roteamento das trilhas e adaptar o circuito aos diferentes processos de fabricação.
 
 Como o projeto possui duas versões de placa a evolução de cada versão é apresentada separadamente.
 
-#### PCB Industrial (JLCPCB)
+## PCB Industrial (JLCPCB)
+
+### Primeira versão da PCB
+
+A primeira versão do layout da placa, desenvolvida para fabricação industrial em dupla camada, foi criada em fevereiro. Essa etapa teve como principal objetivo servir como treinamento e aprendizado no desenvolvimento de PCBs mais profissionais, por isso o design adotou um formato mais retangular e simples. Inicialmente, a proposta era apenas produzir uma placa compacta funcional, permitindo estudar melhor a organização dos componentes e o roteamento das trilhas.
+
+Mesmo sendo uma versão inicial, foi possível posicionar todos os componentes necessários, organizar os circuitos de forma mais eficiente e realizar o roteamento das trilhas de alimentação e sinal. Além disso, também foram feitos os primeiros cálculos de largura de trilha, considerando principalmente a distribuição de corrente no circuito.
+
+Essa versão foi consideravelmente mais simples em comparação às posteriores, porém teve um papel importante no desenvolvimento do projeto. O objetivo principal era apresentar a evolução inicial da placa aos demais integrantes do grupo e ao líder da equipe, permitindo receber opiniões, sugestões e avaliar a viabilidade do desenvolvimento até aquele momento.
 
 <p align="left">
   <img src="pcb/PCB_TOP_V1.png" width="35%">
   <img src="pcb/PCB_BOTTOM_V1.png" width="35%">
 </p>
 
-Primeira versão do layout da placa desenvolvida para fabricação industrial em dupla camada.
+### Versão final da PCB
 
-<img src="img/pcb_industrial_v2.png" height="300">
+Para a segunda versão, surgiu a proposta do integrante responsável pela parte mecânica de transformar a própria placa em um chassi estrutural do robô. A ideia principal era reduzir o peso total do projeto, otimizar o espaço interno e tornar a montagem mais prática e eficiente. Dessa forma, a PCB deixaria de ser apenas uma placa eletrônica e passaria também a exercer função estrutural, permitindo fixar diretamente componentes mecânicos como sensores, suportes, ventoinhas e outros acessórios.
 
-Versão otimizada da PCB com melhorias no posicionamento dos componentes e no roteamento das trilhas.
+O modelo do chassi foi desenvolvido pelo mecânico em formato SVG e posteriormente importado para o EasyEDA, onde iniciou-se uma nova etapa de posicionamento dos componentes eletrônicos e roteamento das trilhas. Diferente da primeira versão, esse modelo trouxe desafios significativamente maiores, principalmente devido ao espaço reduzido disponível para acomodar os componentes e realizar o roteamento adequado das conexões elétricas.
+
+Além da necessidade de encaixar corretamente todos os componentes no novo formato da placa, também foi preciso planejar cuidadosamente o trajeto das trilhas em áreas bastante limitadas, evitando interferências e mantendo a integridade elétrica do circuito. Após diversos ajustes, reorganizações e validações, foi possível concluir a versão final da PCB/chassi e verificar todas as conexões através das ferramentas de validação do próprio software, garantindo o funcionamento correto do projeto antes da fabricação.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/PCB_JLC_TOP.png" width="35%">
+  <img src="../misc/estudos/media/img/PCB_JLC_BOTTOM.png" width="35%">
+</p>
+
+### Placa Física
+
+Após um período de grande expectativa, a fabricação da PCB foi concluída e as placas finalmente chegaram em Manaus. O lote veio com cinco unidades, o que possibilitou maior segurança durante a etapa de montagem e testes. Assim que chegaram, iniciou-se imediatamente o processo de soldagem e fixação dos componentes eletrônicos na placa. Essa etapa foi, sem dúvidas, uma das mais desafiadoras de todo o desenvolvimento para mim pois alguns componentes possuíam terminais muito pequenos e exigiam maior precisão durante a soldagem, aumentando significativamente o nível de dificuldade da montagem. Além disso, qualquer excesso de estanho ou pequeno erro poderia comprometer trilhas e conexões importantes da placa.
+
+<img src="/misc/estudos/media/img/Solda_placa.jpeg" height="350">
+
+A primeira unidade montada apresentou alguns problemas relacionados à soldagem, principalmente em pontos mais críticos do circuito. Por conta disso, o líder da equipe decidiu utilizar uma segunda placa para continuar o desenvolvimento. Após soldar novamente e realizar diversos ajustes e bastante dedicação durante o processo de soldagem, todos os componentes foram corretamente instalados e, para nossa satisfação, a placa ligou já no primeiro teste funcional (com apenas a esp32 encaixada). Mesmo sendo necessários alguns ajustes posteriores e pequenas correções ao longo da validação do hardware, o resultado final foi extremamente positivo e marcou uma etapa importante no desenvolvimento do robô.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/Seguidor_montado.jpeg" width="24.3%">
+  <img src="../misc/estudos/media/img/Seguidor_montadoo.jpeg" width="35%">
+</p>
+
+
+Com isso, após a realização de mais alguns testes para validar todo o circuito, foi possível confirmar o funcionamento correto da placa em conjunto com os demais sistemas do robô. Dessa forma, o desenvolvimento da PCB JLC foi finalmente concluído, tanto na parte eletrônica quanto na integração mecânica, resultando em uma versão totalmente funcional do projeto.
+
+
+## PCB Fabricada em CNC
+
+### Primeira versão da PCB CNC
+
+A ideia de desenvolver uma versão usinada da placa em máquina CNC surgiu devido à possibilidade de não conseguirmos solicitar a fabricação da PCB na China, principalmente por conta do tempo de entrega e dos custos envolvidos, já que além do valor em dólar também existem taxas adicionais de importação.
+
+Felizmente, conseguimos realizar o pedido da placa industrial, mas enquanto ela ainda estava em transporte para o Brasil, decidimos continuar o desenvolvimento da versão usinada como alternativa e também como forma de aprendizado. Para isso, foi utilizado o mesmo modelo de placa/chassi e o mesmo posicionamento dos componentes da versão original, alterando principalmente o roteamento das trilhas.
+
+Nessa versão, as trilhas precisavam ser mais largas devido ao processo de usinagem, além da limitação de espaço causada pela grande quantidade de conexões em áreas pequenas, o que tornou o desenvolvimento um desafio considerável. Outro ponto importante foi a necessidade de exportar o projeto em formato bitmap, fazendo com que fosse necessário utilizar o software Proteus. Com isso, toda a parte esquemática, posicionamento dos componentes e roteamento precisou ser refeita praticamente do zero, processo que levou cerca de dois dias para ser concluído.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/Esquemático_PCB_Proteus.bmp" width="35%">
+  <img src="../electronics/pcb/PCB_CNC_V2.png" width="23%">
+</p>
+
+Após essa etapa, iniciamos o processo de usinagem da placa no FabLab, utilizando a máquina MonoFab. Toda a parte de vetorização necessária para a fabricação foi realizada pelo atual vice-capitão do gear, Raysson, permitindo que a PCB fosse finalmente usinada e preparada para os testes físicos do projeto.
+
+<img src="/misc/estudos/media/img/PCB_CNC.jpeg" height="350">
+
+Com isso, iniciei os testes de soldagem na PCB usinada, porém essa acabou sendo a etapa mais complicada do processo. Diferente das placas industriais, a soldagem em placas de fenolite usinadas possui diversas limitações que, se não forem seguidas corretamente, podem comprometer toda a placa.Durante aproximadamente uma semana foram realizados vários testes de solda, mas os resultados avançavam lentamente. Qualquer pequeno contato entre o terminal do componente e áreas indevidas da placa podia gerar curto-circuito, além de que o excesso de retrabalho durante a soldagem acabava danificando os pads ou até rompendo algumas trilhas do circuito. Ao todo, foram produzidas duas versões da placa usinada, porém ambas acabaram sendo perdidas devido aos danos causados durante o processo de montagem e soldagem.
+
+<p align="left">
+  <img src="../misc/estudos/media/img/Falhas_PCB_CNC.jpeg" width="25%">
+  <img src="../misc/estudos/media/img/Falhas1_PCB_CNC.jpeg" width="25%">
+</p>
+
+Por fim, com a chegada das placas fabricadas pela JLCPCB, nosso líder decidiu direcionar totalmente os esforços para a versão industrial da PCB, já que ela apresentava maior confiabilidade, melhor acabamento e menos limitações durante a montagem e soldagem. Dessa forma, o desenvolvimento da versão usinada acabou sendo interrompido e deixado em segundo plano. Mesmo não sendo concluída, essa etapa foi extremamente importante para adquirir experiência com processos de fabricação CNC, limitações de placas fenolite e técnicas de roteamento e soldagem em PCBs usinadas.
 
 ## Estrutura
 
