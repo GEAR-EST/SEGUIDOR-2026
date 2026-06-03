@@ -192,7 +192,7 @@ void ZeGuia:: terminarCorrida()
 
 void ZeGuia::enviarLeituraSensores()
 {
-    uint16_t position = qtr.readLineWhite(sensorValues);
+    uint16_t position = qtr.readLineBlack(sensorValues);
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
 
@@ -203,7 +203,7 @@ void ZeGuia::enviarLeituraSensores()
         for (uint8_t i = 0; i < SensorCount; i++)
         {
             SerialBT.print(',');
-            SerialBT.print(1000 - sensorValues[i]);
+            SerialBT.print(sensorValues[i]);
         }
         SerialBT.print(',');
         SerialBT.print(readRight);
@@ -329,16 +329,20 @@ void ZeGuia::lineBlack(){
         emTracejado = false;
     }
 
+    pos_ant = pos; 
+    
     int pid_value = pid.somatory(SETPOINT, pos);
 
-    int vel_m1 = VEL_MAX - pid_value;
-    int vel_m2 = VEL_MAX + pid_value;
+    int vel_m1 = VEL_MAX + pid_value;
+    int vel_m2 = VEL_MAX - pid_value;
 
     vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
     vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
 
-    controlMotors(vel_m1, vel_m2);
+    if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
+    else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
 
+    controlMotors(vel_m2, vel_m1);
 }
 
 void ZeGuia::markCounter(uint8_t n){
