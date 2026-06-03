@@ -67,5 +67,6 @@ private:
     void lineWhite();
     void lineBlack();
     void markCounter(uint8_t n);
+    bool handleDashed(int pos);
 
 };

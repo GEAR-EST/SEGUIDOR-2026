@@ -258,31 +258,7 @@ void ZeGuia::processarComando(RobotCommand cmd)
 void ZeGuia::lineWhite() {
     int pos = qtr.readLineWhite(sensorValues);
 
-    bool lineLost = ((pos == 0) || (pos == 7000));
-
-    static uint32_t timeStartDashed = 0;
-    static bool inDashed = false;
-
-    if (lineLost) {
-        if (!inDashed) {
-            timeStartDashed = millis();
-            inDashed = true;
-            SerialBT.println("Em tracejado!");
-        }
-            
-        uint32_t tempo = millis() - timeStartDashed;
-        if (tempo < 80) {
-            SerialBT.println("Frentee!");
-            controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
-            return; 
-        } else {
-            if (pos == 0)    controlMotors(-1.2*VEL_MAX, 1.2*VEL_MAX);
-            if (pos == 7000) controlMotors(1.2*VEL_MAX, -1.2*VEL_MAX);
-        }
-        
-    } else {
-        inDashed = false;
-    }
+    if (handleDashed(pos)) return;
 
     pos_ant = pos; 
     
@@ -303,31 +279,7 @@ void ZeGuia::lineWhite() {
 void ZeGuia::lineBlack(){
     int pos = qtr.readLineBlack(sensorValues);
 
-    bool lineLost = ((pos == 0) || (pos == 7000));
-
-    static uint32_t timeStartDashed = 0;
-    static bool inDashed = false;
-
-    if (lineLost) {
-        if (!inDashed) {
-            timeStartDashed = millis();
-            inDashed = true;
-            SerialBT.println("Em tracejado!");
-        }
-            
-        uint32_t tempo = millis() - timeStartDashed;
-        if (tempo < 80) {
-            SerialBT.println("Frentee!");
-            controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
-            return; 
-        } else {
-            if (pos == 0)    controlMotors(-1.2*VEL_MAX, 1.2*VEL_MAX);
-            if (pos == 7000) controlMotors(1.2*VEL_MAX, -1.2*VEL_MAX);
-        }
-        
-    } else {
-        inDashed = false;
-    }
+    if (handleDashed(pos)) return;
 
     pos_ant = pos; 
     
@@ -361,3 +313,32 @@ void ZeGuia::markCounter(uint8_t n){
     }
 }
 
+bool ZeGuia::handleDashed(int pos) {
+    bool lineLost = (pos == 0 || pos == 7000);
+
+    static uint32_t timeStartDashed = 0;
+    static bool inDashed = false;
+
+    if (lineLost) {
+        if (!inDashed) {
+            timeStartDashed = millis();
+            inDashed = true;
+            SerialBT.println("Em tracejado!");
+        }
+
+        uint32_t tempo = millis() - timeStartDashed;
+        if (tempo < 80) {
+            SerialBT.println("Frentee!");
+            controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
+            return true; // já controlou, interrompe o fluxo pai
+        } else {
+            if (pos == 0)    controlMotors(-1.2*VEL_MAX,  1.2*VEL_MAX);
+            if (pos == 7000) controlMotors( 1.2*VEL_MAX, -1.2*VEL_MAX);
+        }
+
+    } else {
+        inDashed = false;
+    }
+
+    return false; // não tratou, continua o fluxo pai
+}
