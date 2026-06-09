@@ -9,6 +9,7 @@ QueueHandle_t commandsQueue;
 ZeGuia zeGuia;
 
 void setup() {
+
   Serial.begin(115200);
   delay(1500);
   Serial.println("Sistema Iniciando...");

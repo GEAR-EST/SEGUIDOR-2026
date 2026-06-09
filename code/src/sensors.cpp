@@ -1,7 +1,4 @@
-#include "globals.h"
 #include "sensors.h"
-#include "controls.h"
-#include "motordriver.h"
 #include "communication.h"
 
 QTRSensors qtr;
@@ -77,7 +74,6 @@ void doCalibration(){
     preferences.putBytes("min_val", min_values, min_values_bytes);
     preferences.end();
 
-    digitalWrite(LED_BUILTIN, LOW);
     SerialBT.println("Calibração terminou :p");
 }
 
