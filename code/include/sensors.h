@@ -1,5 +1,4 @@
-#ifndef SENSORS_H
-#define SENSORS_H
+#pragma once
 
 #include <QTRSensors.h>
 #include <Preferences.h>
@@ -39,5 +38,3 @@ void side_sensors_print();
 void doCalibration();
 
 bool readCalibration();
-
-#endif

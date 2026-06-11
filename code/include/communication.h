@@ -1,5 +1,4 @@
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
+#pragma once
 
 #include <BluetoothSerial.h>
 #include <freertos/semphr.h>
@@ -18,5 +17,3 @@ extern unsigned long past_time;
 const long bat_interval = 10000;
 
 void CommunicationTask(void* pvParameters);
-
-#endif
