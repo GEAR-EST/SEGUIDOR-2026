@@ -1,6 +1,5 @@
 #include "communication.h"
 #include "commands.h"
-#include "globals.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -13,6 +12,7 @@ void SerialMonitorChecked(RobotCommand cmd);
 
 void CommunicationTask(void* pvParameters) 
 {
+    pinMode(BATTERY_PIN, INPUT);
     const uint32_t BATTERY_SEND_INTERVAL_MS = 1000;
     uint32_t lastBatterySendMs = 0;
     bool sensorStreamRequested = false;
