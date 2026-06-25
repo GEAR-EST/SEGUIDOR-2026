@@ -1,11 +1,14 @@
-// ============================================================
-// SobreNosHelper.kt
-// Cole este arquivo em:  app/src/main/java/com/example/zeguiaapp/
-//
-// No seu MainActivity.kt, no onCreate(), chame:
-//   SobreNosHelper.setup(this)
-// ============================================================
-
+/**
+ * @file SobreNosHelper.kt
+ * @brief Gerencia o modal "Sobre Nós" e a animação do ponto piscante no terminal.
+ *
+ * O modal exibe informações da equipe com animação de luzes inspirada no grid de
+ * largada da Fórmula 1: as luzes acendem sequencialmente e apagam de uma vez ("largada!").
+ * O ponto verde no terminal principal pisca a cada 900 ms enquanto a Activity estiver ativa.
+ *
+ * @author Gear Robotics
+ * @version 1.0
+ */
 package com.example.zeguiaapp
 
 import android.content.Context
@@ -13,34 +16,49 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ScrollView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
+/**
+ * @object SobreNosHelper
+ * @brief Singleton que gerencia o ciclo de vida do modal "Sobre Nós" e das animações associadas.
+ *
+ * Deve ser inicializado via [setup] no `onCreate()` e destruído via [onDestroy] no `onDestroy()`
+ * da Activity para evitar memory leaks nos Handlers.
+ */
 object SobreNosHelper {
 
-    // ── Referências para poder cancelar quando a Activity destruir ──
-    private val handler = Handler(Looper.getMainLooper())
+    private val handler   = Handler(Looper.getMainLooper())
+
+    /** @brief Runnable responsável pela animação das luzes no modal. */
     private var luzRunnable: Runnable? = null
+
+    /** @brief Runnable responsável pelo piscar do ponto verde no terminal. */
     private var dotRunnable: Runnable? = null
+
+    /** @brief Referência ao AlertDialog atual para poder descartá-lo no onDestroy. */
     private var dialog: AlertDialog? = null
 
-    // ════════════════════════════════════════════════════════════════
-    //  Ponto verde do Terminal piscando
-    // ════════════════════════════════════════════════════════════════
+    /**
+     * @brief Inicia o piscar do ponto verde no label do terminal.
+     *
+     * O ponto alterna entre alpha 1.0 e 0.3 a cada 900 ms.
+     * Busca o primeiro filho de `terminalLabelContainer` como o view do ponto.
+     *
+     * @param activity Activity onde o view `terminalLabelContainer` está inflado.
+     */
     fun startDotBlink(activity: AppCompatActivity) {
-        // O dot fica dentro de terminalLabelContainer (primeiro filho, um View)
         val dot = activity.findViewById<View>(R.id.terminalLabelContainer)
             ?.let { (it as? android.view.ViewGroup)?.getChildAt(0) }
             ?: return
 
         dot.visibility = View.VISIBLE
-        dot.alpha = 1.0f
+        dot.alpha      = 1.0f
 
         var aceso = true
         dotRunnable = object : Runnable {
             override fun run() {
-                aceso = !aceso
+                aceso   = !aceso
                 dot.alpha = if (aceso) 1.0f else 0.3f
                 handler.postDelayed(this, 900)
             }
@@ -48,29 +66,30 @@ object SobreNosHelper {
         handler.post(dotRunnable!!)
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  Setup geral — chame no onCreate()
-    // ════════════════════════════════════════════════════════════════
+    /**
+     * @brief Configura o helper: inicia o piscar do ponto e registra o clique no logo.
+     *
+     * Deve ser chamado no `onCreate()` da Activity, após `setContentView()`.
+     *
+     * @param activity Activity host que contém os views `terminalLabelContainer` e `btnLogo`.
+     */
     fun setup(activity: AppCompatActivity) {
-        // Dot piscando
         startDotBlink(activity)
-
-        // Clique no logo abre o modal
         activity.findViewById<View>(R.id.btnLogo)?.setOnClickListener {
             it.animate()
                 .scaleX(0.78f).scaleY(0.78f)
                 .setDuration(90)
-                .withEndAction {
-                    it.animate().scaleX(1f).scaleY(1f).setDuration(110).start()
-                }
+                .withEndAction { it.animate().scaleX(1f).scaleY(1f).setDuration(110).start() }
                 .start()
             showModal(activity)
         }
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  Modal Sobre Nós
-    // ════════════════════════════════════════════════════════════════
+    /**
+     * @brief Infla e exibe o modal "Sobre Nós" com animação de luzes.
+     *
+     * @param context Context usado para inflar o layout e criar o AlertDialog.
+     */
     fun showModal(context: Context) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_sobre_nos, null)
         val dlg = AlertDialog.Builder(context)
@@ -80,16 +99,13 @@ object SobreNosHelper {
 
         dlg.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Fechar
         dialogView.findViewById<View>(R.id.btnFecharModal)?.setOnClickListener {
             stopLuzAnimation()
             dlg.dismiss()
         }
         dlg.setOnDismissListener { stopLuzAnimation() }
-
         dlg.show()
 
-        // Inicia animação das luzes após o dialog estar visível
         val luzes = listOf(
             dialogView.findViewById<View>(R.id.luz1),
             dialogView.findViewById<View>(R.id.luz2),
@@ -100,22 +116,23 @@ object SobreNosHelper {
         startLuzAnimation(luzes)
     }
 
-    // ════════════════════════════════════════════════════════════════
-    //  Animação das luzes — estilo grid de largada F1
-    //
-    //  Sequência (loop):
-    //   0. todas apagadas            — 600 ms
-    //   1. luz 1 acende              — 600 ms
-    //   2. luz 1+2 acendem           — 600 ms
-    //   3. luz 1+2+3 acendem         — 600 ms
-    //   4. luz 1+2+3+4 acendem       — 600 ms
-    //   5. todas 5 acendem           — 800 ms
-    //   6. todas APAGAM (largada!)   — 1200 ms de pausa
-    //   → repete
-    // ════════════════════════════════════════════════════════════════
+    /**
+     * @brief Executa a animação de luzes estilo grid de largada F1 em loop.
+     *
+     * Sequência de um ciclo completo:
+     * - Passo 0: todas apagadas (1200 ms de pausa — "largada")
+     * - Passos 1–4: acende uma luz por vez, a cada 600 ms
+     * - Passo 5: todas acesas (800 ms)
+     * - Repete a partir do passo 0
+     *
+     * @param luzes Lista ordenada de Views representando as 5 luzes.
+     */
     private fun startLuzAnimation(luzes: List<View>) {
         val apagada = R.drawable.bg_luz_apagada
         val acesa   = R.drawable.bg_luz_acesa
+        val step    = 600L
+        val hold    = 800L
+        val gap     = 1200L
 
         fun setLuzes(quantas: Int) {
             luzes.forEachIndexed { i, v ->
@@ -123,16 +140,11 @@ object SobreNosHelper {
             }
         }
 
-        val step = 600L   // ms entre cada luz
-        val hold = 800L   // ms com todas acesas
-        val gap  = 1200L  // ms de pausa após apagar (largada)
-
         var currentStep = 0
-
         luzRunnable = object : Runnable {
             override fun run() {
                 when (currentStep) {
-                    0 -> { setLuzes(0); handler.postDelayed(this, gap) }
+                    0 -> { setLuzes(0); handler.postDelayed(this, gap)  }
                     1 -> { setLuzes(1); handler.postDelayed(this, step) }
                     2 -> { setLuzes(2); handler.postDelayed(this, step) }
                     3 -> { setLuzes(3); handler.postDelayed(this, step) }
@@ -145,18 +157,25 @@ object SobreNosHelper {
         handler.post(luzRunnable!!)
     }
 
+    /**
+     * @brief Para a animação das luzes, removendo o Runnable da fila do Handler.
+     */
     private fun stopLuzAnimation() {
         luzRunnable?.let { handler.removeCallbacks(it) }
         luzRunnable = null
     }
 
-    // Chame no onDestroy() da Activity para limpar tudo
+    /**
+     * @brief Libera todos os recursos: para animações, remove callbacks e descarta o diálogo.
+     *
+     * Deve ser chamado no `onDestroy()` da Activity para evitar vazamentos de memória.
+     */
     fun onDestroy() {
         luzRunnable?.let { handler.removeCallbacks(it) }
         dotRunnable?.let { handler.removeCallbacks(it) }
         dialog?.dismiss()
         luzRunnable = null
         dotRunnable = null
-        dialog = null
+        dialog      = null
     }
 }

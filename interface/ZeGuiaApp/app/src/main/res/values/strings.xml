@@ -1,11 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ZeGuiaApp</string>
-    <string name="button_name">Bluetooth</string>
-    <string name="switch_name">LED</string>
-    <string name="bt_k_name">Calibrar</string>
-    <string name="bt_r_name">Começar Corrida</string>
-    <string name="bt_f_name">Finalizar Corrida</string>
-    <string name="bt_m_name">Escolher Modo</string>
 
+    <!-- Accessibility descriptions -->
+    <string name="desc_logo_gear">Sobre nós</string>
+    <string name="desc_fechar">Fechar</string>
+    <string name="desc_qr_code">QR Code do projeto</string>
 
+    <!-- activity_main.xml -->
+    <string name="app_title">ZÉ-GUIA</string>
+    <string name="label_esp32_ativo">ESP32 ATIVO</string>
+    <string name="mac_padrao">C0:49:EF:65:16:FE</string>
+    <string name="label_quadro_geral">QUADRO GERAL</string>
+    <string name="label_cronometro">CRONÔMETRO</string>
+    <string name="label_parametros">PARÂMETROS</string>
+    <string name="label_kp">Kp</string>
+    <string name="label_ki">Ki</string>
+    <string name="label_kd">Kd</string>
+    <string name="label_vm">Vm</string>
+    <string name="label_informacoes">INFORMAÇÕES</string>
+    <string name="label_estado">Estado</string>
+    <string name="label_modo">Modo</string>
+    <string name="label_estrategia">Estratégia</string>
+    <string name="label_bateria">BATERIA</string>
+    <string name="label_controles">CONTROLES</string>
+    <string name="btn_calibrar">CALIBRAR</string>
+    <string name="btn_sensores">SENSORES</string>
+    <string name="label_modo_titulo">MODO</string>
+    <string name="btn_seguidor">SEGUIDOR</string>
+    <string name="btn_perseguidor">PERSEGUIDOR</string>
+    <string name="label_estrategia_titulo">ESTRATÉGIA</string>
+    <string name="btn_conservador">CONSERVADOR</string>
+    <string name="btn_arriscado">ARRISCADO</string>
+    <string name="btn_comecar_corrida">COMEÇAR\nCORRIDA</string>
+    <string name="btn_finalizar_corrida">FINALIZAR\nCORRIDA</string>
+    <string name="label_terminal">TERMINAL</string>
+
+    <!-- dialog_sobre_nos.xml -->
+    <string name="gear_descricao">Grupo de Estudos Aplicados à Robótica</string>
+    <string name="uea_descricao">Universidade do\nEstado do Amazonas</string>
+    <string name="titulo_grid_largada">GRID DE LARGADA</string>
+    <string name="subtitulo_criadores">OS CRIADORES</string>
+    <string name="label_posicoes">POSIÇÕES</string>
+    <string name="membro_celio">Célio Benjamim</string>
+    <string name="cargo_celio">LÍDER &amp; MECÂNICA</string>
+    <string name="posicao_1">P1</string>
+    <string name="membro_fernanda">Fernanda Cabral</string>
+    <string name="cargo_fernanda">GESTÃO &amp; DESIGN</string>
+    <string name="posicao_2">P2</string>
+    <string name="membro_leandra">Leandra Matos</string>
+    <string name="cargo_leandra">DEV APP</string>
+    <string name="posicao_3">P3</string>
+    <string name="membro_matheus">Matheus Eduardo</string>
+    <string name="cargo_matheus">DEV FIRMWARE</string>
+    <string name="posicao_4">P4</string>
+    <string name="membro_luan">Luan Maciel</string>
+    <string name="cargo_luan">ELETRÔNICA</string>
+    <string name="posicao_5">P5</string>
+    <string name="label_escaneie_qr">ESCANEIE O QR CODE</string>
+
+    <!-- modal_esp32.xml -->
+    <string name="titulo_configurar">CONFIGURAR</string>
+    <string name="titulo_esp32">ESP32</string>
+    <string name="label_dispositivos_salvos">DISPOSITIVOS SALVOS</string>
+    <string name="label_ativo">ATIVO</string>
+    <string name="label_adicionar_novo">ADICIONAR NOVO</string>
+    <string name="label_endereco_mac">Endereço MAC</string>
+    <string name="hint_mac">XX:XX:XX:XX:XX:XX</string>
+    <string name="btn_adicionar">ADICIONAR</string>
+    <string name="btn_confirmar_selecao">CONFIRMAR SELEÇÃO</string>
+
+    <!-- modal_exportar.xml -->
+    <string name="titulo_resumo_corrida">RESUMO DA CORRIDA</string>
+    <string name="label_data_hora">DATA / HORA</string>
+    <string name="label_tempo_final">TEMPO FINAL</string>
+    <string name="label_robo">ROBÔ</string>
+    <string name="label_configuracoes">CONFIGURAÇÕES</string>
+    <string name="label_endereco_mac_esp32">Endereço MAC - ESP32</string>
+    <string name="label_parametros_pid">PARÂMETROS PID</string>
+    <string name="label_vel_max">Vel. Máx</string>
+    <string name="label_conclusao">CONCLUSÃO</string>
+    <string name="btn_completa">COMPLETA</string>
+    <string name="btn_parcial">PARCIAL</string>
+    <string name="label_observacoes">OBSERVAÇÕES</string>
+    <string name="hint_observacoes">Digite suas observações sobre a corrida…</string>
+    <string name="btn_copiar_transferencia">COPIAR PARA ÁREA DE TRANSFERÊNCIA</string>
+
+    <!-- modal_sensores.xml -->
+    <string name="titulo_monitoramento">MONITORAMENTO\nDOS SENSORES</string>
+    <string name="label_posicao">POSIÇÃO</string>
+    <string name="label_sensores">SENSORES</string>
+    <string name="sensor_s1">S1</string>
+    <string name="sensor_s2">S2</string>
+    <string name="sensor_s3">S3</string>
+    <string name="sensor_s4">S4</string>
+    <string name="sensor_s5">S5</string>
+    <string name="sensor_s6">S6</string>
+    <string name="sensor_s7">S7</string>
+    <string name="sensor_s8">S8</string>
+    <string name="label_direcao">DIREÇÃO</string>
+    <string name="label_esquerda">Esquerda</string>
+    <string name="label_direita">Direita</string>
+
+    <!-- editar_parametros.xml -->
+    <string name="titulo_editar_parametros">EDITAR\nPARÂMETROS</string>
+    <string name="label_velocidade_maxima">Velocidade Máxima (VM)</string>
+    <string name="stepper_menos">-</string>
+    <string name="stepper_mais">+</string>
+    <string name="label_constante_kp">Constante de Proporcionalidade (Kp)</string>
+    <string name="label_constante_ki">Constante de Integral (Ki)</string>
+    <string name="label_constante_kd">Constante de Derivação (Kd)</string>
+    <string name="label_contador_marcas">Contador de Marcas</string>
+    <string name="btn_cancelar">CANCELAR</string>
+    <string name="btn_salvar">SALVAR</string>
 </resources>

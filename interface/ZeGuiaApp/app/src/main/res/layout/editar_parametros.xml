@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#150B24"
-    android:padding="24dp">
+    android:padding="24dp"
+    tools:ignore="Overdraw">
 
     <LinearLayout
         android:id="@+id/layoutHeader"
@@ -19,15 +21,14 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="12dp"
-            android:contentDescription="Editar"
-            android:src="@drawable/ic_edit_pencil"
-             />
+            android:contentDescription="@null"
+            android:src="@drawable/ic_edit_pencil" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/sourcecodepro_bold"
-            android:text="EDITAR\nPARÂMETROS"
+            android:text="@string/titulo_editar_parametros"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -41,7 +42,7 @@
         android:layout_alignParentEnd="true"
         app:layout_constraintTop_toTopOf="@+id/layoutHeader"
         android:background="@drawable/bg_close_button"
-        android:contentDescription="Fechar"
+        android:contentDescription="@string/desc_fechar"
         android:src="@drawable/ic_close"
         app:tint="#EBB3FF" />
 
@@ -73,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="Velocidade Máxima (VM)"
+                android:text="@string/label_velocidade_maxima"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
@@ -91,7 +92,7 @@
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="-"
+                    android:text="@string/stepper_menos"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -106,14 +107,16 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:text="7.0"
                     android:textColor="#00FF66"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <TextView
                     android:id="@+id/btnAumentarV"
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="+"
+                    android:text="@string/stepper_mais"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -132,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="Constante de Proporcionalidade (Kp)"
+                android:text="@string/label_constante_kp"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
@@ -150,7 +153,7 @@
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="-"
+                    android:text="@string/stepper_menos"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -165,14 +168,16 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:text="1.7"
                     android:textColor="#00FF66"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <TextView
                     android:id="@+id/btnAumentarKp"
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="+"
+                    android:text="@string/stepper_mais"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -191,7 +196,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="Constante de Integral (Ki)"
+                android:text="@string/label_constante_ki"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
@@ -209,7 +214,7 @@
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="-"
+                    android:text="@string/stepper_menos"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -224,14 +229,16 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:text="1.8"
                     android:textColor="#00FF66"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <TextView
                     android:id="@+id/btnAumentarKi"
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="+"
+                    android:text="@string/stepper_mais"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -250,7 +257,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="Constante de Derivação (Kd)"
+                android:text="@string/label_constante_kd"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
@@ -268,7 +275,7 @@
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="-"
+                    android:text="@string/stepper_menos"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -283,14 +290,16 @@
                     android:inputType="numberDecimal|numberSigned"
                     android:text="2.5"
                     android:textColor="#00FF66"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <TextView
                     android:id="@+id/btnAumentarKd"
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="+"
+                    android:text="@string/stepper_mais"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -309,7 +318,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="Contador de Marcas"
+                android:text="@string/label_contador_marcas"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
@@ -327,7 +336,7 @@
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="-"
+                    android:text="@string/stepper_menos"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -342,14 +351,16 @@
                     android:inputType="number"
                     android:text="11"
                     android:textColor="#00FF66"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:importantForAutofill="no"
+                    tools:ignore="HardcodedText,LabelFor" />
 
                 <TextView
                     android:id="@+id/btnAumentarMarcas"
                     android:layout_width="24dp"
                     android:layout_height="32dp"
                     android:gravity="center"
-                    android:text="+"
+                    android:text="@string/stepper_mais"
                     android:textColor="#A066FF"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -372,7 +383,7 @@
             android:layout_marginEnd="12dp"
             android:layout_weight="1"
             android:fontFamily="@font/sourcecodepro_bold"
-            android:text="CANCELAR"
+            android:text="@string/btn_cancelar"
             android:textColor="#EBB3FF"
             android:textSize="14sp"
             android:textStyle="bold"
@@ -386,7 +397,7 @@
             android:layout_height="54dp"
             android:layout_weight="1"
             android:fontFamily="@font/sourcecodepro_bold"
-            android:text="SALVAR"
+            android:text="@string/btn_salvar"
             android:textColor="#EBB3FF"
             android:textSize="14sp"
             android:textStyle="bold"

@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
@@ -22,7 +23,7 @@
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@id/btnFecharExportar"
             android:fontFamily="@font/sourcecodepro_bold"
-            android:text="RESUMO DA CORRIDA"
+            android:text="@string/titulo_resumo_corrida"
             android:textColor="#EBB3FF"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -35,6 +36,7 @@
             android:layout_alignTop="@id/txtTituloExportar"
             android:background="@drawable/bg_close_button"
             android:src="@drawable/ic_close"
+            android:contentDescription="@string/desc_fechar"
             app:tint="#EBB3FF" />
 
         <View
@@ -52,6 +54,7 @@
             android:layout_below="@id/topDivider"
             android:orientation="horizontal"
             android:weightSum="7"
+            android:baselineAligned="false"
             android:layout_marginTop="16dp">
 
             <LinearLayout
@@ -59,32 +62,34 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2.5"
                 android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DATA / HORA" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold"/>
-                <TextView android:id="@+id/txtResumoData" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08/05/2026&#10;19:05" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="monospace" android:layout_marginTop="4dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_data_hora" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" />
+                <TextView android:id="@+id/txtResumoData" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="monospace" android:layout_marginTop="4dp" tools:ignore="HardcodedText" />
             </LinearLayout>
 
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438"/>
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2.5"
                 android:orientation="vertical"
-                android:paddingStart="12dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TEMPO FINAL" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold"/>
-                <TextView android:id="@+id/txtResumoTempo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="000.000" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="4dp"/>
+                android:paddingStart="12dp"
+                android:paddingEnd="0dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_tempo_final" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" />
+                <TextView android:id="@+id/txtResumoTempo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="4dp" tools:ignore="HardcodedText" />
             </LinearLayout>
 
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438"/>
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:orientation="vertical"
-                android:paddingStart="12dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ROBÔ" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold"/>
-                <TextView android:id="@+id/txtResumoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Zé-Guia" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="4dp"/>
+                android:paddingStart="12dp"
+                android:paddingEnd="0dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_robo" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" />
+                <TextView android:id="@+id/txtResumoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_marginTop="4dp" tools:ignore="HardcodedText" />
             </LinearLayout>
         </LinearLayout>
 
@@ -96,7 +101,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="CONFIGURAÇÕES" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="@string/label_configuracoes" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp" />
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#3A215C" />
         </LinearLayout>
 
@@ -109,18 +114,18 @@
             android:orientation="vertical">
 
             <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Endereço MAC - ESP32" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoMac" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="C0:49:EF:65:16:FE" android:textColor="#00FF66" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_endereco_mac_esp32" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoMac" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="—" android:textColor="#00FF66" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
             </RelativeLayout>
 
             <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Modo" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoModo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Seguidor" android:textColor="#00FF66" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_modo" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoModo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="—" android:textColor="#00FF66" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
             </RelativeLayout>
 
             <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Estratégia" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoEstrategia" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Conservador" android:textColor="#00FF66" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_estrategia" android:textColor="#A09DA5" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoEstrategia" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="—" android:textColor="#00FF66" android:textSize="12sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -132,7 +137,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="PARÂMETROS PID" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="@string/label_parametros_pid" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp" />
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#3A215C" />
         </LinearLayout>
 
@@ -143,23 +148,24 @@
             android:layout_below="@id/sectionPid"
             android:layout_marginTop="14dp"
             android:orientation="horizontal"
+            android:baselineAligned="false"
             android:weightSum="4">
 
             <LinearLayout android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:layout_marginEnd="4dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kp" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoKp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="15.6" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_kp" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoKp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp" tools:ignore="HardcodedText" />
             </LinearLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ki" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoKi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2.2" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_ki" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoKi" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp" tools:ignore="HardcodedText" />
             </LinearLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:layout_marginHorizontal="2dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kd" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoKd" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.0" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_kd" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoKd" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp" tools:ignore="HardcodedText" />
             </LinearLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="60dp" android:layout_weight="1" android:layout_marginStart="4dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Vel. Máx" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold"/>
-                <TextView android:id="@+id/txtResumoVelMax" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0.5" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/label_vel_max" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                <TextView android:id="@+id/txtResumoVelMax" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="14sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" android:layout_marginTop="2dp" tools:ignore="HardcodedText" />
             </LinearLayout>
         </LinearLayout>
 
@@ -171,7 +177,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="CONCLUSÃO" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="@string/label_conclusao" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp" />
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#3A215C" />
         </LinearLayout>
 
@@ -192,7 +198,7 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="6dp"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="COMPLETA"
+                android:text="@string/btn_completa"
                 android:textColor="#A09DA5"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -208,7 +214,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="6dp"
                 android:fontFamily="@font/sourcecodepro_bold"
-                android:text="PARCIAL"
+                android:text="@string/btn_parcial"
                 android:textColor="#A09DA5"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -225,7 +231,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="OBSERVAÇÕES" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" android:text="@string/label_observacoes" android:textColor="#A09DA5" android:textSize="11sp" android:textStyle="bold" android:layout_marginEnd="8dp" />
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#3A215C" />
         </LinearLayout>
 
@@ -237,13 +243,15 @@
             android:layout_marginTop="14dp"
             android:background="@drawable/bg_sensor_card"
             android:gravity="top|start"
-            android:hint="Digite suas observações sobre a corrida..."
+            android:hint="@string/hint_observacoes"
             android:textColorHint="#433B54"
             android:textColor="#FFFFFF"
             android:textSize="13sp"
             android:fontFamily="@font/sourcecodepro_bold"
             android:padding="14dp"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:importantForAutofill="no"
+            tools:ignore="LabelFor" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCopiarResumo"
@@ -254,17 +262,15 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="4dp"
             android:fontFamily="@font/sourcecodepro_bold"
-            android:text="COPIAR PARA ÁREA DE TRANSFERÊNCIA"
+            android:text="@string/btn_copiar_transferencia"
             android:textColor="#EBB3FF"
             android:textSize="13sp"
             android:textStyle="bold"
             app:cornerRadius="14dp"
             app:icon="@drawable/ic_copy"
+            app:iconTint="@null"
             app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconTint="#EBB3FF"
-            app:strokeColor="#EBB3FF"
-            app:strokeWidth="1.5dp" />
+            app:iconSize="18dp" />
 
     </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>
