@@ -63,6 +63,10 @@
     <string name="desc_editar_esp">Editar endereço MAC</string>
     <string name="desc_excluir_esp">Excluir dispositivo</string>
     <string name="label_editar_mac">EDITAR MAC</string>
+    <string name="titulo_excluir">EXCLUIR</string>
+    <string name="titulo_dispositivo">DISPOSITIVO</string>
+    <string name="msg_confirmar_exclusao">Tem certeza que deseja excluir o dispositivo salvo?</string>
+    <string name="btn_excluir">EXCLUIR</string>
     <string name="titulo_configurar">CONFIGURAR</string>
     <string name="titulo_esp32">ESP32</string>
     <string name="label_dispositivos_salvos">DISPOSITIVOS SALVOS</string>

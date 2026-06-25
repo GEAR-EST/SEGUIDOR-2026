@@ -156,20 +156,26 @@ class EspConfigHelper(
                 Toast.makeText(activity, "Não é possível excluir o único dispositivo salvo", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            AlertDialog.Builder(activity)
-                .setTitle("Excluir dispositivo")
-                .setMessage("Tem certeza que deseja excluir o dispositivo?\n\n$macSelecionadoAtual")
-                .setPositiveButton("Excluir") { _, _ ->
-                    savedMacs.remove(macSelecionadoAtual)
-                    sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
-                    macSelecionadoAtual = savedMacs.first()
-                    dropdownSelectedMac.text = macSelecionadoAtual
-                    layoutEditarMac.isVisible = false
-                    atualizarLista()
-                    Toast.makeText(activity, "Dispositivo removido", Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton("Cancelar", null)
-                .show()
+            val confirmView = activity.layoutInflater.inflate(R.layout.dialog_excluir_esp, null)
+            val confirmDialog = AlertDialog.Builder(activity)
+                .setView(confirmView)
+                .create()
+                .also { it.window?.setBackgroundDrawableResource(android.R.color.transparent) }
+
+            confirmView.findViewById<TextView>(R.id.txtMacExcluir).text = macSelecionadoAtual
+            confirmView.findViewById<View>(R.id.btnFecharExclusao).setOnClickListener { confirmDialog.dismiss() }
+            confirmView.findViewById<MaterialButton>(R.id.btnCancelarExclusao).setOnClickListener { confirmDialog.dismiss() }
+            confirmView.findViewById<MaterialButton>(R.id.btnConfirmarExclusao).setOnClickListener {
+                savedMacs.remove(macSelecionadoAtual)
+                sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
+                macSelecionadoAtual = savedMacs.first()
+                dropdownSelectedMac.text = macSelecionadoAtual
+                layoutEditarMac.isVisible = false
+                atualizarLista()
+                confirmDialog.dismiss()
+                Toast.makeText(activity, "Dispositivo removido", Toast.LENGTH_SHORT).show()
+            }
+            confirmDialog.show()
         }
 
         val podeConfirmar = !isSocketOpen() || estadoAtual == "Parado"
