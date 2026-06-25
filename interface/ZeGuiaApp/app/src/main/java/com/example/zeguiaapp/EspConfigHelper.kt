@@ -79,6 +79,9 @@ class EspConfigHelper(
         val btnFechar             = dialogView.findViewById<View>(R.id.btnFecharModalEsp)
         val btnEditarEsp          = dialogView.findViewById<View>(R.id.btnEditarEsp)
         val btnExcluirEsp         = dialogView.findViewById<View>(R.id.btnExcluirEsp)
+        val layoutEditarMac       = dialogView.findViewById<LinearLayout>(R.id.layoutEditarMac)
+        val editMacAtivo          = dialogView.findViewById<EditText>(R.id.editMacAtivo)
+        val btnSalvarEdicao       = dialogView.findViewById<MaterialButton>(R.id.btnSalvarEdicao)
 
         var macSelecionadoAtual = getAddress()
         dropdownSelectedMac.text = macSelecionadoAtual
@@ -119,37 +122,33 @@ class EspConfigHelper(
 
         btnFechar.setOnClickListener { dialog.dismiss() }
 
+        editMacAtivo.addTextChangedListener(criarMacWatcher(editMacAtivo))
+
         btnEditarEsp.setOnClickListener {
-            val editText = EditText(activity).apply {
-                setText(macSelecionadoAtual)
-                addTextChangedListener(criarMacWatcher(this))
-                inputType = android.text.InputType.TYPE_CLASS_TEXT or
-                        android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
-                filters = arrayOf(android.text.InputFilter.LengthFilter(17))
-                setTextColor("#FFFFFF".toColorInt())
-                setHintTextColor("#5A5266".toColorInt())
-                hint = "XX:XX:XX:XX:XX:XX"
-                setPadding(48, 32, 48, 32)
+            val mostrar = !layoutEditarMac.isVisible
+            layoutEditarMac.isVisible = mostrar
+            if (mostrar) {
+                dropdownListCard.isVisible = false
+                editMacAtivo.setText(macSelecionadoAtual)
+                editMacAtivo.setSelection(editMacAtivo.text.length)
+                editMacAtivo.requestFocus()
             }
-            AlertDialog.Builder(activity)
-                .setTitle("Editar endereço MAC")
-                .setView(editText)
-                .setPositiveButton("Salvar") { _, _ ->
-                    val novoMac = editText.text.toString().trim()
-                    if (novoMac.matches(Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$"))) {
-                        savedMacs.remove(macSelecionadoAtual)
-                        savedMacs.add(novoMac)
-                        macSelecionadoAtual = novoMac
-                        sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
-                        dropdownSelectedMac.text = novoMac
-                        atualizarLista()
-                        Toast.makeText(activity, "MAC atualizado!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(activity, "MAC inválido! Use o formato XX:XX:XX:XX:XX:XX", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .setNegativeButton("Cancelar", null)
-                .show()
+        }
+
+        btnSalvarEdicao.setOnClickListener {
+            val novoMac = editMacAtivo.text.toString().trim()
+            if (novoMac.matches(Regex("^([0-9A-F]{2}:){5}[0-9A-F]{2}$"))) {
+                savedMacs.remove(macSelecionadoAtual)
+                savedMacs.add(novoMac)
+                macSelecionadoAtual = novoMac
+                sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
+                dropdownSelectedMac.text = novoMac
+                layoutEditarMac.isVisible = false
+                atualizarLista()
+                Toast.makeText(activity, "MAC atualizado!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(activity, "MAC inválido! Use o formato XX:XX:XX:XX:XX:XX", Toast.LENGTH_SHORT).show()
+            }
         }
 
         btnExcluirEsp.setOnClickListener {
@@ -157,12 +156,20 @@ class EspConfigHelper(
                 Toast.makeText(activity, "Não é possível excluir o único dispositivo salvo", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            savedMacs.remove(macSelecionadoAtual)
-            sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
-            macSelecionadoAtual = savedMacs.first()
-            dropdownSelectedMac.text = macSelecionadoAtual
-            atualizarLista()
-            Toast.makeText(activity, "Dispositivo removido", Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(activity)
+                .setTitle("Excluir dispositivo")
+                .setMessage("Tem certeza que deseja excluir o dispositivo?\n\n$macSelecionadoAtual")
+                .setPositiveButton("Excluir") { _, _ ->
+                    savedMacs.remove(macSelecionadoAtual)
+                    sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
+                    macSelecionadoAtual = savedMacs.first()
+                    dropdownSelectedMac.text = macSelecionadoAtual
+                    layoutEditarMac.isVisible = false
+                    atualizarLista()
+                    Toast.makeText(activity, "Dispositivo removido", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
 
         val podeConfirmar = !isSocketOpen() || estadoAtual == "Parado"
