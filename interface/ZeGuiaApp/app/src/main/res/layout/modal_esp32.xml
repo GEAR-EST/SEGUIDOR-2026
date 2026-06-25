@@ -218,8 +218,7 @@
                                 android:layout_height="22dp"
                                 android:layout_gravity="center"
                                 android:contentDescription="@string/desc_excluir_esp"
-                                app:srcCompat="@drawable/ic_trash"
-                                app:tint="#A066FF" />
+                                android:src="@drawable/ic_trash" />
                         </FrameLayout>
 
                     </LinearLayout>
@@ -353,6 +352,7 @@
 
         <!-- ============ SECTION 2: ADICIONAR NOVO ============ -->
         <LinearLayout
+            android:id="@+id/sectionAdicionarNovo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

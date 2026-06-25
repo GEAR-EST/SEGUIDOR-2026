@@ -82,6 +82,7 @@ class EspConfigHelper(
         val layoutEditarMac       = dialogView.findViewById<LinearLayout>(R.id.layoutEditarMac)
         val editMacAtivo          = dialogView.findViewById<EditText>(R.id.editMacAtivo)
         val btnSalvarEdicao       = dialogView.findViewById<MaterialButton>(R.id.btnSalvarEdicao)
+        val sectionAdicionarNovo  = dialogView.findViewById<LinearLayout>(R.id.sectionAdicionarNovo)
 
         var macSelecionadoAtual = getAddress()
         dropdownSelectedMac.text = macSelecionadoAtual
@@ -127,6 +128,7 @@ class EspConfigHelper(
         btnEditarEsp.setOnClickListener {
             val mostrar = !layoutEditarMac.isVisible
             layoutEditarMac.isVisible = mostrar
+            sectionAdicionarNovo.isVisible = !mostrar
             if (mostrar) {
                 dropdownListCard.isVisible = false
                 editMacAtivo.setText(macSelecionadoAtual)
@@ -144,6 +146,7 @@ class EspConfigHelper(
                 sharedPrefs.edit { putStringSet("savedMacs", HashSet(savedMacs)) }
                 dropdownSelectedMac.text = novoMac
                 layoutEditarMac.isVisible = false
+                sectionAdicionarNovo.isVisible = true
                 atualizarLista()
                 Toast.makeText(activity, "MAC atualizado!", Toast.LENGTH_SHORT).show()
             } else {
@@ -171,6 +174,7 @@ class EspConfigHelper(
                 macSelecionadoAtual = savedMacs.first()
                 dropdownSelectedMac.text = macSelecionadoAtual
                 layoutEditarMac.isVisible = false
+                sectionAdicionarNovo.isVisible = true
                 atualizarLista()
                 confirmDialog.dismiss()
                 Toast.makeText(activity, "Dispositivo removido", Toast.LENGTH_SHORT).show()
