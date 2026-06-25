@@ -500,13 +500,12 @@ class MainActivity : AppCompatActivity(), BluetoothEventListener {
         val parModo  = parts[0].lowercase()
         val parStrat = parts[1].lowercase()
         val prefix   = "${parModo}_${parStrat}_"
-        sharedPreferences.edit().apply {
+        sharedPreferences.edit {
             putString("${prefix}paramV",      parts[2])
             putString("${prefix}paramKp",     parts[3])
             putString("${prefix}paramKi",     parts[4])
             putString("${prefix}paramKd",     parts[5])
             putString("${prefix}paramMarcas", parts[6])
-            apply()
         }
         if (parModo == parametrosHelper.modoAtual && parStrat == parametrosHelper.estrategiaAtual) {
             parametrosHelper.atualizarDisplay()

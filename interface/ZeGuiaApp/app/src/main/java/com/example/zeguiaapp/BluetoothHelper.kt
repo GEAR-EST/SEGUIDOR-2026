@@ -129,6 +129,7 @@ class BluetoothHelper(
      * para evitar reenvio duplicado ao dispensar o diálogo.
      */
     fun desconectar() {
+        if (btSocket == null && !continuarEscutando) return
         try {
             continuarEscutando = false
             if (sensoresHelper.modalAberto) {
@@ -169,6 +170,8 @@ class BluetoothHelper(
      *
      * Executa em uma thread de background. Termina automaticamente quando
      * [continuarEscutando] é `false` ou o stream é encerrado.
+     * Se o stream encerrar inesperadamente (queda de sinal), notifica o listener
+     * e restaura o switch para permitir nova tentativa de conexão.
      */
     private fun receberDados() {
         Thread {
@@ -180,6 +183,14 @@ class BluetoothHelper(
                     activity.runOnUiThread { despacharMensagem(mensagem.trim()) }
                 } catch (e: IOException) {
                     break
+                }
+            }
+            if (continuarEscutando) {
+                continuarEscutando = false
+                btSocket = null
+                activity.runOnUiThread {
+                    swBluetooth.isChecked = false
+                    listener.onDisconnected()
                 }
             }
         }.start()
