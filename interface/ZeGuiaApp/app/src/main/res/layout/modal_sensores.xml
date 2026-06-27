@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
@@ -29,13 +30,14 @@
                 android:layout_height="32dp"
                 android:layout_marginEnd="12dp"
                 android:src="@drawable/ic_sensor"
+                android:contentDescription="@null"
                 app:tint="#A066FF" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/orbitron"
-                android:text="MONITORAMENTO\nDOS SENSORES"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/titulo_monitoramento"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -50,6 +52,7 @@
             android:layout_alignTop="@id/layoutHeader"
             android:background="@drawable/bg_close_button"
             android:src="@drawable/ic_close"
+            android:contentDescription="@string/desc_fechar"
             app:tint="#A066FF" />
 
         <View
@@ -72,12 +75,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/orbitron"
-                android:text="POSIÇÃO"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/label_posicao"
                 android:textColor="#A09DA5"
                 android:textSize="11sp"
                 android:textStyle="bold"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="8dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -100,9 +103,10 @@
                 android:textColor="#00FF66"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"
+                android:fontFamily="@font/sourcecodepro_bold"
                 android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                tools:ignore="HardcodedText" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -124,9 +128,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace" android:layout_alignParentStart="true"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3500" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace" android:layout_centerInParent="true"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7000" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace" android:layout_alignParentEnd="true"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_alignParentStart="true" tools:ignore="HardcodedText" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3500" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_centerInParent="true" tools:ignore="HardcodedText" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7000" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_alignParentEnd="true" tools:ignore="HardcodedText" />
                 </RelativeLayout>
             </LinearLayout>
         </RelativeLayout>
@@ -143,12 +147,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/orbitron"
-                android:text="SENSORES"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/label_sensores"
                 android:textColor="#A09DA5"
                 android:textSize="11sp"
                 android:textStyle="bold"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="8dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -168,28 +172,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:baselineAligned="false"
                 android:weightSum="4"
                 android:layout_marginBottom="10dp">
 
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S1" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="486" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="486" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s1" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS1" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S2" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="508" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="508" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s2" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS2" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S3" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="531" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="531" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s3" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS3" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginStart="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S4" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="548" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="548" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s4" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS4" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -197,27 +202,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:baselineAligned="false"
                 android:weightSum="4">
 
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S5" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="628" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="628" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s5" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS5" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S6" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1000" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="1000" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s6" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS6" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S7" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1000" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="1000" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s7" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS7" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginStart="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="S8" android:textColor="#A09DA5" android:textSize="10sp" android:fontFamily="monospace"/>
-                    <TextView android:id="@+id/txtS8" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="655" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="monospace" android:textStyle="bold"/>
-                    <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="655" android:progressDrawable="@drawable/bg_horizontal_progress"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s8" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS8" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS8" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -234,12 +240,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/orbitron"
-                android:text="DIREÇÃO"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/label_direcao"
                 android:textColor="#A09DA5"
                 android:textSize="11sp"
                 android:textStyle="bold"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="8dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -255,6 +261,7 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/bg_sensor_card"
             android:orientation="horizontal"
+            android:baselineAligned="false"
             android:weightSum="4">
 
             <TextView
@@ -262,13 +269,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.2"
                 android:gravity="center"
-                android:text="Esquerda"
+                android:text="@string/label_esquerda"
                 android:textColor="#A09DA5"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"/>
+                android:fontFamily="@font/sourcecodepro_bold" />
 
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438"/>
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
 
             <TextView
                 android:id="@+id/txtDirecaoEsquerdaValor"
@@ -280,22 +287,23 @@
                 android:textColor="#00FF66"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"/>
+                android:fontFamily="@font/sourcecodepro_bold"
+                tools:ignore="HardcodedText" />
 
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438"/>
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.2"
                 android:gravity="center"
-                android:text="Direita"
+                android:text="@string/label_direita"
                 android:textColor="#A09DA5"
                 android:textSize="13sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"/>
+                android:fontFamily="@font/sourcecodepro_bold" />
 
-            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438"/>
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
 
             <TextView
                 android:id="@+id/txtDirecaoDireitaValor"
@@ -303,11 +311,12 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
                 android:gravity="center"
-                android:text="1"
+                android:text="0"
                 android:textColor="#00FF66"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"/>
+                android:fontFamily="@font/sourcecodepro_bold"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
     </RelativeLayout>

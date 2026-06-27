@@ -35,7 +35,7 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="LockedOrientationActivity,DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
