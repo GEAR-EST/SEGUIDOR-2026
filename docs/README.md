@@ -39,6 +39,10 @@ Na tabela a seguir será possível observar a lista com todos os componentes uti
 
 *Inserir explicações e evolução da lógica do robô e da [Programação](../code). Se achar necessário, pode adicionar diagramas para explicar a lógica de funcionamento, como um fluxograma ou máquina de estados*
 
+## 5. Interface de Controle
+
+O robô é controlado remotamente pelo **ZeGuiaApp**, um aplicativo Android nativo desenvolvido em **Kotlin**, que se comunica com a ESP32 via **Bluetooth Classic (SPP/RFCOMM)**. O app permite ao operador calibrar os sensores, selecionar modo e estratégia, ajustar os parâmetros PID, iniciar e finalizar corridas, monitorar a leitura dos sensores em tempo real e exportar um resumo de performance ao final de cada corrida. A documentação completa da interface está em [interface/README.md](../interface/README.md).
+
 ## 5. Resultados
 
 *Inserir imagens e vídeos (link do youtube) do robô funcionando, em competição e foto da equipe completa*

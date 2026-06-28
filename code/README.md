@@ -1,47 +1,126 @@
-> *OBS: Este arquivo (code/README.md) deve ser excluído, ele serve apenas como guia para entender como é organizado o este diretório (/code). Então mesmo que não tenha a seguir textos em itálico, este arquivo por completo deve ser excluído futuramente*
+# Diretório de Código
 
----
+Este diretório contém o firmware do robô ZeGuia, desenvolvido com o framework **Arduino** sobre **FreeRTOS** utilizando **PlatformIO** como ambiente de build.
 
-Este é um template de projeto padrão para desenvolvimento com [PlatformIO](https://platformio.org/). Ele fornece uma estrutura de pastas limpa e organizada, ideal para iniciar seus projetos de sistemas embarcados.
-
-O objetivo deste template é promover as melhores práticas de organização de código, separando a lógica da aplicação, configurações, bibliotecas e testes.
+O firmware roda em uma **ESP32** e é responsável por toda a lógica de controle do robô: leitura de sensores, controle PID dos motores, comunicação Bluetooth com o ZeGuiaApp e persistência de parâmetros na memória não volátil (NVS).
 
 ## Estrutura de Diretórios
 
-O projeto está organizado da seguinte forma:
-
 ```
 code/
-├── .pio/                       # Arquivos de compilação e firmware (gerado automaticamente, não está no git)
-├── .vscode/                    # Configurações do editor Visual Studio Code (gerado automaticamente, não está no git)
-├── include/                    # Arquivos de cabeçalho (.h) globais do projeto
-├── lib/                        # Bibliotecas privadas (específicas do projeto). Para bibliotecas externas, use o arquivo `platformio.ini`
-├── src/                        # Arquivos de código-fonte (.c, .cpp) da aplicação
-├── platformio.ini              # Arquivo de configuração principal do PlatformIO
-└── README.md --> ESTE ARQUIVO  # Organização do template
+├── include/          # Cabeçalhos (.h) compartilhados entre os módulos
+├── lib/              # Bibliotecas externas (QTR Sensors, L298N)
+├── src/              # Código-fonte principal (.cpp)
+└── platformio.ini    # Configuração da placa, framework e dependências
 ```
 
-### Descrição
+## Arquitetura do Firmware
 
-  * `├── .pio/`
+O firmware é organizado em dois módulos principais executados como **tasks FreeRTOS** em núcleos separados da ESP32:
 
-      * Este diretório é gerenciado pelo PlatformIO e contém os arquivos de compilação, dependências baixadas e o firmware final (`.bin` ou `.hex`). **Ele deve ser ignorado pelo git, em [.gitignore](.gitignore).**
+| Task | Núcleo | Prioridade | Responsabilidade |
+|---|---|---|---|
+| `CommunicationTask` | 0 | 1 | Bluetooth, parsing de mensagens, envio de bateria |
+| `ControlsTask` | 1 | 3 | Lógica PID, controle de motores, sensores |
 
-  * `├── .vscode/`
+As tasks se comunicam exclusivamente via **fila FreeRTOS** (`commandsQueue`) do tipo `RobotMessage`, sem compartilhamento de variáveis direto entre núcleos.
 
-      * Contém as configurações específicas para o editor Visual Studio Code, como definições do IntelliSense. Também é gerenciado automaticamente.
+---
 
-  * `├── include/`
+## Módulo de Comunicação
 
-      * Use este diretório para arquivos de cabeçalho (`.h`, `.hpp`) que precisam ser compartilhados entre diferentes partes do seu código-fonte em `src/`. Um exemplo clássico é um arquivo `config.h` com definições de pinos e constantes globais.
+### Visão Geral
 
-  * `├── lib/`
+O módulo de comunicação gerencia toda a troca de dados entre o firmware e o **ZeGuiaApp** via **Bluetooth Classic SPP** (Serial Port Profile), emulando uma porta serial sem fio sobre o protocolo RFCOMM.
 
-      * Local ideal para bibliotecas internas e específicas do projeto. Cada biblioteca deve estar em sua própria subpasta (ex: `lib/MySensorLib/`). O PlatformIO automaticamente compila e vincula essas bibliotecas ao projeto. É perfeito para encapsular e reutilizar código. Se for uma biblioteca externa, usar o [`lib_deps`](https://docs.platformio.org/en/latest/projectconf/sections/env/options/library/lib_deps.html) dentro de [`platformio.ini`](platformio.ini)
+É composto por três arquivos:
 
-  * `├── src/`
+| Arquivo | Função |
+|---|---|
+| `include/communication.h` | Declarações públicas: `CommunicationTask`, `SerialBT`, `btMutex`, `send_battery` |
+| `src/communication.cpp` | Implementação da task, parsing do protocolo, callback SPP e envio de bateria |
+| `include/commands.h` | Enum `RobotCommand` e struct `RobotMessage` — unidade de dado da fila |
 
-      * O coração da sua aplicação. O código-fonte principal (`.c`, `.cpp`) reside aqui. O arquivo `main.cpp` (ou `main.c`), que contém as funções `setup()` e `loop()`, é o ponto de entrada do programa.
+### Protocolo de Comunicação
 
-  * `└── platformio.ini`
-      * Este é o arquivo de configuração mais importante do projeto. Nele você define a placa em que está desenvolvendo (`board`), o framework (`framework`), as bibliotecas de que o projeto depende (`lib_deps`) e outras opções de configuração do projeto PlatformIO. Para saber quais configurações podem ser feitas, acesse: [https://docs.platformio.org/en/stable/projectconf/index.html](https://docs.platformio.org/en/stable/projectconf/index.html)
+#### App → ESP32 (entrada)
+
+| Mensagem | Comando gerado | Ação |
+|---|---|---|
+| `K` | `CMD_CALIBRATE` | Calibra os sensores |
+| `R` | `CMD_START` | Inicia a corrida |
+| `F` | `CMD_STOP` | Para a corrida |
+| `S` | `CMD_MODE_FOLLOWER` | Seleciona modo Seguidor |
+| `P` | `CMD_MODE_CHASE` | Seleciona modo Perseguidor |
+| `C` | `CMD_STRATEGY_CONSERVATIVE` | Seleciona estratégia Conservadora |
+| `A` | `CMD_STRATEGY_RISK` | Seleciona estratégia Arriscada |
+| `L` | `CMD_SENSOR_STREAM_ON` | Liga stream de sensores |
+| `l` | `CMD_SENSOR_STREAM_OFF` | Desliga stream de sensores |
+| `Q` | `CMD_GET_PARAMS` | Solicita todos os parâmetros PID salvos |
+| `PID:V\|Kp\|Ki\|Kd\|Marcas` | `hasPidTunings = true` | Atualiza parâmetros PID |
+
+#### ESP32 → App (saída)
+
+| Prefixo | Conteúdo | Uso no app |
+|---|---|---|
+| `Estado: X` | `Calibrando`, `Calibrado`, `Correndo`, `Parado` | Atualiza máquina de estados da UI |
+| `Modo: X` | `Seguidor`, `Perseguidor` | Atualiza label de modo |
+| `Estrategia: X` | `Conservador`, `Arriscado` | Atualiza label de estratégia |
+| `PARAMS:Modo\|Estrat\|V\|Kp\|Ki\|Kd\|Marcas` | 7 campos por `\|` | Sincroniza parâmetros com SharedPreferences |
+| `BAT<valor>` | Inteiro 0–100 | Atualiza indicador de bateria |
+| `S,pos,s1..s8,dir,esq` | 12 campos por `,` | Atualiza modal de sensores |
+| `-> mensagem` | Texto livre | Exibido no terminal do app |
+
+### Thread Safety
+
+O `SerialBT` é acessado por duas tasks simultâneas (`CommunicationTask` que lê, e `ZeGuia::enviarLeituraSensores` / `enviarTodosParametros` que escrevem). O acesso de escrita é protegido pelo **btMutex** (`SemaphoreHandle_t`), garantindo que apenas uma task utilize o SerialBT por vez.
+
+### Callback SPP
+
+Ao **conectar**, o callback envia uma mensagem de boas-vindas, interrompe qualquer stream de sensores residual e solicita automaticamente os parâmetros PID via `CMD_GET_PARAMS`. Ao **desconectar**, encerra o stream de sensores para evitar envios sem receptor.
+
+### Bateria
+
+A função `send_battery()` é chamada dentro do loop da `CommunicationTask` a cada **10 segundos** (`bat_interval`). Realiza 16 leituras analógicas do pino de bateria, calcula a média e mapeia o resultado para 0–100%, enviando no formato `BAT<percentual>`.
+
+---
+
+## Módulo Principal — ZeGuia
+
+O módulo ZeGuia define o esqueleto da lógica principal do robô. A classe `ZeGuia` foi estruturada com a **máquina de estados interna** e as assinaturas de todos os métodos necessários, servindo de base para que os demais contribuidores implementem a lógica de controle e PID.
+
+| Arquivo | Função |
+|---|---|
+| `include/zeGuia.h` | Declaração da classe, enums de modo/estratégia e assinaturas dos métodos |
+| `src/zeGuia.cpp` | Esqueleto de implementação com a máquina de estados e estrutura de chamadas |
+
+### Máquina de Estados Interna
+
+O estado do robô é representado por quatro atributos da classe, que determinam o que o `loop()` executa a cada ciclo:
+
+| Atributo | Tipo | Descrição |
+|---|---|---|
+| `mode` | `RobotMode` | `MODE_NONE`, `MODE_FOLLOWER` ou `MODE_CHASE` |
+| `strategy` | `RobotStrategy` | `S_NONE`, `S_CONSERVATIVE` ou `S_RISK` |
+| `running` | `bool` | `true` enquanto a corrida está em andamento |
+| `sensorStreaming` | `bool` | `true` enquanto o stream de sensores está ativo |
+
+As transições de estado são disparadas por `processarComando()`, que recebe comandos da `commandsQueue` e atualiza os atributos acima. A lógica de cada estado (controle PID, streaming, parada autônoma) está estruturada nos métodos privados e deve ser completada pelo contribuidor responsável pela parte de controle.
+
+---
+
+## Módulo de Controle e PID
+
+*A ser documentado.*
+
+---
+
+## Módulo de Sensores
+
+*A ser documentado.*
+
+---
+
+## Módulo de Motores
+
+*A ser documentado.*
