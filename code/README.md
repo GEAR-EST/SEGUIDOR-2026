@@ -41,6 +41,16 @@ O módulo de comunicação gerencia toda a troca de dados entre o firmware e o *
 | `src/communication.cpp` | Implementação da task, parsing do protocolo, callback SPP e envio de bateria |
 | `include/commands.h` | Enum `RobotCommand` e struct `RobotMessage` — unidade de dado da fila |
 
+### Funcionamento
+
+A `CommunicationTask` roda em loop infinito no núcleo 0. A cada iteração ela lê os bytes disponíveis no `SerialBT` caractere por caractere, acumulando-os numa string até encontrar o `\n` que indica fim de linha. Ao completar uma linha, remove espaços (`trim()`) e inicia o parsing.
+
+Se a linha começa com `PID:`, os campos são extraídos por índice de separador `|` e armazenados nos campos de PID da `RobotMessage`, com `hasPidTunings = true`. Se a linha tem um único caractere, ele é mapeado diretamente para o `RobotCommand` correspondente no `switch`. Em ambos os casos, a mensagem montada é colocada na `commandsQueue` via `xQueueSend`.
+
+Do outro lado, a `ControlsTask` consome essa fila e chama `zeGuia.processarMensagem()`, que aplica os parâmetros PID se presentes e executa o comando. Esse fluxo garante que a leitura do Bluetooth e o controle dos motores nunca disputem o mesmo núcleo.
+
+Além da leitura, a cada iteração da task é chamada `send_battery()`, que verifica se já passou o intervalo de 10 segundos e, se sim, lê o pino de bateria e envia `BAT<percentual>` ao app. Ao fim de cada iteração, a task aguarda 50 ms com `vTaskDelay` para não monopolizar o núcleo.
+
 ### Protocolo de Comunicação
 
 #### App → ESP32 (entrada)
