@@ -2,7 +2,7 @@
 
 Este diretório contém todos os arquivos relacionados ao desenvolvimento da interface de controle do robô seguidor de linha do projeto *SEGUIDOR-2026*.
 
-Aqui está reunida a aplicação Android **ZéGuia App**, desenvolvida em *Kotlin*, que permite ao operador monitorar e controlar o robô em tempo real por meio de conexão Bluetooth. O diretório reúne o código-fonte do aplicativo, a evolução do design no Figma e os registros de cada versão lançada ao longo do projeto.
+Aqui está reunida a aplicação Android **ZeGuiaApp**, desenvolvida em *Kotlin* no *Android Studio*, que permite ao operador monitorar e controlar o robô em tempo real por meio de conexão Bluetooth. O diretório reúne o código-fonte do aplicativo, a evolução do design no Figma e os registros de cada versão lançada ao longo do projeto.
 
 O objetivo deste diretório é documentar a arquitetura do aplicativo, registrar a evolução das versões e facilitar a compreensão do funcionamento completo da interface de controle.
 
@@ -10,7 +10,11 @@ O objetivo deste diretório é documentar a arquitetura do aplicativo, registrar
 
 ## Visão Geral
 
-O **ZéGuia App** é um aplicativo Android nativo desenvolvido em **Kotlin** utilizando o padrão de Activity única (`MainActivity`). Toda a lógica de comunicação, controle de estados, atualização de UI e persistência de dados reside em um único arquivo Kotlin, com os layouts definidos em arquivos XML separados por responsabilidade.
+<video controls src="img/tela-principal/VisaoGeral.mp4" alt="Vídeo de demonstração do ZeGuiaApp em funcionamento durante uma corrida completa">Seu navegador não suporta vídeo HTML5.</video>
+
+*Demonstração do ZeGuiaApp em funcionamento completo*
+
+O **ZeGuiaApp** é um aplicativo Android nativo desenvolvido em **Kotlin** com arquitetura modular baseada em helpers especializados e Activity única (`MainActivity`). A lógica é distribuída em 11 arquivos Kotlin, cada um com responsabilidade única: a `MainActivity` atua como orquestradora, conectando os helpers entre si e implementando a interface `BluetoothEventListener` para reagir aos eventos da ESP32. Os layouts são definidos em arquivos XML separados por tela e modal.
 
 A comunicação com o robô é feita via **Bluetooth Classic** (protocolo RFCOMM, SPP), trocando mensagens de texto simples entre o aplicativo e o firmware da ESP32.
 
@@ -30,11 +34,9 @@ A comunicação com o robô é feita via **Bluetooth Classic** (protocolo RFCOMM
 
 ## Ícone do Aplicativo
 
-> Insira aqui a imagem do ícone final do ZéGuia App
+![Ícone do ZeGuiaApp: logo do GEAR com engrenagem estilizada sobre fundo escuro](<img/icone/LOGO APP.png>)
 
-```
-[ESPAÇO PARA FOTO DO ÍCONE]
-```
+*Ícone oficial do ZeGuiaApp*
 
 ---
 
@@ -42,7 +44,9 @@ A comunicação com o robô é feita via **Bluetooth Classic** (protocolo RFCOMM
 
 A tela principal do aplicativo é composta por seções organizadas verticalmente, cada uma com uma função específica no controle do robô.
 
-<img src="img/tela_v10.jpg" height="700" width="auto">
+![Tela principal do ZeGuiaApp versão 10 com cronômetro, parâmetros PID, bateria, controles de modo, estratégia e terminal Bluetooth](img/tela-principal/TelaPrincipal.jpg)
+
+*Tela principal do ZeGuiaApp — versão final (v10)*
 
 ### Estrutura da Tela
 
@@ -59,7 +63,7 @@ Barra superior com fundo escuro `#130822` contendo logo, título e dois botões 
 
 Card principal com label **QUADRO GERAL** e botão de exportar no canto superior direito (ícone de upload, habilitado somente após uma corrida finalizada). Internamente dividido em dois blocos lado a lado:
 
-- **Bloco esquerdo — Cronômetro**: ícone gráfico de relógio e display digital verde neon no formato `M.SS` (minutos e segundos com centésimos)
+- **Bloco esquerdo — Cronômetro**: ícone gráfico de relógio e display digital verde neon no formato `SS.cc` (segundos inteiros e centésimos)
 - **Bloco direito — Parâmetros**: exibe Kp, Ki, Kd e Vm do modo/estratégia atual com ícone de lápis para abrir edição; abaixo, seção **INFORMAÇÕES** com Estado, Modo e Estratégia do robô em tempo real
 
 #### Card Bateria
@@ -70,22 +74,22 @@ Card separado abaixo do Quadro Geral. Exibe o percentual numérico à esquerda e
 
 Dois botões lado a lado:
 
-- **CALIBRAR** — envia o comando `K` para o firmware; bloqueia todos os demais botões enquanto o estado `Calibrando` está ativo
-- **SENSORES** — abre o modal de leitura dos sensores em tempo real
+- **CALIBRAR** — envia o comando `K` para o firmware; o robô percorre os sensores sobre a pista e o fundo branco para aprender os valores mínimos e máximos de reflexão de cada sensor, definindo os limiares que diferenciam linha de fundo. Sem calibração, o robô não consegue interpretar corretamente a posição da linha. Todos os demais botões ficam bloqueados durante a calibração.
+- **SENSORES** — abre o modal de leitura dos sensores em tempo real. Útil para verificar se os sensores estão lendo corretamente antes de uma corrida — por exemplo, identificar sensores sujos, mal posicionados ou com valores fora do esperado — sem precisar iniciar a corrida.
 
 #### Seção Modo
 
 Agrupamento com dois botões de seleção:
 
-- **SEGUIDOR** — define o robô no modo seguidor de linha; envia comando `S`
-- **PERSEGUIDOR** — define o robô no modo de perseguição; envia comando `P`
+- **SEGUIDOR** — o robô segue a linha da pista e para de forma autônoma; envia comando `S`
+- **PERSEGUIDOR** — além de seguir a linha, o robô deve chegar perto de alcançar o robô adversário na pista; envia comando `P`
 
 #### Seção Estratégia
 
 Aparece abaixo da seleção de modo:
 
-- **CONSERVADOR** — aplica a estratégia conservadora; envia comando `C` e carrega os parâmetros salvos para a combinação modo+conservador
-- **ARRISCADO** — aplica a estratégia arriscada; envia comando `A` e carrega os parâmetros salvos para a combinação modo+arriscado
+- **CONSERVADOR** — parâmetros calibrados para garantir que o robô complete a volta com segurança, priorizando estabilidade sobre velocidade; envia comando `C`
+- **ARRISCADO** — parâmetros com maior velocidade e ganhos mais agressivos, mas com maior risco de o robô perder a linha; envia comando `A`
 
 #### Botões de Corrida
 
@@ -122,11 +126,11 @@ Cada parâmetro possui botões `+` e `−` (stepper) e campo de edição direta.
 PID:VM|Kp|Ki|Kd|Marcas
 ```
 
-> Insira aqui a foto do modal de editar parâmetros
 
-```
-[ESPAÇO PARA FOTO DO MODAL EDITAR PARÂMETROS]
-```
+![Modal de edição de parâmetros PID com campos de VM, Kp, Ki, Kd e Marcas, cada um com botões de incremento e decremento](img/modais/EditarParametros.jpg)
+
+*Modal de edição de parâmetros — steppers de ±0,01 para Kp, Ki, Kd e ±1 para VM e Marcas*
+
 
 ---
 
@@ -145,11 +149,9 @@ POS: XXXX
 ESQ: XX | DIR: XX
 ```
 
-> Insira aqui a foto do modal de sensores
+![Modal de leitura dos sensores exibindo os 8 sensores QTR-8RC em grade 4x2, posição da linha e leitura dos sensores laterais esquerdo e direito](img/modais/TelaSensores.jpg)
 
-```
-[ESPAÇO PARA FOTO DO MODAL SENSORES]
-```
+*Modal de sensores — leitura em tempo real dos 8 sensores ópticos e sensores laterais*
 
 ---
 
@@ -169,11 +171,9 @@ Gera um resumo formatado da corrida com os dados:
 
 O botão de copiar só é habilitado após a seleção do status da corrida. O resumo é copiado para a área de transferência do celular para facilitar o registro de performance.
 
-> Insira aqui a foto do modal de exportar
+![Modal de exportação de feedback de corrida com tempo final, configurações, parâmetros PID, seleção de status e campo de observações](img/modais/ModalExportar.jpg)
 
-```
-[ESPAÇO PARA FOTO DO MODAL EXPORTAR]
-```
+*Modal de exportar — resumo da corrida pronto para copiar para a área de transferência*
 
 ---
 
@@ -191,11 +191,10 @@ O campo de texto formata automaticamente o MAC conforme a digitação, inserindo
 
 Os endereços MAC são persistidos em `SharedPreferences` como um conjunto (`Set<String>`), permitindo alternar entre diferentes unidades do robô sem redigitar.
 
-> Insira aqui a foto do modal de configurar ESP32
+![Modal de configuração da ESP32 com lista de endereços MAC cadastrados, campo para adicionar novo MAC e opções de editar e excluir](img/modais/ModalConfigurarEsp32.jpg)
 
-```
-[ESPAÇO PARA FOTO DO MODAL CONFIGURAR ESP32]
-```
+*Modal de configuração da ESP32 — gerenciamento de endereços MAC salvos*
+
 
 ---
 
@@ -205,17 +204,15 @@ Acessado pelo logo do GEAR no header.
 
 Exibe informações sobre a equipe criadora do robô, incluindo nomes, funções, logo do GEAR, logo da instituição e QR Code para o Instagram do GEAR.
 
-> Insira aqui a foto do modal sobre nós
+<video controls src="img/modais/Modal_SobreNos.mp4" alt="Vídeo do modal Sobre Nós com animação de luzes sequenciais inspirada no grid de largada da Fórmula 1, exibindo nomes e funções da equipe GEAR">Seu navegador não suporta vídeo HTML5.</video>
 
-```
-[ESPAÇO PARA FOTO DO MODAL SOBRE NÓS]
-```
+*Modal Sobre Nós — animação de largada F1 com apresentação da equipe, logo GEAR e QR Code do Instagram*
 
 ---
 
 ## Arquivos Kotlin
 
-A partir da versão 8, o código foi **modularizado**: a lógica que antes estava inteiramente em `MainActivity.kt` foi distribuída em 10 arquivos helpers especializados, seguindo o princípio de responsabilidade única. A `MainActivity` passou a atuar apenas como orquestradora, conectando os helpers entre si.
+O código segue uma arquitetura modular com 11 arquivos Kotlin, cada um com responsabilidade única. A `MainActivity` atua como orquestradora, instanciando e conectando os helpers via injeção manual de dependências e implementando os callbacks de `BluetoothEventListener`.
 
 ### `BluetoothEventListener.kt`
 
@@ -307,7 +304,7 @@ Orquestradora da aplicação. Instancia e conecta todos os helpers via injeção
 | `inicializarViews()` | Localiza e atribui todas as views do layout |
 | `inicializarHelpers()` | Instancia todos os helpers e registra listeners de botões |
 | `configurarListeners()` | Registra listeners do switch Bluetooth e dos cards do header |
-| `animarClique()` | Animação de "aperto" (scale 78%→100%) nos botões do header |
+| `animarClique()` | Animação de "apertar" (scale 78%→100%) nos botões do header |
 | `atualizarEstadoEdicaoParametros()` | Habilita/desabilita o botão de edição conforme estratégia ativa |
 | `atualizarBateria()` | Atualiza percentual e 10 barras de cor dinâmica |
 | `onConnected()` / `onDisconnected()` / `onConnectionFailed()` | Callbacks Bluetooth → atualiza ícone e estado da UI |
@@ -351,9 +348,9 @@ Orquestradora da aplicação. Instancia e conecta todos os helpers via injeção
 
 O aplicativo implementa uma máquina de estados baseada nas mensagens recebidas do robô. Cada estado habilita ou desabilita um conjunto específico de botões da interface.
 
-```
-[ESPAÇO PARA DIAGRAMA DA MÁQUINA DE ESTADOS]
-```
+![Diagrama de máquina de estados do ZeGuiaApp mostrando os estados Desconectado, Conectado, Calibrando, Calibrado, Modo Selecionado, Estratégia Selecionada, Em Corrida e Corrida Finalizada com suas transições](img/fluxo/FSM-SeguidorPerseguidorDeLinha(v3).drawio.png)
+
+*Máquina de estados do aplicativo — transições disparadas por mensagens recebidas da ESP32*
 
 | Estado | Gatilho | Botões habilitados |
 |---|---|---|
@@ -370,9 +367,6 @@ O aplicativo implementa uma máquina de estados baseada nas mensagens recebidas 
 
 ## Fluxo de Uso do Aplicativo
 
-```
-[ESPAÇO PARA DIAGRAMA DE FLUXO / DIAGRAMA DE ATIVIDADES]
-```
 
 O fluxo completo para realizar uma corrida é:
 
@@ -429,283 +423,123 @@ Antes de usar o aplicativo, é necessário parear a ESP32 com o celular pelo men
 
 ---
 
-## Diagramas UML
-
-### Diagrama de Casos de Uso
-
-Representa as principais interações do operador com o sistema.
-
-```
-[ESPAÇO PARA DIAGRAMA DE CASOS DE USO]
-```
-
----
-
-### Diagrama de Sequência: Fluxo de Conexão e Corrida
-
-Representa a troca de mensagens entre o App e a ESP32 durante uma corrida completa.
-
-```
-[ESPAÇO PARA DIAGRAMA DE SEQUÊNCIA]
-```
-
----
-
-### Diagrama de Máquina de Estados
-
-Representa os estados da interface e as transições causadas pelas mensagens recebidas do robô.
-
-```
-[ESPAÇO PARA DIAGRAMA DE MÁQUINA DE ESTADOS UML]
-```
-
----
-
-### Diagrama de Atividades: Fluxo de Uso
-
-Representa o fluxo de ações do operador desde a abertura do app até o fim de uma corrida.
-
-```
-[ESPAÇO PARA DIAGRAMA DE ATIVIDADES]
-```
-
----
-
-### Diagrama de Componentes
-
-Representa a arquitetura de componentes do sistema, incluindo App, Bluetooth, ESP32 e Firmware.
-
-```
-[ESPAÇO PARA DIAGRAMA DE COMPONENTES]
-```
-
----
-
 ## Evolução do Design — Figma
 
-O design do ZéGuia App foi desenvolvido iterativamente no **Figma**, acompanhando as versões do aplicativo. Abaixo estão os registros de cada versão do protótipo.
+O design do ZeGuiaApp foi desenvolvido iterativamente no **Figma**. Abaixo estão os registros de cada versão do protótipo.
 
 ### Versão 1
 
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V1]
-```
+![Protótipo Figma v1 da tela principal do ZeGuiaApp com layout inicial de controles](<img/figma/v1/Tela Principal_Figma.png>)
+
+*Tela principal — protótipo inicial*
+
+![Protótipo Figma v1 dos cards de Bluetooth e LED com switches de controle](<img/figma/v1/Bluetooth e Led_v1.png>)
+
+*Cards de Bluetooth e LED — versão 1*
+
+![Protótipo Figma v1 dos botões de Calibrar, Dot, Start e Finish](<img/figma/v1/Calibrar_Dot_Start_Finish v1.png>)
+
+*Botões de controle de corrida — versão 1*
+
+---
 
 ### Versão 2
 
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V2]
-```
+![Protótipo Figma v2 da tela principal com atualização de layout e novos componentes visuais](<img/figma/v2/Tela Principal - Versão 2.png>)
+
+*Tela principal — versão 2*
+
+![Protótipo Figma v2 do card de toggle de Bluetooth e LED com novo visual](img/figma/v2/ToggleCard_Bluetooth_LedV2.png)
+
+*Toggle card de Bluetooth e LED — versão 2*
+
+![Protótipo Figma v2 da seção de modos e estratégias com botões Seguidor, Perseguidor, Conservador e Arriscado](img/figma/v2/Modos_Estrategias_v2.png)
+
+*Seção de modos e estratégias — versão 2*
+
+![Protótipo Figma v2 dos modais de alerta e confirmação](img/figma/v2/Modais_alertas.png)
+
+*Modais de alerta — versão 2*
+
+---
 
 ### Versão 3
 
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V3]
-```
+![Protótipo Figma v3 da tela principal com refinamentos visuais e atualização de componentes](<img/figma/v3/Tela Principal - Versão 3.png>)
 
-### Versão 4
+*Tela principal — versão 3*
 
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V4]
-```
+![Protótipo Figma v3 do toggle card de LED e Bluetooth com novo estilo visual](img/figma/v3/ToogleCard_Led_BT(v3).png)
 
-### Versão 5
-
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V5]
-```
-
-### Versão 6
-
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V6]
-```
-
-### Versão 7
-
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V7]
-```
-
-### Versão 8
-
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V8]
-```
-
-### Versão 9
-
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V9]
-```
-
-### Versão 10 (Final)
-
-```
-[ESPAÇO PARA IMAGEM DO FIGMA V10]
-```
+*Toggle card de LED e Bluetooth — versão 3*
 
 ---
 
-## Histórico de Versões
+### Versão 4 — Final do Figma
 
-### Versão 1
+![Protótipo Figma v4 final da tela principal sincronizada com a versão 10 do app](<img/figma/v4/Tela Principal - Versão 4.png>)
 
-Primeira versão funcional do ZéGuia App. Implementação base da comunicação Bluetooth com a ESP32 e tela de controle inicial.
+*Tela principal — versão 4 (final do Figma)*
 
-> Insira aqui a foto da tela da versão 1
+![Protótipo Figma v4 do modal Sobre Nós com cards dos membros da equipe GEAR](<img/figma/v4/Sobre Nós.png>)
 
-```
-[ESPAÇO PARA FOTO DA VERSÃO 1]
-```
+*Modal Sobre Nós — versão 4*
 
----
+![Protótipo Figma v4 mostrando o estado das luzes acesas na animação de largada do modal Sobre Nós](<img/figma/v4/Luzes Acesas.png>)
 
-### Versão 2 — ESP32 `88:57:21:7A:C6:1E`
+*Animação de luzes acesas no modal Sobre Nós — inspiração no grid de largada da F1*
 
-- Edição de parâmetros expandida: `velEsq`, `velDir` e `Contador de Marcas`
-- Componente visual de bateria dinâmico com atualização conforme percentual recebido da ESP32
-- Botão **Exportar** para registro de informações e performance após finalizar corrida
+![Protótipo Figma v4 do toggle card de Bluetooth com estados de cor para desconectado, conectando e conectado](<img/figma/v4/Toggle Card - Bluetooth (v4).png>)
 
-> Insira aqui a foto da tela da versão 2
+*Toggle card de Bluetooth com estados visuais — versão 4*
 
-```
-[ESPAÇO PARA FOTO DA VERSÃO 2]
-```
+![Protótipo Figma v4 do modal de leitura de sensores em grade 4x2 com posição e leituras laterais](img/figma/v4/Sensores.png)
 
----
+*Modal de sensores — versão 4*
 
-### Versão 3 — ESP32 `88:57:21:7A:C6:1E`
+![Protótipo Figma v4 do modal de edição de parâmetros PID com steppers de incremento](<img/figma/v4/Parâmetros.png>)
 
-- Parâmetros vinculados a modo e estratégia: 4 conjuntos independentes salvos em memória
-  - (1) Seguidor + Conservador
-  - (2) Seguidor + Arriscado
-  - (3) Perseguidor + Conservador
-  - (4) Perseguidor + Arriscado
-- Ao selecionar modo e estratégia, o card de parâmetros exibe automaticamente os valores salvos para aquela combinação
-- Novo estado **Calibrado** após conclusão da calibração; demais botões bloqueados durante calibração
-- Cronômetro com fonte maior para melhor visualização
-- Orientação do aplicativo bloqueada em retrato
+*Modal de edição de parâmetros — versão 4*
 
-> Insira aqui a foto da tela da versão 3
+![Protótipo Figma v4 do modal de configuração da ESP32 com campo de novo MAC e lista de dispositivos](<img/figma/v4/Configurar ESP32.png>)
 
-```
-[ESPAÇO PARA FOTO DA VERSÃO 3]
-```
+*Modal de configuração da ESP32 — versão 4*
 
----
+![Protótipo Figma v4 da tela de seleção de ESP32 com lista de endereços MAC cadastrados](<img/figma/v4/Seleção ESP32.png>)
 
-### Versão 4 — ESP32 `88:57:21:7A:C6:1E`
+*Seleção de ESP32 ativa — versão 4*
 
-- Correção da lógica de parada autônoma sincronizada com a máquina de estados do app
-- Ajustes de tamanho no layout
+![Protótipo Figma v4 do modal de feedback de corrida com resumo de tempo, modo, estratégia e parâmetros](img/figma/v4/Feedback.png)
 
-> Insira aqui a foto da tela da versão 4
+*Modal de feedback de corrida — versão 4*
 
-```
-[ESPAÇO PARA FOTO DA VERSÃO 4]
-```
+![Protótipo Figma v4 da tela de seleção de conclusão da corrida com opções Completa, Parcialmente e Interrompida](<img/figma/v4/Seleção Conclusão.png>)
 
----
+*Seleção do status de conclusão da corrida — versão 4*
 
-### Versão 5 — ESP32 `88:57:21:7A:C6:1E`
+![Protótipo Figma v4 do indicador de status de bateria com barras coloridas e percentual](<img/figma/v4/Status Bateria.png>)
 
-- Atualização do número de dígitos do cronômetro (remoção de um dígito à esquerda)
-- Conversão de tempo para segundos no feedback da corrida
-- Layout da leitura de sensores reorganizado em grade 4×2 para os 8 sensores
+*Indicador de bateria com barras de cor dinâmica — versão 4*
 
-> Insira aqui a foto da tela da versão 5
+![Protótipo Figma v4 dos botões de Calibrar e Sensores com ícones e estados habilitado e desabilitado](<img/figma/v4/Calibrar e Sensores V4.png>)
 
-```
-[ESPAÇO PARA FOTO DA VERSÃO 5]
-```
-
----
-
-### Versão 6 — ESP32 `C0:49:EF:65:16:FE`
-
-- **Troca de ESP32**: novo endereço MAC `C0:49:EF:65:16:FE`
-- Parâmetros passam a ser obtidos diretamente da ESP32 (não mais armazenados apenas localmente)
-- Velocidade convertida de float para inteiro
-- Remoção de `velEsq` e `velDir` no modal de edição de parâmetros
-- Remoção do botão de controle de LED
-
-> Insira aqui a foto da tela da versão 6
-
-```
-[ESPAÇO PARA FOTO DA VERSÃO 6]
-```
-
----
-
-### Versão 7 — ESP32 `C0:49:EF:65:16:FE`
-
-- Correção no modal de editar parâmetros: ao reabrir o modal, os valores salvos são exibidos corretamente
-- Incremento dos steppers de Kp, Ki e Kd reduzido de 0,1 para **0,01**
-- Edição de parâmetros bloqueada até que modo e estratégia sejam selecionados
-- Remoção do tempo em minutos no feedback da corrida
-
-> Insira aqui a foto da tela da versão 7
-
-```
-[ESPAÇO PARA FOTO DA VERSÃO 7]
-```
-
----
-
-### Versão 8 — ESP32 `C0:49:EF:65:16:FE`
-
-Grande atualização de layout para sincronização com o design do Figma.
-
-- Redesign completo do quadro geral e de todos os modais (sensores, editar parâmetros e exportar)
-- Nova funcionalidade: **Configurar ESP32** — possibilidade de adicionar e selecionar endereços MAC
-- Adição do modal **Sobre Nós** com nomes e funções da equipe, logo do GEAR, logo da instituição e QR Code do Instagram
-- Cronômetro exibindo segundos (mudança de minutos para segundos)
-- VM reincluído na tela principal
-
-> Insira aqui a foto da tela da versão 8
-
-```
-[ESPAÇO PARA FOTO DA VERSÃO 8]
-```
-
----
-
-### Versão 9 — ESP32 `C0:49:EF:65:16:FE`
-
-- Melhorias de layout em relação à versão 8, principalmente no modal Sobre Nós
-- Ícone Bluetooth do header: switch removido; ícone muda de cor (laranja ao conectar, verde quando conectado)
-- Mini animação de clique nos botões do header (contração e expansão)
-- Correções de fontes, cores e padronização visual
-
-> Insira aqui a foto da tela da versão 9
-
-```
-[ESPAÇO PARA FOTO DA VERSÃO 9]
-```
-
----
-
-### Versão 10 — Final
-
-- Sincronização total com a versão final do Figma
-- Logo atualizada
-- Configuração da ESP32: **editar e excluir** endereços MACs cadastrados com confirmação de exclusão via dialog customizado
-- Campo "Adicionar novo MAC" oculto por padrão; ícone da lixeira com mesma cor do lápis
-- **Modularização completa**: toda a lógica extraída da `MainActivity` para 10 helpers especializados (`BluetoothHelper`, `BluetoothIconHelper`, `CronometroHelper`, `UiStateHelper`, `ParametrosHelper`, `SensoresHelper`, `EspConfigHelper`, `ExportarHelper`, `SobreNosHelper`, `BluetoothEventListener`)
-- Detecção de **desconexão inesperada** (ESP32 desligada durante corrida); `SharedPreferences` padronizado entre todos os helpers
-- Animação de largada da Fórmula 1 no modal Sobre Nós
-- Ponto verde piscante no terminal
-
-<img src="img/tela_v10.jpg" height="700" width="auto">
-
+*Botões de Calibrar e Sensores — versão 4*
 ---
 
 ## Estrutura de Diretórios
 
 ```
 interface/
-├── img/                           # Fotos das versões do aplicativo
+├── img/
+│   ├── icone/                     # Ícone do aplicativo
+│   ├── tela-principal/            # Screenshots da tela principal e vídeo geral
+│   ├── modais/                    # Screenshots e vídeos de todos os modais
+│   ├── fluxo/                     # Diagramas de máquina de estados e fluxo
+│   └── figma/                     # Protótipos do Figma por versão
+│       ├── v1/
+│       ├── v2/
+│       ├── v3/
+│       └── v4/
 └── ZeGuiaApp/
     └── app/
         └── src/
