@@ -36,23 +36,19 @@ Na tabela a seguir será possível observar a lista resumindo os materiais utili
 
 ## 2. Modelo 3D
 
-O Modelo 3D do robô foi desenvolvido no *software* **Autodesk Inventor**. A seguir uma imagem do modelo 3D final:
-
-<img src="../mechanics/img/V2/Geral 2.jpg" height="500">
-
-Todos os arquivos do modelo 3D podem ser consultados no diretório [/mechanics](../mechanics/)
+O projeto mecânico do robô foi modelado no software **Autodesk Inventor**, contendo toda a estrutura física necessária para movimento e sucção. O modelo abrange desde os suportes para sensores e motores até a integração com a placa eletrônica, que também atua como chassi. Os arquivos das peças CAD 3D, assembly, arquivos STL, a documentação completa da mecânicapode ser visto no diretório [/mechanics](../mechanics/).
 
 ## 3. Eletrônica
 
-Todo o processo de desenvolvimento da PCB, pinout, esquemático eletrônico, evolução e detalhamento de cada componente está no diretório [/electronics](../electronics/)
+A arquitetura eletrônica é centralizada em um microcontrolador **ESP32**, responsável por integrar os sensores de refletância (**QTR-8RC** e **TCRT5000**), acionar os motores N20 via ponte H (**TB6612FNG**) e controlar a turbina de sucção através de um **MOSFET (IRLZ44N)**. Todo o sistema é alimentado por uma bateria LiPo 2S e unificado em uma **PCB de dupla camada**, projetada no **EasyEDA** e fabricada pela JLCPCB. O esquemático completo, diagramas de pinout e a evolução do hardware estão documentados no diretório [/electronics](../electronics/).
 
 ## 4. Lógica do robô
 
-Toda a lógica de controle, arquitetura do Firmware, comunicação Bluetooth, Máquina de Estados (FSM) e bibliotecas desenvolvidas estão detalhadas no diretório de [Programação](../code/)
+O firmware do robô foi desenvolvido sob o framework **Arduino** utilizando **FreeRTOS** no ambiente de desenvolvimento **PlatformIO**. O sistema aproveita o processamento *dual-core* da ESP32 para executar duas *Tasks* paralelas: uma dedicada exclusivamente à comunicação Bluetooth e telemetria, e outra focada no processamento em tempo real do controle **PID** e leitura de sensores. A lógica principal é regida por uma Máquina de Estados (FSM) que gerencia os modos de corrida e estratégias do robô. A documentação completa da arquitetura do código está no diretório [/code](../code/).
 
 ## 5. Interface de Controle
 
-O robô é controlado remotamente pelo **ZeGuiaApp**, um aplicativo Android nativo desenvolvido em **Kotlin**, que se comunica com a ESP32 via **Bluetooth Classic (SPP/RFCOMM)**. O app permite ao operador calibrar os sensores, selecionar modo e estratégia, ajustar os parâmetros PID, iniciar e finalizar corridas, monitorar a leitura dos sensores em tempo real e exportar um resumo de performance ao final de cada corrida. A documentação completa da interface está em [interface/README.md](../interface/README.md).
+O robô é controlado remotamente pelo **ZeGuiaApp**, um aplicativo Android nativo desenvolvido em **Kotlin**, que se comunica com a ESP32 via **Bluetooth Classic (SPP/RFCOMM)**. O app permite ao operador calibrar os sensores, selecionar modo e estratégia, ajustar os parâmetros PID, iniciar e finalizar corridas, monitorar a leitura dos sensores em tempo real e exportar um resumo de performance ao final de cada corrida. A documentação completa da interface está em [/interface/](../interface).
 
 ## 6. Resultados
 
