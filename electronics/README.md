@@ -23,7 +23,7 @@ A alimentação do sistema é fornecida por uma bateria LiPo, sendo distribuída
 
 A alimentação do sistema é fornecida por uma bateria LiPo 2S de 7,4 V. A energia proveniente da bateria é distribuída para diferentes partes do circuito de acordo com a necessidade de cada componente.
 
-<img src="/misc/estudos/media/img/circuit_seguidor.png" height="400" width="auto">
+<img src="../misc/estudos/media/img/circuit_seguidor.png" height="400" width="auto">
 
 A tensão da bateria é direcionada para três partes principais do sistema:
 
@@ -70,83 +70,83 @@ Nesta seção são apresentados os diagramas de pinout dos principais componente
 
 ### ESP32 Dev Kit
 
-<img src="/misc/estudos/media/img/Pinout_ESP32.png" width="600">
+<img src="../misc/estudos/media/img/Pinout_ESP32.png" width="600">
 
 Pinout utilizado para identificar as conexões entre a ESP32 e os demais componentes do robô, incluindo sensores, ponte H e MOSFET de acionamento da ventoinha.
 
 ### Ponte H TB6612FNG
 
-<img src="/misc/estudos/media/img/Pinout_TB6612FNG.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_TB6612FNG.png" height="350">
 
 A ponte H TB6612FNG é utilizada para controlar os dois motores N20 responsáveis pela locomoção do robô. Ela recebe sinais PWM da ESP32 permitindo controlar a velocidade e o sentido de rotação dos motores.
 
 ### Sensor de Linha QTR-8RC
 
-<img src="/misc/estudos/media/img/Pinout_QTR-8RC.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_QTR-8RC.png" height="350">
 
 O sensor QTR-8RC é o sensor principal do robô, sendo responsável pela detecção da linha da pista. Ele é composto por um conjunto de sensores infravermelhos dispostos em forma de array que permitem identificar a posição da linha em relação ao robô.
 
 ### Sensor Infravermelho TCRT5000
 
-<img src="/misc/estudos/media/img/Pinout_Sensores_Laterais.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_Sensores_Laterais.png" height="350">
 
 Os sensores TCRT5000 são utilizados como sensores auxiliares para detecção de linhas laterais e marcações ao longo da pista. Eles funcionam através da emissão e recepção de luz infravermelha refletida pela superfície.
 
 ### MOSFET IRLZ44N
 
-<img src="/misc/estudos/media/img/pinout_IRLZ44N.jpeg" height="350">
+<img src="../misc/estudos/media/img/pinout_IRLZ44N.jpeg" height="350">
 
 O MOSFET IRLZ44N é utilizado para controlar o acionamento do motor coreless responsável pela ventoinha de sucção do robô. Ele atua como uma chave eletrônica controlada pelo microcontrolador.
 
 ### Regulador de Tensão Mini360
 
-<img src="/misc/estudos/media/img/Pinout_Regulador_Tensão.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_Regulador_Tensão.png" height="350">
 
 O módulo Mini360 é um conversor DC-DC do tipo buck responsável por reduzir a tensão da bateria LiPo para um nível adequado para alimentação da ESP32 e dos demais componentes eletrônicos do sistema.
 
 ### Bateria LiPo 2S 7.4V
 
-<img src="/misc/estudos/media/img/pinout_bateria.png" height="350">
+<img src="../misc/estudos/media/img/pinout_bateria.png" height="350">
 
 A bateria LiPo 2S de 7,4 V é a fonte principal de alimentação do sistema, fornecendo energia para os motores e para o circuito eletrônico do robô.
 
 ### Motor DC N20 3000 RPM
 
-<img src="/misc/estudos/media/img/pinout_motor n20.jpeg" height="350">
+<img src="../misc/estudos/media/img/pinout_motor n20.jpeg" height="350">
 
 Os motores N20 são responsáveis pela locomoção do robô. Eles recebem alimentação através da ponte H TB6612FNG que controla a velocidade e o sentido de rotação.
 
 ### Motor Coreless 8523
 
-<img src="/misc/estudos/media/img/pinout_Motor coreless 8523.jpeg" height="350">
+<img src="../misc/estudos/media/img/pinout_Motor coreless 8523.jpeg" height="350">
 
 O motor coreless 8523 é utilizado no sistema de sucção do robô. Esse tipo de motor é capaz de atingir altas rotações e é amplamente utilizado em aplicações que exigem baixo peso e alta eficiência.
 
 ### Diodo 1N4007
 
-<img src="/misc/estudos/media/img/pinout_diodo.jpeg" height="350">
+<img src="../misc/estudos/media/img/pinout_diodo.jpeg" >
 
 O diodo 1N4007 é utilizado como diodo de flyback para proteger o MOSFET contra picos de tensão gerados pelo motor coreless durante o desligamento.
 
 ### Resistores
 
-<img src="/misc/estudos/media/img/Pinout_Regulador.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_Regulador.png" height="350">
 
 Os resistores são utilizados no circuito para limitar corrente e para implementação de divisores de tensão, como no caso do monitoramento da bateria.
 
 ### Switch
 
-<img src="/misc/estudos/media/img/pinout_chave switch.jpeg" height="350">
+<img src="../misc/estudos/media/img/pinout_chave switch.jpeg" height="350">
 
 O switch é utilizado para ligar e desligar o sistema eletrônico do robô, controlando a alimentação proveniente da bateria.
 
 ### Capacitores (Eletrolítico e Cerâmico)
 
-<img src="/misc/estudos/media/img/Pinout_Capacitores.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_Capacitores.png" height="350">
 
 ### Capacitores dos motores
 
-<img src="/misc/estudos/media/img/Pinout_Capacitor_Motores.png" height="350">
+<img src="../misc/estudos/media/img/Pinout_Capacitor_Motores.png" height="350">
 
 Os capacitores são soldados em paralelo com os terminais dos motores com o objetivo de eliminar os ruídos e melhorar seu funcionamento
 
@@ -176,7 +176,7 @@ Para permitir diferentes formas de prototipagem e fabricação, o projeto da PCB
 
 O esquemático eletrônico do circuito foi desenvolvido no EasyEDA e representa todas as conexões elétricas entre os componentes do robô, incluindo a alimentação, controle dos motores, sensores e circuito de acionamento da turbina de sucção.
 
-<img src="/misc/estudos/media/img/Esquema_Elétrico_EASYEDA.png" height="350">
+<img src="../misc/estudos/media/img/Esquema_Elétrico_EASYEDA.png" height="350">
 
 ## Evolução da PCB
 
@@ -216,7 +216,7 @@ Além da necessidade de encaixar corretamente todos os componentes no novo forma
 
 Após um período de grande expectativa, a fabricação da PCB foi concluída e as placas finalmente chegaram em Manaus. O lote veio com cinco unidades, o que possibilitou maior segurança durante a etapa de montagem e testes. Assim que chegaram, iniciou-se imediatamente o processo de soldagem e fixação dos componentes eletrônicos na placa. Essa etapa foi, sem dúvidas, uma das mais desafiadoras de todo o desenvolvimento para mim pois alguns componentes possuíam terminais muito pequenos e exigiam maior precisão durante a soldagem, aumentando significativamente o nível de dificuldade da montagem. Além disso, qualquer excesso de estanho ou pequeno erro poderia comprometer trilhas e conexões importantes da placa.
 
-<img src="/misc/estudos/media/img/Solda_placa.jpeg" height="350">
+<img src="../misc/estudos/media/img/Solda_placa.jpeg" height="350">
 
 A primeira unidade montada apresentou alguns problemas relacionados à soldagem, principalmente em pontos mais críticos do circuito. Por conta disso, o líder da equipe decidiu utilizar uma segunda placa para continuar o desenvolvimento. Após soldar novamente e realizar diversos ajustes e bastante dedicação durante o processo de soldagem, todos os componentes foram corretamente instalados e, para nossa satisfação, a placa ligou já no primeiro teste funcional (com apenas a esp32 encaixada). Mesmo sendo necessários alguns ajustes posteriores e pequenas correções ao longo da validação do hardware, o resultado final foi extremamente positivo e marcou uma etapa importante no desenvolvimento do robô.
 
@@ -246,7 +246,7 @@ Nessa versão, as trilhas precisavam ser mais largas devido ao processo de usina
 
 Após essa etapa, iniciamos o processo de usinagem da placa no FabLab, utilizando a máquina MonoFab. Toda a parte de vetorização necessária para a fabricação foi realizada pelo atual vice-capitão do gear, Raysson, permitindo que a PCB fosse finalmente usinada e preparada para os testes físicos do projeto.
 
-<img src="/misc/estudos/media/img/PCB_CNC.jpeg" height="350">
+<img src="../misc/estudos/media/img/PCB_CNC.jpeg" height="350">
 
 Com isso, iniciei os testes de soldagem na PCB usinada, porém essa acabou sendo a etapa mais complicada do processo. Diferente das placas industriais, a soldagem em placas de fenolite usinadas possui diversas limitações que, se não forem seguidas corretamente, podem comprometer toda a placa.Durante aproximadamente uma semana foram realizados vários testes de solda, mas os resultados avançavam lentamente. Qualquer pequeno contato entre o terminal do componente e áreas indevidas da placa podia gerar curto-circuito, além de que o excesso de retrabalho durante a soldagem acabava danificando os pads ou até rompendo algumas trilhas do circuito. Ao todo, foram produzidas duas versões da placa usinada, porém ambas acabaram sendo perdidas devido aos danos causados durante o processo de montagem e soldagem.
 
@@ -265,4 +265,4 @@ Por fim, com a chegada das placas fabricadas pela JLCPCB, nosso líder decidiu d
 
 - `img/`: Diretório contendo fotos das versões da placa real.
 
-- (OPCIONAL) `pcb/`: Diretório contendo os arquivos necessários para fazer a placa de circuito impresso, como Esquemático Eletrônico e arquivo Gerber.
+- `pcb/`: Diretório contendo os arquivos necessários para fazer a placa de circuito impresso, como Esquemático Eletrônico e arquivo Gerber.
