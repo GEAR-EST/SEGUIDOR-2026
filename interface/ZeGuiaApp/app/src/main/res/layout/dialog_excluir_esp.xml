@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    app:cardBackgroundColor="#130822"
+    app:strokeColor="#A066FF"
+    app:strokeWidth="1dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ============ HEADER ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_trash"
+                app:tint="#FF4D4D" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_excluir"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/sourcecodepro_bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_dispositivo"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/sourcecodepro_bold" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/btnFecharExclusao"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_modal_close_box"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/desc_fechar"
+                    app:srcCompat="@drawable/ic_close"
+                    app:tint="#A066FF" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- Divisor horizontal -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2E1A47" />
+
+        <!-- ============ BODY ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/msg_confirmar_exclusao"
+                android:textColor="#CFC9D8"
+                android:textSize="13sp"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- MAC em destaque -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:cardBackgroundColor="#0A0410"
+                app:strokeColor="#2E1A47"
+                app:strokeWidth="1dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/txtMacExcluir"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:textColor="#00FF66"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/sourcecodepro_bold" />
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <!-- ============ BOTÕES ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelarExclusao"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="@string/btn_cancelar"
+                android:textColor="#A066FF"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:fontFamily="@font/orbitron"
+                app:strokeColor="#A066FF"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#1A0D2A"
+                app:cornerRadius="12dp"
+                app:rippleColor="#A066FF" />
+
+            <View
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmarExclusao"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="@string/btn_excluir"
+                android:textColor="#FF4D4D"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.15"
+                android:fontFamily="@font/orbitron"
+                app:icon="@drawable/ic_trash"
+                app:iconSize="14dp"
+                app:iconTint="#FF4D4D"
+                app:iconPadding="6dp"
+                app:strokeColor="#FF4D4D"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#210000"
+                app:cornerRadius="12dp"
+                app:rippleColor="#FF4D4D" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

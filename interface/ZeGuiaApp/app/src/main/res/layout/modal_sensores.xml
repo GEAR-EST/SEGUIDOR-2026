@@ -2,63 +2,322 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="320dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
+    android:layout_margin="16dp"
     app:cardBackgroundColor="#130822"
-    app:cardCornerRadius="20dp"
-    app:strokeColor="#A066FF"
-    app:strokeWidth="2dp">
+    app:cardCornerRadius="16dp"
+    app:strokeColor="#2C164D"
+    app:strokeWidth="1.5dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="20dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/btnFecharSensores"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_sensor"
+                android:contentDescription="@null"
+                app:tint="#A066FF" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="SENSORES"
-                android:textColor="#A066FF"
-                android:fontFamily="@font/orbitron"
-                android:textSize="16sp" />
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/titulo_monitoramento"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:lineSpacingMultiplier="0.9" />
+        </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btnFecharSensores"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                app:tint="#A09DA5" />
-        </RelativeLayout>
+        <ImageButton
+            android:id="@+id/btnFecharSensores"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/layoutHeader"
+            android:background="@drawable/bg_close_button"
+            android:src="@drawable/ic_close"
+            android:contentDescription="@string/desc_fechar"
+            app:tint="#A066FF" />
 
         <View
+            android:id="@+id/topDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#2E1A47"
-            android:layout_marginBottom="16dp" />
+            android:layout_below="@id/layoutHeader"
+            android:layout_marginTop="20dp"
+            android:background="#231438" />
 
-        <TextView
-            android:id="@+id/txtValoresSensores"
+        <LinearLayout
+            android:id="@+id/sectionPosicao"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:minLines="3"
-            android:textColor="#00FF66"
-            android:textSize="18sp"
-            android:lineSpacingExtra="6dp"
-            android:fontFamily="monospace" />
+            android:layout_below="@id/topDivider"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/label_posicao"
+                android:textColor="#A09DA5"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#3A215C" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutPosicaoBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sectionPosicao"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/txtPosicaoValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7000"
+                android:textColor="#00FF66"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                tools:ignore="HardcodedText" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/txtPosicaoValor"
+                android:layout_marginStart="16dp"
+                android:orientation="vertical">
+
+                <ProgressBar
+                    android:id="@+id/progressPosicao"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:max="7000"
+                    android:progress="7000"
+                    android:progressDrawable="@drawable/bg_horizontal_progress" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_alignParentStart="true" tools:ignore="HardcodedText" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3500" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_centerInParent="true" tools:ignore="HardcodedText" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="7000" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" android:layout_alignParentEnd="true" tools:ignore="HardcodedText" />
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/sectionSensores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutPosicaoBar"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/label_sensores"
+                android:textColor="#A09DA5"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#3A215C" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/gridSensores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sectionSensores"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false"
+                android:weightSum="4"
+                android:layout_marginBottom="10dp">
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s1" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS1" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s2" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS2" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s3" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS3" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginStart="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s4" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS4" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false"
+                android:weightSum="4">
+
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s5" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS5" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s6" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS6" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginHorizontal="3dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s7" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS7" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="64dp" android:layout_weight="1" android:layout_marginStart="6dp" android:background="@drawable/bg_sensor_card" android:orientation="vertical" android:gravity="center" android:padding="6dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/sensor_s8" android:textColor="#A09DA5" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                    <TextView android:id="@+id/txtS8" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#00FF66" android:textSize="15sp" android:fontFamily="@font/sourcecodepro_bold" android:textStyle="bold" tools:ignore="HardcodedText" />
+                    <ProgressBar android:id="@+id/progressS8" style="@android:style/Widget.ProgressBar.Horizontal" android:layout_width="match_parent" android:layout_height="4dp" android:layout_marginTop="4dp" android:max="1000" android:progress="0" android:progressDrawable="@drawable/bg_horizontal_progress" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sectionDirecao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/gridSensores"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:text="@string/label_direcao"
+                android:textColor="#A09DA5"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#3A215C" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_below="@id/sectionDirecao"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_sensor_card"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:weightSum="4">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:gravity="center"
+                android:text="@string/label_esquerda"
+                android:textColor="#A09DA5"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/sourcecodepro_bold" />
+
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
+
+            <TextView
+                android:id="@+id/txtDirecaoEsquerdaValor"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="#00FF66"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/sourcecodepro_bold"
+                tools:ignore="HardcodedText" />
+
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:gravity="center"
+                android:text="@string/label_direita"
+                android:textColor="#A09DA5"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/sourcecodepro_bold" />
+
+            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#231438" />
+
+            <TextView
+                android:id="@+id/txtDirecaoDireitaValor"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="#00FF66"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/sourcecodepro_bold"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+    </RelativeLayout>
 </com.google.android.material.card.MaterialCardView>

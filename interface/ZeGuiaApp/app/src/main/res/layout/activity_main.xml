@@ -1,193 +1,406 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0A0410"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:ignore="Overdraw">
 
+    <!-- ============================== HEADER ============================== -->
     <View
         android:id="@+id/headerBackground"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:background="#130822"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/titleApp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ZÉ-GUIA"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:letterSpacing="0.1"
-        android:fontFamily="@font/orbitron"
-        android:layout_marginStart="20dp"
+    <View
+        android:id="@+id/headerBottomLine"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#2E1A47"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerBackground" />
+
+    <ImageView
+        android:id="@+id/btnLogo"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/gear_logo"
+        android:scaleType="fitCenter"
+        android:background="@drawable/bg_logo_gradient"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:contentDescription="@string/desc_logo_gear"
         app:layout_constraintTop_toTopOf="@id/headerBackground"
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/containerToggles"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/titleApp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginEnd="12dp"
+        android:text="@string/app_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:letterSpacing="0.12"
+        android:fontFamily="@font/orbitron"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toTopOf="@id/headerBackground"
+        app:layout_constraintBottom_toBottomOf="@id/headerBackground"
+        app:layout_constraintStart_toEndOf="@id/btnLogo"
+        app:layout_constraintEnd_toStartOf="@id/cardConfigEsp" />
+
+    <!-- Badge ESP32: só ícone + bolinha de status, sem texto -->
+    <LinearLayout
+        android:id="@+id/cardConfigEsp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/bg_esp32_badge"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toTopOf="@id/headerBackground"
+        app:layout_constraintBottom_toBottomOf="@id/headerBackground"
+        app:layout_constraintEnd_toStartOf="@id/cardBluetoothToggle">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_esp32" />
+
+        <TextView
+            android:id="@+id/txtEspStatus"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:text="@string/label_esp32_ativo" />
+
+        <TextView
+            android:id="@+id/txtEspMac"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:text="@string/mac_padrao" />
+
+        <ImageView
+            android:id="@+id/btnConfigMac"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@null"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Bluetooth: ícone + ponto indicador de conexão -->
+    <FrameLayout
+        android:id="@+id/cardBluetoothToggle"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/bg_esp32_badge"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintTop_toTopOf="@id/headerBackground"
         app:layout_constraintBottom_toBottomOf="@id/headerBackground"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="45dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="6dp"
-            app:cardBackgroundColor="#1A0D2A"
-            app:cardCornerRadius="10dp"
-            app:strokeColor="#2E1A47"
-            app:strokeWidth="1dp"
-            app:cardElevation="0dp">
+        <ImageView
+            android:id="@+id/iconBluetooth"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            app:srcCompat="@drawable/ic_bluetooth" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/bluetooth"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:thumbTint="#A066FF"
+            app:trackTint="#2E1A47" />
+    </FrameLayout>
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="2dp"
-                    app:srcCompat="@drawable/ic_led"
-                    app:tint="#A066FF" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/LED"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:scaleX="0.6"
-                    android:scaleY="0.6"
-                    app:thumbTint="#A066FF"
-                    app:trackTint="#2E1A47" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="45dp"
-            android:layout_height="50dp"
-            app:cardBackgroundColor="#1A0D2A"
-            app:cardCornerRadius="10dp"
-            app:strokeColor="#2E1A47"
-            app:strokeWidth="1dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="2dp"
-                    app:srcCompat="@drawable/ic_bluetooth"
-                    app:tint="#A066FF" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/bluetooth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:scaleX="0.6"
-                    android:scaleY="0.6"
-                    app:thumbTint="#A066FF"
-                    app:trackTint="#2E1A47" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
-
+    <!-- ============================== CARD QUADRO GERAL ============================== -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mainStatusCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="6dp"
         app:cardBackgroundColor="#130822"
         app:strokeColor="#2E1A47"
         app:strokeWidth="1dp"
-        app:cardCornerRadius="16dp"
-        app:layout_constraintTop_toBottomOf="@id/headerBackground"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/headerBottomLine"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:baselineAligned="false">
+            android:orientation="vertical"
+            android:padding="7dp">
 
+            <!-- Título + botão EXPORTAR (só ícone) -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_quadro_geral"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/orbitron" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExportar"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text=""
+                    app:backgroundTint="#0C0411"
+                    app:icon="@drawable/ic_export"
+                    app:iconSize="22dp"
+                    app:iconTint="#A066FF"
+                    app:iconPadding="0dp"
+                    app:iconGravity="textStart"
+                    app:strokeColor="#A066FF"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp"
+                    app:rippleColor="#A066FF"
+                    android:stateListAnimator="@null"
+                    android:elevation="0dp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#2E1A47"
+                android:layout_marginVertical="5dp" />
+
+            <!-- Linha: CRONÔMETRO | PARÂMETROS + INFORMAÇÕES -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
+
+                <!-- CRONÔMETRO -->
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="85dp"
-                    android:orientation="vertical">
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_inner_panel"
+                    android:paddingHorizontal="4dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:gravity="center_horizontal">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_cronometro"
+                        android:textColor="#A09DA5"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.08"
+                        android:fontFamily="@font/orbitron" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="CRONÔMETRO"
-                            android:textColor="#A09DA5"
-                            android:textSize="9sp"
-                            android:fontFamily="@font/orbitron"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginTop="2dp" />
-                    </RelativeLayout>
+                    <ImageView
+                        android:layout_width="62dp"
+                        android:layout_height="62dp"
+                        android:layout_marginTop="6dp"
+                        android:contentDescription="@null"
+                        app:srcCompat="@drawable/ic_clock" />
 
                     <TextView
                         android:id="@+id/txtCronometro"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0:0.000"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="6dp"
+                        android:text="0.00"
                         android:textColor="#00FF66"
-                        android:textSize="28sp"
-                        android:fontFamily="@font/orbitron"
+                        android:textSize="32sp"
+                        android:fontFamily="@font/sourcecodepro_bold"
                         android:textStyle="bold"
-                        android:layout_marginTop="20dp" />
+                        android:gravity="center_horizontal"
+                        android:shadowColor="#9900FF66"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="10"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:fontFeatureSettings="tnum"
+                        android:includeFontPadding="false"
+                        android:minEms="4"
+                        tools:ignore="HardcodedText" />
                 </LinearLayout>
 
-                <View
+                <Space
+                    android:layout_width="7dp"
+                    android:layout_height="match_parent" />
+
+                <!-- COLUNA DIREITA -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.15"
+                    android:orientation="vertical">
+
+                    <!-- PARÂMETROS -->
+                    <LinearLayout
+                        android:id="@+id/btnAbrirEdicao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_inner_panel"
+                        android:padding="5dp"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/label_parametros"
+                                android:textColor="#A09DA5"
+                                android:textSize="11sp"
+                                android:letterSpacing="0.08"
+                                android:fontFamily="@font/orbitron" />
+
+                            <ImageView
+                                android:id="@+id/iconEditarParams"
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:contentDescription="@null"
+                                app:tint="@null"
+                                app:srcCompat="@drawable/ic_edit_pencil" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="3dp">
+
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/label_kp" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/label_ki" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/label_kd" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="@string/label_vm" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="2dp">
+
+                            <TextView android:id="@+id/txtParamKp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/txtParamKi" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/txtParamKd" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0.0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                            <TextView android:id="@+id/txtParamVR" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="0" android:textColor="#E0AAFF" android:textSize="11sp" android:textStyle="bold" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <Space android:layout_width="match_parent" android:layout_height="4dp" />
+
+                    <!-- INFORMAÇÕES -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_inner_panel"
+                        android:padding="5dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/label_informacoes"
+                            android:textColor="#A09DA5"
+                            android:textSize="11sp"
+                            android:letterSpacing="0.08"
+                            android:fontFamily="@font/orbitron" />
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="3dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_estado" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                            <TextView android:id="@+id/txtEstadoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_modo" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                            <TextView android:id="@+id/txtModoRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="2dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/label_estrategia" android:textColor="#CFC9D8" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" />
+                            <TextView android:id="@+id/txtEstrategiaRobo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="—" android:textColor="#FFFFFF" android:textSize="11sp" android:fontFamily="@font/sourcecodepro_bold" tools:ignore="HardcodedText" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- BATERIA: título centralizado + percentual + barras -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_inner_panel"
+                android:paddingHorizontal="7dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="5dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#2E1A47"
-                    android:layout_marginVertical="4dp"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_bateria"
+                    android:textColor="#A09DA5"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.08"
+                    android:fontFamily="@font/orbitron"
+                    android:gravity="center"
+                    android:layout_marginBottom="3dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="BATERIA"
-                        android:textColor="#A09DA5"
-                        android:textSize="9sp"
-                        android:fontFamily="@font/orbitron" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <TextView
                         android:id="@+id/txtBatteryPercent"
@@ -195,235 +408,67 @@
                         android:layout_height="wrap_content"
                         android:text="100%"
                         android:textColor="#00E5FF"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_gravity="center_horizontal"
-                        android:fontFamily="@font/orbitron" />
+                        android:fontFamily="@font/sourcecodepro_bold"
+                        android:layout_marginEnd="8dp"
+                        tools:ignore="HardcodedText" />
 
                     <LinearLayout
                         android:id="@+id/layoutBarrasBateria"
-                        android:layout_width="match_parent"
-                        android:layout_height="10dp"
-                        android:layout_marginTop="6dp"
-                        android:weightSum="6">
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" android:layout_marginEnd="2dp"/>
-                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="#00E5FF" />
-                    </LinearLayout>
+                        android:layout_width="0dp"
+                        android:layout_height="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_battery_track"
+                        android:padding="1dp"
+                        android:weightSum="10">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnExportar"
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="16dp"
-                        android:text="EXPORTAR"
-                        android:textSize="10sp"
-                        android:textColor="#FFFFFF"
-                        android:fontFamily="@font/orbitron"
-                        app:backgroundTint="#A066FF"
-                        app:cornerRadius="8dp"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="12dp"
-                android:background="#2E1A47" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="85dp"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:id="@+id/btnAbrirEdicao"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="6dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PARÂMETROS"
-                            android:textColor="#A09DA5"
-                            android:textSize="9sp"
-                            android:fontFamily="@font/orbitron"
-                            android:layout_marginTop="2dp"/>
-
-                        <ImageView
-                            android:layout_width="14dp"
-                            android:layout_height="14dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginTop="2dp"
-                            app:srcCompat="@android:drawable/ic_menu_edit"
-                            app:tint="#A066FF"/>
-                    </RelativeLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="8dp"
-                        android:baselineAligned="false">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Kp"
-                                android:textColor="#CFC9D8"
-                                android:textSize="10sp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-
-                            <TextView
-                                android:id="@+id/txtParamKp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0.0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Ki"
-                                android:textColor="#CFC9D8"
-                                android:textSize="10sp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-
-                            <TextView
-                                android:id="@+id/txtParamKi"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0.0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Kd"
-                                android:textColor="#CFC9D8"
-                                android:textSize="10sp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-
-                            <TextView
-                                android:id="@+id/txtParamKd"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0.0"
-                                android:textColor="#FFFFFF"
-                                android:textSize="12sp"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/sourcecodepro_bold" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </LinearLayout> <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#2E1A47"
-                android:layout_marginVertical="4dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="75dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="INFORMAÇÕES"
-                        android:textColor="#A09DA5"
-                        android:textSize="9sp"
-                        android:fontFamily="@font/orbitron" />
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estado" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" />
-                        <TextView android:id="@+id/txtEstadoRobo" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" />
-                    </LinearLayout>
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Modo" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" />
-                        <TextView android:id="@+id/txtModoRobo" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" />
-                    </LinearLayout>
-
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp">
-                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Estratégia" android:textColor="#CFC9D8" android:textSize="10sp" android:fontFamily="@font/sourcecodepro_bold" />
-                        <TextView android:id="@+id/txtEstrategiaRobo" android:text="—" android:textColor="#FFFFFF" android:textSize="10sp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/sourcecodepro_bold" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" android:layout_marginEnd="1dp" />
+                        <View android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@drawable/bg_battery_segment_on" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-
+    <!-- ============================== LABEL CONTROLES ============================== -->
     <TextView
         android:id="@+id/labelControles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CONTROLES"
+        android:text="@string/label_controles"
         android:textColor="#A09DA5"
-        android:textSize="14sp"
+        android:textSize="11sp"
         android:textStyle="bold"
+        android:letterSpacing="0.15"
         android:fontFamily="@font/orbitron"
-        app:layout_constraintTop_toBottomOf="@id/mainStatusCard"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="20dp"/>
+        android:layout_marginStart="20dp"
+        app:layout_constraintTop_toBottomOf="@id/mainStatusCard"
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- ============================== CONTROLES ============================== -->
     <LinearLayout
         android:id="@+id/controlsContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:paddingHorizontal="16dp"
+        android:layout_marginTop="6dp"
+        android:paddingHorizontal="12dp"
         app:layout_constraintTop_toBottomOf="@id/labelControles"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- CALIBRAR + SENSORES -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -433,70 +478,87 @@
                 android:id="@+id/calibrate"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="CALIBRAR"
+                android:text="@string/btn_calibrar"
                 android:textColor="#F39200"
+                android:letterSpacing="0.1"
                 app:icon="@drawable/ic_calibrar"
                 app:iconTint="#F39200"
+                app:iconSize="16dp"
+                app:iconPadding="6dp"
                 app:strokeColor="#F39200"
+                app:strokeWidth="1dp"
+                app:backgroundTint="#1A0F00"
                 app:cornerRadius="12dp"
-                android:textSize="12sp"
-                android:fontFamily="@font/orbitron" />
+                android:textStyle="bold"
+                android:textSize="11sp"
+                android:fontFamily="@font/orbitron"
+                app:rippleColor="#F39200" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLerSensores"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
-                android:text="SENSORES"
+                android:text="@string/btn_sensores"
                 android:textColor="#FFEB3B"
-                app:icon="@android:drawable/ic_menu_view"
+                android:letterSpacing="0.1"
+                app:icon="@drawable/ic_sensor"
                 app:iconTint="#FFEB3B"
+                app:iconSize="22dp"
+                app:iconPadding="6dp"
                 app:strokeColor="#FFEB3B"
                 app:cornerRadius="12dp"
-                android:textSize="12sp"
-                android:fontFamily="@font/orbitron" />
+                android:textStyle="bold"
+                android:textSize="11sp"
+                android:fontFamily="@font/orbitron"
+                app:rippleColor="#FFEB3B" />
         </LinearLayout>
 
+        <!-- Card MODO + ESTRATÉGIA -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="7dp"
             app:cardBackgroundColor="#0D0614"
             app:strokeColor="#2E1A47"
             app:strokeWidth="1dp"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="7dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginEnd="6dp"
+                        android:layout_width="13dp"
+                        android:layout_height="13dp"
+                        android:layout_marginEnd="5dp"
+                        android:contentDescription="@null"
                         app:srcCompat="@drawable/modo"
-                        app:tint="#00E5FF"/>
+                        app:tint="#00E5FF" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="MODO"
+                        android:text="@string/label_modo_titulo"
                         android:textColor="#00E5FF"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
+                        android:letterSpacing="0.1"
                         android:fontFamily="@font/orbitron" />
                 </LinearLayout>
 
@@ -509,37 +571,39 @@
                         android:id="@+id/follower"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginEnd="4dp"
-                        android:text="SEGUIDOR"
+                        android:text="@string/btn_seguidor"
                         android:textColor="#00BFFF"
+                        android:letterSpacing="0.1"
                         app:strokeColor="#00BFFF"
                         app:strokeWidth="1dp"
                         app:backgroundTint="#00111A"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="10dp"
                         android:textStyle="bold"
                         android:textSize="11sp"
                         android:fontFamily="@font/orbitron"
-                        app:rippleColor="#00BFFF"/>
+                        app:rippleColor="#00BFFF" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/chase"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginStart="4dp"
-                        android:text="PERSEGUIDOR"
+                        android:text="@string/btn_perseguidor"
                         android:textColor="#00BFFF"
+                        android:letterSpacing="0.1"
                         app:strokeColor="#00BFFF"
                         app:strokeWidth="1dp"
                         app:backgroundTint="#00111A"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="10dp"
                         android:textStyle="bold"
                         android:textSize="11sp"
                         android:fontFamily="@font/orbitron"
-                        app:rippleColor="#00BFFF"/>
+                        app:rippleColor="#00BFFF" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -547,22 +611,25 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginEnd="6dp"
+                        android:layout_width="13dp"
+                        android:layout_height="13dp"
+                        android:layout_marginEnd="5dp"
+                        android:contentDescription="@null"
                         app:srcCompat="@drawable/ic_estrategia"
-                        app:tint="#E020FF"/>
+                        app:tint="#E020FF" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ESTRATÉGIA"
+                        android:text="@string/label_estrategia_titulo"
                         android:textColor="#E020FF"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
+                        android:letterSpacing="0.1"
                         android:fontFamily="@font/orbitron" />
                 </LinearLayout>
 
@@ -575,58 +642,65 @@
                         android:id="@+id/conservative"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginEnd="4dp"
-                        android:text="CONSERVADOR"
+                        android:text="@string/btn_conservador"
                         android:textColor="#C040FF"
+                        android:letterSpacing="0.1"
                         app:strokeColor="#C040FF"
                         app:strokeWidth="1dp"
                         app:backgroundTint="#0C0411"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="10dp"
                         android:textStyle="bold"
-                        android:textSize="10sp"
+                        android:textSize="11sp"
                         android:fontFamily="@font/orbitron"
-                        app:rippleColor="#C040FF"/>
+                        app:rippleColor="#C040FF" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/risk"
                         style="?attr/materialButtonOutlinedStyle"
                         android:layout_width="0dp"
-                        android:layout_height="50dp"
+                        android:layout_height="44dp"
                         android:layout_weight="1"
                         android:layout_marginStart="4dp"
-                        android:text="ARRISCADO"
+                        android:text="@string/btn_arriscado"
                         android:textColor="#C040FF"
+                        android:letterSpacing="0.1"
                         app:strokeColor="#C040FF"
                         app:strokeWidth="1dp"
                         app:backgroundTint="#0C0411"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="10dp"
                         android:textStyle="bold"
                         android:textSize="11sp"
                         android:fontFamily="@font/orbitron"
-                        app:rippleColor="#C040FF"/>
+                        app:rippleColor="#C040FF" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- COMEÇAR + FINALIZAR -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="8dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/run"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="55dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                android:text="COMEÇAR\nCORRIDA"
+                android:layout_marginEnd="5dp"
+                android:text="@string/btn_comecar_corrida"
                 android:textColor="#00FF66"
+                android:letterSpacing="0.1"
+                android:lineSpacingExtra="-2dp"
                 app:icon="@drawable/ic_play"
                 app:iconTint="#00FF66"
+                app:iconSize="16dp"
+                app:iconPadding="6dp"
                 app:iconGravity="textStart"
                 app:strokeColor="#00FF66"
                 app:strokeWidth="1dp"
@@ -635,19 +709,23 @@
                 android:textStyle="bold"
                 android:textSize="11sp"
                 android:fontFamily="@font/orbitron"
-                app:rippleColor="#00FF66"/>
+                app:rippleColor="#00FF66" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/stop"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="0dp"
-                android:layout_height="55dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:text="FINALIZAR\nCORRIDA"
+                android:layout_marginStart="5dp"
+                android:text="@string/btn_finalizar_corrida"
                 android:textColor="#FF2A55"
+                android:letterSpacing="0.1"
+                android:lineSpacingExtra="-2dp"
                 app:icon="@drawable/ic_stop"
                 app:iconTint="#FF2A55"
+                app:iconSize="16dp"
+                app:iconPadding="6dp"
                 app:iconGravity="textStart"
                 app:strokeColor="#FF2A55"
                 app:strokeWidth="1dp"
@@ -656,57 +734,64 @@
                 android:textStyle="bold"
                 android:textSize="11sp"
                 android:fontFamily="@font/orbitron"
-                app:rippleColor="#FF2A55"/>
+                app:rippleColor="#FF2A55" />
         </LinearLayout>
     </LinearLayout>
 
+    <!-- ============================== LABEL TERMINAL ============================== -->
     <LinearLayout
         android:id="@+id/terminalLabelContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
         app:layout_constraintTop_toBottomOf="@id/controlsContainer"
         app:layout_constraintStart_toStartOf="parent">
 
         <View
-            android:layout_width="8dp"
-            android:layout_height="8dp"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
             android:background="@drawable/bg_dot"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="6dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TERMINAL"
-            android:textColor="#A09DA5"
-            android:textSize="14sp"
+            android:text="@string/label_terminal"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:letterSpacing="0.15"
             android:fontFamily="@font/orbitron"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- ============================== TERMINAL ============================== -->
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/terminalCard"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="10dp"
         app:cardBackgroundColor="#0A0410"
         app:strokeColor="#2E1A47"
         app:strokeWidth="1dp"
         app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
         app:layout_constraintTop_toBottomOf="@id/terminalLabelContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_min="80dp">
 
         <ScrollView
             android:id="@+id/scrollMonitor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp">
+            android:padding="10dp"
+            android:scrollbars="none">
 
             <TextView
                 android:id="@+id/txtSerial"
@@ -715,7 +800,7 @@
                 android:textColor="#00FF66"
                 android:textSize="11sp"
                 android:fontFamily="monospace"
-                android:lineSpacingExtra="4dp" />
+                android:lineSpacingExtra="3dp" />
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>
 

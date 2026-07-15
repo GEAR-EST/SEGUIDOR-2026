@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    app:cardBackgroundColor="#130822"
+    app:strokeColor="#A066FF"
+    app:strokeWidth="1dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ============ HEADER: Ícone + Título + Botão fechar ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="@null"
+                app:srcCompat="@drawable/ic_esp32" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_configurar"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/sourcecodepro_bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/titulo_esp32"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/sourcecodepro_bold" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/btnFecharModalEsp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_modal_close_box"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/desc_fechar"
+                    app:srcCompat="@drawable/ic_close"
+                    app:tint="#A066FF" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- Divisor horizontal -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2E1A47" />
+
+        <!-- ============ SECTION 1: DISPOSITIVOS SALVOS ============ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_dispositivos_salvos"
+                    android:textColor="#A066FF"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="@font/sourcecodepro_bold"
+                    android:layout_marginEnd="10dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#2E1A47" />
+            </LinearLayout>
+
+            <!-- ============ DISPOSITIVO ATIVO ============ -->
+            <LinearLayout
+                android:id="@+id/dropdownContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    app:cardBackgroundColor="#0A0410"
+                    app:strokeColor="#A066FF"
+                    app:strokeWidth="1dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:baselineAligned="false">
+
+                        <!-- MAC ativo (clicável para expandir lista) -->
+                        <LinearLayout
+                            android:id="@+id/dropdownHeader"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="14dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/label_ativo"
+                                android:textColor="#A09DA5"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.15"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+
+                            <TextView
+                                android:id="@+id/dropdownSelectedMac"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/mac_padrao"
+                                android:textColor="#00FF66"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/sourcecodepro_bold" />
+                        </LinearLayout>
+
+                        <!-- Divider vertical -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#A066FF"
+                            android:layout_marginVertical="12dp" />
+
+                        <!-- Botão editar -->
+                        <FrameLayout
+                            android:id="@+id/btnEditarEsp"
+                            android:layout_width="52dp"
+                            android:layout_height="match_parent"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/desc_editar_esp"
+                                android:src="@drawable/ic_edit_pencil" />
+                        </FrameLayout>
+
+                        <!-- Divider vertical -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#A066FF"
+                            android:layout_marginVertical="12dp" />
+
+                        <!-- Botão excluir -->
+                        <FrameLayout
+                            android:id="@+id/btnExcluirEsp"
+                            android:layout_width="52dp"
+                            android:layout_height="match_parent"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless">
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/desc_excluir_esp"
+                                android:src="@drawable/ic_trash" />
+                        </FrameLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- ============ EDITAR MAC ATIVO (inicialmente oculto) ============ -->
+            <LinearLayout
+                android:id="@+id/layoutEditarMac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_editar_mac"
+                        android:textColor="#A066FF"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.15"
+                        android:fontFamily="@font/sourcecodepro_bold"
+                        android:layout_marginEnd="10dp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="#2E1A47" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="#0A0410"
+                        app:strokeColor="#A066FF"
+                        app:strokeWidth="1dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="0dp">
+
+                        <EditText
+                            android:id="@+id/editMacAtivo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@android:color/transparent"
+                            android:paddingHorizontal="12dp"
+                            android:hint="@string/hint_mac"
+                            android:textColorHint="#5A5266"
+                            android:textColor="#00FF66"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/sourcecodepro_bold"
+                            android:inputType="textCapCharacters"
+                            android:maxLength="17"
+                            android:digits="0123456789ABCDEFabcdef:"
+                            android:imeOptions="actionDone"
+                            android:gravity="center_vertical"
+                            android:importantForAutofill="no"
+                            tools:ignore="LabelFor" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSalvarEdicao"
+                        style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+                        android:paddingHorizontal="14dp"
+                        android:text="@string/btn_salvar"
+                        android:textColor="#A066FF"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:fontFamily="@font/orbitron"
+                        app:icon="@drawable/ic_check_download"
+                        app:iconSize="14dp"
+                        app:iconTint="#A066FF"
+                        app:iconPadding="6dp"
+                        app:strokeColor="#A066FF"
+                        app:strokeWidth="1dp"
+                        app:backgroundTint="#1A0D2A"
+                        app:cornerRadius="10dp"
+                        app:rippleColor="#A066FF" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ============ LISTA EXPANDIDA (inicialmente oculta) ============ -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/dropdownListCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#0A0410"
+                app:strokeColor="#2E1A47"
+                app:strokeWidth="1dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="220dp"
+                    android:scrollbars="vertical"
+                    android:scrollbarThumbVertical="@drawable/bg_scrollbar_thumb"
+                    android:scrollbarSize="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/dropdownListContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="8dp" />
+                </ScrollView>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- ============ SECTION 2: ADICIONAR NOVO ============ -->
+        <LinearLayout
+            android:id="@+id/sectionAdicionarNovo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_adicionar_novo"
+                    android:textColor="#A066FF"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.15"
+                    android:fontFamily="@font/sourcecodepro_bold"
+                    android:layout_marginEnd="10dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#2E1A47" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_endereco_mac"
+                android:textColor="#CFC9D8"
+                android:textSize="11sp"
+                android:fontFamily="@font/sourcecodepro_bold"
+                android:layout_marginBottom="6dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="#0A0410"
+                    app:strokeColor="#2E1A47"
+                    app:strokeWidth="1dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp">
+
+                    <EditText
+                        android:id="@+id/editNovoMac"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:paddingHorizontal="12dp"
+                        android:hint="@string/hint_mac"
+                        android:textColorHint="#5A5266"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/sourcecodepro_bold"
+                        android:inputType="textCapCharacters"
+                        android:maxLength="17"
+                        android:digits="0123456789ABCDEFabcdef:"
+                        android:imeOptions="actionDone"
+                        android:gravity="center_vertical"
+                        android:importantForAutofill="no"
+                        tools:ignore="LabelFor" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSalvarEsp"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:paddingHorizontal="14dp"
+                    android:text="@string/btn_adicionar"
+                    android:textColor="#00FF66"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="@font/orbitron"
+                    app:icon="@drawable/ic_plus"
+                    app:iconSize="14dp"
+                    app:iconTint="#00FF66"
+                    app:iconPadding="6dp"
+                    app:strokeColor="#00FF66"
+                    app:strokeWidth="1dp"
+                    app:backgroundTint="#00210E"
+                    app:cornerRadius="10dp"
+                    app:rippleColor="#00FF66" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ============ BOTÃO CONFIRMAR SELEÇÃO ============ -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmarSelecao"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/btn_confirmar_selecao"
+            android:textColor="#A066FF"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.15"
+            android:fontFamily="@font/sourcecodepro_bold"
+            app:icon="@drawable/ic_check_download"
+            app:iconSize="18dp"
+            app:iconTint="#A066FF"
+            app:iconPadding="10dp"
+            app:strokeColor="#A066FF"
+            app:strokeWidth="1dp"
+            app:backgroundTint="#1A0D2A"
+            app:cornerRadius="14dp"
+            app:rippleColor="#A066FF" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
