@@ -32,9 +32,9 @@ ZeGuia zeGuia;
  * entra em loop infinito com mensagem de erro na serial.
  */
 void setup() {
-  Serial.begin(115200);
-  delay(1500);
-  Serial.println("Sistema Iniciando...");
+    Serial.begin(115200);
+    delay(1500);
+    Serial.println("Sistema Iniciando...");
 
   commandsQueue = xQueueCreate(10, sizeof(RobotMessage));
   if (commandsQueue == NULL)
@@ -44,17 +44,19 @@ void setup() {
     {
       delay(1000);
     }
+
+    /* Core 1 — controle PID (maior prioridade para tempo-real). */
+    xTaskCreatePinnedToCore(ControlsTask,      "Task_PID", 4096, NULL, 3, NULL, 1);
+
+    /* Core 0 — comunicação Bluetooth (menor prioridade, tolerante a latência). */
+    xTaskCreatePinnedToCore(CommunicationTask, "Task_BT",  8192, NULL, 1, NULL, 0);
   }
-
-  xTaskCreatePinnedToCore(ControlsTask, "Task_PID", 4096, NULL, 3, NULL, 1);
-
-  xTaskCreatePinnedToCore(CommunicationTask, "Task_BT", 8192, NULL, 1, NULL, 0);
 }
 
 /**
- * @brief Loop principal — não utilizado.
+ * @brief Loop principal do Arduino (não utilizado).
  *
- * Toda a lógica é executada pelas tasks FreeRTOS criadas em setup().
+ * Toda a lógica roda em tasks FreeRTOS; este loop fica vazio
+ * e a task @c loopTask do Arduino-ESP32 simplesmente cede CPU.
  */
-void loop() {
-}
+void loop() {}

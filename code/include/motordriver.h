@@ -1,5 +1,4 @@
-#ifndef MOTORDRIVER_H
-#define MOTORDRIVER_H
+#pragma once
 
 #include <Arduino.h>
 #include <L298NX2.h>
@@ -36,5 +35,3 @@ void controlMotors(int speedA, int speedB);
 void pinModeMotors();
 
 bool fail_safe();
-
-#endif

@@ -12,13 +12,10 @@
 
 #include "commands.h"
 #include "communication.h"
-#include "zeGuia.h"
 #include "controls.h"
-#include "globals.h"
 #include "motordriver.h"
 #include "sensors.h"
-#include <Arduino.h>
-#include <Preferences.h>
+#include "zeGuia.h"
 
 extern QueueHandle_t commandsQueue;
 
@@ -27,7 +24,10 @@ extern QueueHandle_t commandsQueue;
  */
 void ZeGuia::setup()
 {
-    _setup();
+    setup_qtr();
+    setup_side_sensors();
+    readCalibration();
+    pinModeMotors();
 }
 
 /**
@@ -196,6 +196,7 @@ void ZeGuia::loopSeguidor()
     else if (strategy == S_RISK)
     {
         lineWhite();
+        markCounter(novasMarcas);
     }
 }
 
@@ -204,13 +205,15 @@ void ZeGuia::loopSeguidor()
  */
 void ZeGuia::loopPerseguidor()
 {
-    if (strategy == S_CONSERVATIVE)
+    if (strategy == S_CONSERVATIVE) 
+    { 
+        lineBlack();
+        markCounter(novasMarcas);
+    } 
+    else if (strategy == S_RISK) 
     {
-        controlMotors((int)velMax, (int)velMax);
-    }
-    else if (strategy == S_RISK)
-    {
-        controlMotors((int)velMax, (int)velMax);
+        lineBlack();
+        markCounter(novasMarcas);
     }
 }
 
@@ -232,6 +235,7 @@ void ZeGuia::iniciarCorrida()
 {
     rsOn   = 0;
     stateR = 0;
+    pos_ant = 0;
 
     RobotMessage stale;
     while (xQueueReceive(commandsQueue, &stale, 0) == pdTRUE) {}
@@ -266,7 +270,7 @@ void ZeGuia::terminarCorrida()
  */
 void ZeGuia::enviarLeituraSensores()
 {
-    uint16_t position = qtr.readLineWhite(sensorValues);
+    uint16_t position = qtr.readLineBlack(sensorValues);
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
 
@@ -276,7 +280,7 @@ void ZeGuia::enviarLeituraSensores()
         for (uint8_t i = 0; i < SensorCount; i++)
         {
             SerialBT.print(',');
-            SerialBT.print(1000 - sensorValues[i]);
+            SerialBT.print(sensorValues[i]);
         }
         SerialBT.print(',');
         SerialBT.print(readRight);
@@ -338,10 +342,13 @@ void ZeGuia::processarComando(RobotCommand cmd)
  * individuais de cada motor. Os valores são mapeados para o intervalo [VEL_MIN, VEL_MAX]
  * antes de serem enviados ao driver de motores.
  */
-void ZeGuia::lineWhite()
-{
+void ZeGuia::lineWhite() {
     int pos = qtr.readLineWhite(sensorValues);
 
+    if (handleDashed(pos)) return;
+
+    pos_ant = pos; 
+    
     int pid_value = pid.somatory(SETPOINT, pos);
 
     int vel_m1 = VEL_MAX - pid_value;
@@ -354,6 +361,27 @@ void ZeGuia::lineWhite()
     else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
 
     controlMotors(vel_m1, vel_m2);
+}
+
+void ZeGuia::lineBlack(){
+    int pos = qtr.readLineBlack(sensorValues);
+
+    if (handleDashed(pos)) return;
+
+    pos_ant = pos; 
+    
+    int pid_value = pid.somatory(SETPOINT, pos);
+
+    int vel_m1 = VEL_MAX + pid_value;
+    int vel_m2 = VEL_MAX - pid_value;
+
+    vel_m1 = constrain(vel_m1, -VEL_MAX, VEL_MAX);
+    vel_m2 = constrain(vel_m2, -VEL_MAX, VEL_MAX);
+
+    if (vel_m1 >= 0) vel_m1 = map(vel_m1, 0, VEL_MAX, VEL_MIN, VEL_MAX);
+    else if (vel_m1 < 0) vel_m1 = map(vel_m1, -VEL_MAX, 0, -VEL_MAX, -VEL_MIN);
+
+    controlMotors(vel_m2, vel_m1);
 }
 
 /**
@@ -379,4 +407,34 @@ void ZeGuia::markCounter(uint8_t n)
             processarComando(RobotCommand::CMD_STOP);
         }
     }
+}
+
+bool ZeGuia::handleDashed(int pos) {
+    bool lineLost = (pos == 0 || pos == 7000);
+
+    static uint32_t timeStartDashed = 0;
+    static bool inDashed = false;
+
+    if (lineLost) {
+        if (!inDashed) {
+            timeStartDashed = millis();
+            inDashed = true;
+            SerialBT.println("Em tracejado!");
+        }
+
+        uint32_t tempo = millis() - timeStartDashed;
+        if (tempo < 80) {
+            SerialBT.println("Frentee!");
+            controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
+            return true; 
+        } else {
+            if (pos == 0)    controlMotors(-1.2*VEL_MAX,  1.2*VEL_MAX);
+            if (pos == 7000) controlMotors( 1.2*VEL_MAX, -1.2*VEL_MAX);
+        }
+
+    } else {
+        inDashed = false;
+    }
+
+    return false;
 }
