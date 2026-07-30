@@ -1,3 +1,15 @@
+/**
+ * @file zeGuia.cpp
+ * @brief Implementação da classe ZeGuia — lógica de controle, PID e estado do robô.
+ *
+ * Cada método executa uma responsabilidade isolada dentro do ciclo de vida da corrida:
+ * calibração, seleção de modo/estratégia, loop de controle, streaming de sensores,
+ * persistência de parâmetros na NVS e parada autônoma por contagem de marcas.
+ *
+ * @author Gear Robotics
+ * @version 1.0
+ */
+
 #include "commands.h"
 #include "communication.h"
 #include "controls.h"
@@ -7,7 +19,10 @@
 
 extern QueueHandle_t commandsQueue;
 
-void ZeGuia::setup() 
+/**
+ * @brief Inicializa o hardware do robô chamando _setup() dos módulos externos.
+ */
+void ZeGuia::setup()
 {
     setup_qtr();
     setup_side_sensors();
@@ -15,6 +30,11 @@ void ZeGuia::setup()
     pinModeMotors();
 }
 
+/**
+ * @brief Processa uma mensagem da commandsQueue, aplicando PID e/ou executando o comando.
+ *
+ * @param message Mensagem recebida, podendo conter parâmetros PID e/ou um comando.
+ */
 void ZeGuia::processarMensagem(const RobotMessage& message)
 {
     if (message.hasPidTunings)
@@ -29,6 +49,15 @@ void ZeGuia::processarMensagem(const RobotMessage& message)
     }
 }
 
+/**
+ * @brief Atualiza os parâmetros PID em memória, aplica ao controlador e persiste na NVS.
+ *
+ * @param novaVelMax Nova velocidade máxima.
+ * @param novoKp     Novo ganho proporcional.
+ * @param novoKi     Novo ganho integral.
+ * @param novoKd     Novo ganho derivativo.
+ * @param novasMarcas Novo número de marcas para parada autônoma.
+ */
 void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float novoKd, int novasMarcas)
 {
     velMax            = novaVelMax;
@@ -40,17 +69,33 @@ void ZeGuia::atualizarPID(float novaVelMax, float novoKp, float novoKi, float no
     salvarParametrosNVS();
 }
 
+/**
+ * @brief Aplica velMax ao VEL_MAX global e atualiza os ganhos do controlador PID.
+ */
 void ZeGuia::aplicarParametrosPID()
 {
     VEL_MAX = static_cast<float>(velMax);
-    pid.setTunnings(kp, ki, kd);  
+    pid.setTunnings(kp, ki, kd);
 }
 
+/**
+ * @brief Gera a chave NVS no formato `mAbbr_sAbbr_param`.
+ *
+ * @param mAbbr  Abreviação do modo  ("sf" para seguidor, "ps" para perseguidor).
+ * @param sAbbr  Abreviação da estratégia ("co" para conservador, "ar" para arriscado).
+ * @param param  Nome do parâmetro ("v", "kp", "ki", "kd", "mr").
+ * @return String com a chave composta.
+ */
 static String nvsKey(const char* mAbbr, const char* sAbbr, const char* param)
 {
     return String(mAbbr) + "_" + sAbbr + "_" + param;
 }
 
+/**
+ * @brief Salva os parâmetros PID atuais na NVS com chave baseada no modo e estratégia ativos.
+ *
+ * Não faz nada se o modo ou a estratégia ainda não foram selecionados.
+ */
 void ZeGuia::salvarParametrosNVS()
 {
     if (mode == MODE_NONE || strategy == S_NONE) return;
@@ -67,6 +112,12 @@ void ZeGuia::salvarParametrosNVS()
     prefs.end();
 }
 
+/**
+ * @brief Envia via Bluetooth todos os 4 conjuntos de parâmetros PID salvos na NVS.
+ *
+ * Formato de cada linha: `PARAMS:Modo|Estrategia|V|Kp|Ki|Kd|Marcas`.
+ * Utiliza btMutex para acesso thread-safe ao SerialBT.
+ */
 void ZeGuia::enviarTodosParametros()
 {
     static const char* mAbbrs[]    = {"sf",          "sf",       "ps",           "ps"};
@@ -94,12 +145,18 @@ void ZeGuia::enviarTodosParametros()
     prefs.end();
 }
 
-void ZeGuia::loop() 
+/**
+ * @brief Executa a lógica cíclica do robô: controle de corrida e streaming de sensores.
+ *
+ * Chamado repetidamente pela ControlsTask. Despacha para loopSeguidor() ou
+ * loopPerseguidor() conforme o modo ativo, e envia leituras de sensores no
+ * intervalo definido por SENSOR_SEND_INTERVAL_MS quando sensorStreaming está ativo.
+ */
+void ZeGuia::loop()
 {
-    // Lógica principal do robô, chamada repetidamente
-    if (running) 
+    if (running)
     {
-        switch (mode) 
+        switch (mode)
         {
             case MODE_FOLLOWER:
                 loopSeguidor();
@@ -123,21 +180,29 @@ void ZeGuia::loop()
     }
 }
 
-void ZeGuia::loopSeguidor() //logica do seguidor, chamada dentro do loop principal quando o modo é MODE_FOLLOWER
+/**
+ * @brief Loop do modo Seguidor: executa o controle de linha e a parada autônoma por marcas.
+ *
+ * Na estratégia Conservadora, ativa também o contador de marcas laterais.
+ * Na estratégia Arriscada, apenas segue a linha sem verificar marcas.
+ */
+void ZeGuia::loopSeguidor()
 {
-
-    if (strategy == S_CONSERVATIVE) 
+    if (strategy == S_CONSERVATIVE)
     {
         lineWhite();
         markCounter(novasMarcas);
-    } 
-    else if (strategy == S_RISK) 
+    }
+    else if (strategy == S_RISK)
     {
         lineWhite();
         markCounter(novasMarcas);
     }
 }
 
+/**
+ * @brief Loop do modo Perseguidor: aciona os motores na velocidade máxima em linha reta.
+ */
 void ZeGuia::loopPerseguidor()
 {
     if (strategy == S_CONSERVATIVE) 
@@ -151,20 +216,27 @@ void ZeGuia::loopPerseguidor()
         markCounter(novasMarcas);
     }
 }
+
+/**
+ * @brief Executa a calibração dos sensores e notifica o app com `Estado: Calibrado`.
+ */
 void ZeGuia::calibrarRobo()
 {
     doCalibration();
     SerialBT.println("Estado: Calibrado");
 }
 
-void ZeGuia:: iniciarCorrida()
+/**
+ * @brief Inicia a corrida: reseta contadores de marca, limpa a fila e seta running = true.
+ *
+ * Descarta mensagens acumuladas na fila para evitar comandos antigos afetando a nova corrida.
+ */
+void ZeGuia::iniciarCorrida()
 {
-    // Reseta contadores de marcas para nova corrida
     rsOn   = 0;
     stateR = 0;
     pos_ant = 0;
 
-    // Descarta mensagens antigas que possam estar acumuladas na fila
     RobotMessage stale;
     while (xQueueReceive(commandsQueue, &stale, 0) == pdTRUE) {}
 
@@ -172,10 +244,13 @@ void ZeGuia:: iniciarCorrida()
     rsOn = 0;
 }
 
-void ZeGuia:: terminarCorrida()
+/**
+ * @brief Para a corrida: aplica ré breve se dentro do intervalo, trava motores e notifica `Estado: Parado`.
+ */
+void ZeGuia::terminarCorrida()
 {
     running = false;
-    
+
     const uint32_t time_now = millis();
     if (time_now - lastStopMs >= TIME_BACK_STOP){
         controlMotors(-120, -120);
@@ -185,10 +260,14 @@ void ZeGuia:: terminarCorrida()
     digitalWrite(BI1, HIGH);
     digitalWrite(BI2, HIGH);
     SerialBT.println("Estado: Parado");
-    
-      
 }
 
+/**
+ * @brief Lê os sensores e envia a leitura via Bluetooth no formato `S,pos,s1..s8,dir,esq`.
+ *
+ * Utiliza btMutex para acesso thread-safe ao SerialBT.
+ * Os valores dos sensores são invertidos (1000 - valor) para representar reflexão sobre fundo branco.
+ */
 void ZeGuia::enviarLeituraSensores()
 {
     uint16_t position = qtr.readLineBlack(sensorValues);
@@ -196,7 +275,6 @@ void ZeGuia::enviarLeituraSensores()
     readLeft = digitalRead(LeftSensor);
 
     if (xSemaphoreTake(btMutex, pdMS_TO_TICKS(10)) == pdTRUE) {
-        // Formato para o app: S,<pos>,<s1>...<s8>,<right>,<left>
         SerialBT.print("S,");
         SerialBT.print(position);
         for (uint8_t i = 0; i < SensorCount; i++)
@@ -212,7 +290,11 @@ void ZeGuia::enviarLeituraSensores()
     }
 }
 
-
+/**
+ * @brief Despacha o comando recebido para a ação correspondente no robô.
+ *
+ * @param cmd Comando a ser executado.
+ */
 void ZeGuia::processarComando(RobotCommand cmd)
 {
     switch (cmd)
@@ -248,12 +330,18 @@ void ZeGuia::processarComando(RobotCommand cmd)
     case CMD_GET_PARAMS:
         enviarTodosParametros();
         break;
-
     default:
         break;
-    }   
+    }
 }
 
+/**
+ * @brief Lê a posição da linha branca, calcula a saída PID e aplica aos motores.
+ *
+ * A saída do PID é somada/subtraída da velocidade máxima para gerar as velocidades
+ * individuais de cada motor. Os valores são mapeados para o intervalo [VEL_MIN, VEL_MAX]
+ * antes de serem enviados ao driver de motores.
+ */
 void ZeGuia::lineWhite() {
     int pos = qtr.readLineWhite(sensorValues);
 
@@ -296,19 +384,28 @@ void ZeGuia::lineBlack(){
     controlMotors(vel_m2, vel_m1);
 }
 
-void ZeGuia::markCounter(uint8_t n){
+/**
+ * @brief Conta marcas laterais detectadas pelo sensor direito e para o robô ao atingir o alvo.
+ *
+ * Utiliza uma máquina de estados de dois bits (rsOn, stateR) para detectar a borda
+ * de subida do sensor e evitar contagens múltiplas por marca.
+ *
+ * @param n Número de marcas que disparam a parada autônoma (0 = desativado).
+ */
+void ZeGuia::markCounter(uint8_t n)
+{
     if (n > 0){
         if (!digitalRead(RightSensor) && stateR == 0){
             rsOn++;
             stateR = 1;
-           SerialBT.print("Contador de marcas: "); SerialBT.println(rsOn);
+            SerialBT.print("Contador de marcas: "); SerialBT.println(rsOn);
         } else if (digitalRead(RightSensor) && stateR == 1){
             stateR = 0;
         }
         if (rsOn == n){
             SerialBT.println("Parada Ativa Ativada!");
             processarComando(RobotCommand::CMD_STOP);
-      }
+        }
     }
 }
 

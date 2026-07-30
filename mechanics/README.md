@@ -29,20 +29,16 @@ Este diretório contém todos os arquivos relacionados ao projeto mecânico do r
 
 - Visão Geral
 
-<img src="img/V2/Geral.jpg" height="300">
+<img src="img/Físico/ISO1.jpeg" height="500">
 
 - Visão Geral 2
 
-<img src="img/V2/Geral 3.jpg" height="300">
+<img src="img/Físico/ISO2.jpeg" height="500">
 
 - Visão Traseira
 
-<img src="img/V2/Costa.jpg" height="300">
+<img src="img/Físico/BACK1.jpeg" height="500">
 
 - Visão Superior
 
-<img src="img/V2/Superior.jpg" height="300">
-
-- Visão Inferior
-
-<img src="img/V2/Baixo.jpg" height="300">
+<img src="img/Físico/SUP1.jpeg" height="500">

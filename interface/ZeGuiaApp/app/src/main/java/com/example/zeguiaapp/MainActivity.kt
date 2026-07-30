@@ -1,856 +1,514 @@
+/**
+ * @file MainActivity.kt
+ * @brief Activity principal do ZeGuia — orquestra os helpers e implementa os callbacks Bluetooth.
+ *
+ * Responsabilidades:
+ * - Inicializar e conectar todos os helpers do aplicativo
+ * - Gerenciar o estado local de conexão (MAC ativo, MACs salvos, modo selecionado)
+ * - Implementar [BluetoothEventListener] para reagir aos eventos da ESP32
+ * - Exibir o display de bateria com barras coloridas
+ * - Controlar o estado visual do botão de editar parâmetros
+ *
+ * @author Gear Robotics
+ * @version 1.0
+ */
 package com.example.zeguiaapp
 
 import android.Manifest
-import android.bluetooth.BluetoothAdapter
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
-import androidx.core.content.ContextCompat
-import com.google.android.material.button.MaterialButton
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.util.Locale
+import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
+import androidx.core.graphics.toColorInt
 import java.util.UUID
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.*
 
+/**
+ * @class MainActivity
+ * @brief Entry-point da aplicação; coordena todos os módulos via injeção manual de dependências.
+ */
+class MainActivity : AppCompatActivity(), BluetoothEventListener {
 
-class MainActivity : AppCompatActivity() {
-
+    // ── Views da tela principal ──
     private lateinit var txtSerial: TextView
-    private lateinit var txtBatteryPercent: TextView
     private lateinit var txtEstadoRobo: TextView
     private lateinit var txtModoRobo: TextView
     private lateinit var txtEstrategiaRobo: TextView
     private lateinit var txtCronometro: TextView
+    private lateinit var txtBatteryPercent: TextView
+    private lateinit var txtEspMac: TextView
+    private lateinit var btnAbrirEdicao: LinearLayout
+    private lateinit var iconEditarParams: ImageView
+    private lateinit var swBluetooth: SwitchCompat
 
-    private lateinit var txtParamKp: TextView
-    private lateinit var txtParamKi: TextView
-    private lateinit var txtParamKd: TextView
+    // ── Helpers ──
+    private lateinit var cronometroHelper: CronometroHelper
+    private lateinit var uiHelper: UiStateHelper
+    private lateinit var iconHelper: BluetoothIconHelper
+    private lateinit var parametrosHelper: ParametrosHelper
+    private lateinit var btHelper: BluetoothHelper
+    private lateinit var sensoresHelper: SensoresHelper
+    private lateinit var espConfigHelper: EspConfigHelper
+    private lateinit var exportarHelper: ExportarHelper
 
-    private lateinit var btnCalibrar: Button
-    private lateinit var btnStartRun: Button
-    private lateinit var btnStopRun: Button
-    private lateinit var btnModeFollower: Button
-    private lateinit var btnModeChase: Button
-    private lateinit var btnStrategyConservative: Button
-    private lateinit var btnStrategyRisk: Button
-    private lateinit var btnAbrirEdicao: RelativeLayout
+    // ── Estado de sessão ──
+    private lateinit var sharedPreferences: SharedPreferences
 
-    private lateinit var btnExportar: Button
-    private var continuarEscutando = false
+    /** @brief Endereço MAC da ESP32 atualmente selecionada. */
+    private var address: String = ""
+
+    /** @brief Conjunto de MACs persistidos pelo usuário. */
+    private var savedMacs: MutableSet<String> = mutableSetOf()
+
+    /** @brief `true` após o primeiro "Modo:" recebido; habilita estratégias pós-calibração. */
     private var modoSelecionado = false
-    private lateinit var btAdapter: BluetoothAdapter
-    private var btSocket: BluetoothSocket? = null
-    private val address: String = "C0:49:EF:65:16:FE"
-    //"C0:49:EF:65:16:FE"
-    //"CC:DB:A7:62:8D:96"
 
     private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
-    private lateinit var sharedPreferences: SharedPreferences
-    // Modo e estrategia selecionados para namespacing dos parametros
-    private var modoAtual: String = ""
-    private var estrategiaAtual: String = ""
+    // ──────────────────────────────────────────────────────────────────────────────
+    //  Ciclo de vida
+    // ──────────────────────────────────────────────────────────────────────────────
 
-    // Cronometro sincronizado pela mensagem do robo
-    private val cronometroHandler = Handler(Looper.getMainLooper())
-    private var cronometroRodando = false
-    private var tempoInicioMs: Long = 0L
-
-    private lateinit var containerCards: LinearLayout
-
-    private var lendoSensores = false
-    private val sensorHandler = Handler(Looper.getMainLooper())
-
-    private var txtSensoresModal: TextView? = null
-
-    private lateinit var btnLerSensores: Button
-
-    private val atualizarCronometro = object : Runnable {
-        override fun run() {
-            if (!cronometroRodando) return
-            val decorrido = System.currentTimeMillis() - tempoInicioMs
-            val minutos = (decorrido / 1000) / 60
-            val segundos = (decorrido / 1000) % 60
-            val centesimos = (decorrido % 1000) / 10
-            txtCronometro.text = String.format(Locale.US, "%2d:%02d:%02d", minutos, segundos, centesimos)
-            cronometroHandler.postDelayed(this, 50)
-        }
-    }
-
-    private val sensorPollRunnable = object : Runnable {
-        override fun run() {
-            if (!lendoSensores) return
-            enviarComando("L")
-            sensorHandler.postDelayed(this, 180) // ajuste: 120-250ms
-        }
-    }
-
-
-
+    /**
+     * @brief Inicializa views, helpers e listeners. Ponto de entrada da Activity.
+     *
+     * @param savedInstanceState Estado salvo da instância anterior (não utilizado).
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         sharedPreferences = getSharedPreferences("ZeGuiaPrefs", Context.MODE_PRIVATE)
 
-        txtEstadoRobo = findViewById(R.id.txtEstadoRobo)
-        txtModoRobo = findViewById(R.id.txtModoRobo)
-        txtEstrategiaRobo = findViewById(R.id.txtEstrategiaRobo)
-        txtSerial = findViewById(R.id.txtSerial)
-        txtCronometro = findViewById(R.id.txtCronometro)
+        savedMacs = sharedPreferences.getStringSet("savedMacs", mutableSetOf("C0:49:EF:65:16:FE"))
+            ?.toMutableSet() ?: mutableSetOf("C0:49:EF:65:16:FE")
+        address = sharedPreferences.getString("selectedMac", "C0:49:EF:65:16:FE") ?: "C0:49:EF:65:16:FE"
 
-        txtBatteryPercent = findViewById(R.id.txtBatteryPercent)
+        inicializarViews()
+        inicializarHelpers()
+        configurarListeners()
 
-        txtParamKp = findViewById(R.id.txtParamKp)
-        txtParamKi = findViewById(R.id.txtParamKi)
-        txtParamKd = findViewById(R.id.txtParamKd)
+        // Restaura modo/estratégia da sessão anterior
+        parametrosHelper.modoAtual      = sharedPreferences.getString("lastModoAtual",      "") ?: ""
+        parametrosHelper.estrategiaAtual = sharedPreferences.getString("lastEstrategiaAtual", "") ?: ""
+        parametrosHelper.atualizarDisplay()
+        atualizarEstadoEdicaoParametros()
 
-
-
-        txtParamKp.text    = sharedPreferences.getString("paramKp", "--")
-        txtParamKi.text    = sharedPreferences.getString("paramKi", "--")
-        txtParamKd.text    = sharedPreferences.getString("paramKd", "--")
-        txtCronometro.text = "0:00:00"
-
-// ADICIONAR:
-        modoAtual       = sharedPreferences.getString("lastModoAtual", "") ?: ""
-        estrategiaAtual = sharedPreferences.getString("lastEstrategiaAtual", "") ?: ""
-        atualizarDisplayParametros()
-
-        btnLerSensores = findViewById<Button>(R.id.btnLerSensores)
-        btnCalibrar = findViewById(R.id.calibrate)
-        btnStartRun = findViewById(R.id.run)
-        btnStopRun = findViewById(R.id.stop)
-        btnModeFollower = findViewById(R.id.follower)
-        btnModeChase = findViewById(R.id.chase)
-        btnStrategyConservative = findViewById(R.id.conservative)
-        btnStrategyRisk = findViewById(R.id.risk)
-        btnAbrirEdicao = findViewById(R.id.btnAbrirEdicao)
-
-        btnExportar = findViewById(R.id.btnExportar)
-        btnExportar.setOnClickListener { abrirModalExportar() }
-
-        estadoDesconectado()
+        uiHelper.estadoDesconectado()
+        iconHelper.setDesconectado()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            requestPermissions(
+            ActivityCompat.requestPermissions(
+                this,
                 arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN),
                 1
             )
         }
-
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        btAdapter = bluetoothManager.adapter
-
-        val swBluetooth = findViewById<SwitchCompat>(R.id.bluetooth)
-        swBluetooth.setOnCheckedChangeListener { _, isChecked ->
-            atualizarCoresSwitch(swBluetooth, isChecked) // Aplica sua lógica de cores
-            if (isChecked) {
-                conectarBluetooth()
-            } else {
-                desconectarBluetooth()
-            }
-        }
-
-        // Cliques so enviam comando; cronometro inicia/para quando chegar mensagem do robo
-        btnCalibrar.setOnClickListener { enviarComando("K") }
-
-        btnLerSensores.setOnClickListener {
-            abrirModalSensores()
-            //simularLeituraSensores()
-        }
-        btnModeFollower.setOnClickListener {
-            modoAtual = "seguidor"
-            estrategiaAtual = ""
-            enviarComando("S")
-        }
-        btnModeChase.setOnClickListener {
-            modoAtual = "perseguidor"
-            estrategiaAtual = ""
-            enviarComando("P")
-        }
-        btnStrategyConservative.setOnClickListener {
-            estrategiaAtual = "conservador"
-            enviarComando("C")
-            carregarParametros()
-        }
-        btnStrategyRisk.setOnClickListener {
-            estrategiaAtual = "arriscado"
-            enviarComando("A")
-            carregarParametros()
-        }
-        btnStartRun.setOnClickListener { enviarComando("R") }
-        btnStopRun.setOnClickListener { enviarComando("F") }
-
-        btnAbrirEdicao.setOnClickListener { mostrarDialogEdicao() }
     }
 
-    // Retorna o prefixo de chave para o modo+estrategia atual, ex: "seguidor_conservador_"
-    // Retorna o prefixo de chave para o modo+estrategia atual, ex: "seguidor_conservador_"
-    private fun prefKey(): String {
-        return if (modoAtual.isNotEmpty() && estrategiaAtual.isNotEmpty()) {
-            "${modoAtual}_${estrategiaAtual}_"
-        } else {
-            ""
-        }
-    }
-
-    private fun atualizarDisplayParametros() {
-        val prefix = prefKey()
-        if (prefix.isEmpty()) {
-            txtParamKp.text = "--"
-            txtParamKi.text = "--"
-            txtParamKd.text = "--"
-            return
-        }
-        txtParamKp.text = sharedPreferences.getString("${prefix}paramKp", "--") ?: "--"
-        txtParamKi.text = sharedPreferences.getString("${prefix}paramKi", "--") ?: "--"
-        txtParamKd.text = sharedPreferences.getString("${prefix}paramKd", "--") ?: "--"
-    }
-
-    // Carrega os parametros do modo+estrategia atual, atualiza a tela e envia para o ESP32
-    private fun carregarParametros() {
-        val prefix = prefKey()
-        val kp     = sharedPreferences.getString("${prefix}paramKp", "0.0") ?: "0.0"
-        val ki     = sharedPreferences.getString("${prefix}paramKi", "0.0") ?: "0.0"
-        val kd     = sharedPreferences.getString("${prefix}paramKd", "0.0") ?: "0.0"
-        val v      = sharedPreferences.getString("${prefix}paramV", "0") ?: "0"
-        val marcas = sharedPreferences.getString("${prefix}paramMarcas", "0") ?: "0"
-
-        txtParamKp.text = kp
-        txtParamKi.text = ki
-        txtParamKd.text = kd
-
-        // Envia os parametros salvos desta estrategia direto para o ESP32
-        enviarComando("PID:$v|$kp|$ki|$kd|$marcas")
-    }
-
-
-    private fun mostrarDialogEdicao() {
-        if (prefKey().isEmpty()) {
-            Toast.makeText(this, "Selecione modo e estratégia antes de editar parâmetros", Toast.LENGTH_SHORT).show()
-            return
-        }
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.editar_parametros, null)
-        val builder = AlertDialog.Builder(this)
-        builder.setView(dialogView)
-        val alertDialog = builder.create()
-        alertDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        alertDialog.show()
-
-        val editV      = dialogView.findViewById<EditText>(R.id.editV)
-        val editKp     = dialogView.findViewById<EditText>(R.id.editKp)
-        val editKi     = dialogView.findViewById<EditText>(R.id.editKi)
-        val editKd     = dialogView.findViewById<EditText>(R.id.editKd)
-        val editMarcas = dialogView.findViewById<EditText>(R.id.editMarcas)
-
-        val prefix = prefKey()
-
-        val vSalvo = sharedPreferences.getString("${prefix}paramV", "0")
-            ?.toFloatOrNull()?.toInt()?.toString() ?: "0"
-        editV.setText(vSalvo)
-
-        fun normFloat(key: String): String {
-            val raw = sharedPreferences.getString("${prefix}$key", "0.0") ?: "0.0"
-            val parsed = raw.replace(",", ".").toFloatOrNull() ?: 0f
-            return String.format(Locale.US, "%.2f", parsed)
-        }
-        editKp.setText(normFloat("paramKp"))
-        editKi.setText(normFloat("paramKi"))
-        editKd.setText(normFloat("paramKd"))
-
-// Marcas: inteiro simples
-        val marcasSalvo = sharedPreferences.getString("${prefix}paramMarcas", "0")
-            ?.toFloatOrNull()?.toInt()?.toString() ?: "0"
-        editMarcas.setText(marcasSalvo)
-
-
-        fun configurarStepper(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
-            dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
-                val v = editText.text.toString().toFloatOrNull() ?: 0f
-                editText.setText(String.format(Locale.US, "%.2f", v + 0.01f))
-            }
-            dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
-                val v = editText.text.toString().toFloatOrNull() ?: 0f
-                editText.setText(String.format(Locale.US, "%.2f", v - 0.01f))
-            }
-        }
-
-        // Stepper para inteiros (passo 1)
-        fun configurarStepperInt(btnMenosId: Int, btnMaisId: Int, editText: EditText) {
-            dialogView.findViewById<TextView>(btnMaisId).setOnClickListener {
-                val v = editText.text.toString().toFloatOrNull()?.toInt() ?: 0
-                editText.setText((v + 1).toString())
-            }
-            dialogView.findViewById<TextView>(btnMenosId).setOnClickListener {
-                val v = editText.text.toString().toFloatOrNull()?.toInt() ?: 0
-                editText.setText((v - 1).toString())
-            }
-        }
-
-        configurarStepperInt(R.id.btnDiminuirV, R.id.btnAumentarV, editV)
-        configurarStepper(R.id.btnDiminuirKp, R.id.btnAumentarKp, editKp)
-        configurarStepper(R.id.btnDiminuirKi, R.id.btnAumentarKi, editKi)
-        configurarStepper(R.id.btnDiminuirKd, R.id.btnAumentarKd, editKd)
-        configurarStepperInt(R.id.btnDiminuirMarcas, R.id.btnAumentarMarcas, editMarcas)
-
-        dialogView.findViewById<MaterialButton>(R.id.btnCancelar).setOnClickListener {
-            alertDialog.dismiss()
-        }
-
-        dialogView.findViewById<MaterialButton>(R.id.btnSalvar).setOnClickListener {
-            val novoV      = editV.text.toString().ifEmpty { "0" }
-            val novoKp     = editKp.text.toString().ifEmpty { "0.0" }
-            val novoKi     = editKi.text.toString().ifEmpty { "0.0" }
-            val novoKd     = editKd.text.toString().ifEmpty { "0.0" }
-            val novoMarcas = editMarcas.text.toString().ifEmpty { "0" }
-
-            txtParamKp.text     = novoKp
-            txtParamKi.text     = novoKi
-            txtParamKd.text     = novoKd
-
-
-            sharedPreferences.edit().apply {
-                putString("${prefix}paramV",      novoV)
-                putString("${prefix}paramKp",     novoKp)
-                putString("${prefix}paramKi",     novoKi)
-                putString("${prefix}paramKd",     novoKd)
-                putString("${prefix}paramMarcas", novoMarcas)
-                apply()
-            }
-
-            // Formato firmware: PID:V|Kp|Ki|Kd|VelEsq|VelDir|NovasMarcas
-            enviarComando("PID:$novoV|$novoKp|$novoKi|$novoKd|$novoMarcas")
-            alertDialog.dismiss()
-        }
-    }
-
-    private fun iniciarCronometro() {
-        if (cronometroRodando) return
-        cronometroRodando = true
-        tempoInicioMs = System.currentTimeMillis()
-        cronometroHandler.post(atualizarCronometro)
-    }
-
-    private fun pararCronometro() {
-        cronometroRodando = false
-        cronometroHandler.removeCallbacks(atualizarCronometro)
-    }
-
-    private fun resetarCronometro() {
-        pararCronometro()
-        txtCronometro.text = "0:00:00"
-    }
-
-    private fun configurarBotao(botao: Button, habilitado: Boolean) {
-        botao.isEnabled = habilitado
-        botao.alpha = if (habilitado) 1.0f else 0.3f
-    }
-
-    private fun estadoDesconectado() {
-        modoSelecionado = false
-        configurarBotao(btnCalibrar, false)
-        configurarBotao(btnModeFollower, false)
-        configurarBotao(btnModeChase, false)
-        configurarBotao(btnStrategyConservative, false)
-        configurarBotao(btnStrategyRisk, false)
-        configurarBotao(btnStartRun, false)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnLerSensores, false) // sem conexão, desabilitado
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoConectadoInicial() {
-        configurarBotao(btnCalibrar, true)
-        configurarBotao(btnModeFollower, true)
-        configurarBotao(btnModeChase, true)
-        configurarBotao(btnLerSensores, true)
-        configurarBotao(btnStrategyConservative, false)
-        configurarBotao(btnStrategyRisk, false)
-        configurarBotao(btnStartRun, false)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoCalibrando() {
-        configurarBotao(btnCalibrar, false)
-        configurarBotao(btnModeFollower, false)
-        configurarBotao(btnModeChase, false)
-        configurarBotao(btnLerSensores, false)
-        configurarBotao(btnStrategyConservative, false)
-        configurarBotao(btnStrategyRisk, false)
-        configurarBotao(btnStartRun, false)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoPosCalibracao() {
-        configurarBotao(btnCalibrar, true)
-        configurarBotao(btnModeFollower, true)
-        configurarBotao(btnModeChase, true)
-        configurarBotao(btnLerSensores, true)
-        configurarBotao(btnStrategyConservative, modoSelecionado)
-        configurarBotao(btnStrategyRisk, modoSelecionado)
-        configurarBotao(btnStartRun, false)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoPosModo() {
-        configurarBotao(btnCalibrar, false)
-        configurarBotao(btnModeFollower, true)
-        configurarBotao(btnModeChase, true)
-        configurarBotao(btnLerSensores, true)
-        configurarBotao(btnStrategyConservative, true)
-        configurarBotao(btnStrategyRisk, true)
-        configurarBotao(btnStartRun, false)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoPosEstrategia() {
-        configurarBotao(btnCalibrar, false)
-        configurarBotao(btnModeFollower, false)
-        configurarBotao(btnModeChase, false)
-        configurarBotao(btnLerSensores, true)
-        configurarBotao(btnStrategyConservative, true)
-        configurarBotao(btnStrategyRisk, true)
-        configurarBotao(btnStartRun, true)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoCorrendo() {
-        configurarBotao(btnCalibrar, false)
-        configurarBotao(btnModeFollower, false)
-        configurarBotao(btnModeChase, false)
-        configurarBotao(btnStrategyConservative, false)
-        configurarBotao(btnStrategyRisk, false)
-        configurarBotao(btnStartRun, false)
-        configurarBotao(btnLerSensores, false)
-        configurarBotao(btnStopRun, true)
-        configurarBotao(btnExportar, false)
-    }
-
-    private fun estadoFinalizado() {
-        configurarBotao(btnCalibrar, true)
-        configurarBotao(btnModeFollower, true)
-        configurarBotao(btnModeChase, true)
-        configurarBotao(btnStrategyConservative, true)
-        configurarBotao(btnStrategyRisk, true)
-        configurarBotao(btnStartRun, true)
-        configurarBotao(btnStopRun, false)
-        configurarBotao(btnLerSensores, true)
-        configurarBotao(btnExportar, true)
-    }
-
-    private fun permissaoBluetooth(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-    }
-
-    private fun conectarBluetooth() {
-        if (!permissaoBluetooth()) {
-            runOnUiThread {
-                Toast.makeText(this, "Permissão de Bluetooth necessária!", Toast.LENGTH_SHORT).show()
-                findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
-            }
-            return
-        }
-
-        if (!btAdapter.isEnabled) {
-            Toast.makeText(this, "Ative o Bluetooth!", Toast.LENGTH_SHORT).show()
-            findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
-            return
-        }
-
-        Thread {
-            try {
-                val dispositivo = btAdapter.getRemoteDevice(address)
-                btSocket = dispositivo.createRfcommSocketToServiceRecord(MY_UUID)
-                btAdapter.cancelDiscovery()
-                btSocket?.connect()
-
-                continuarEscutando = true
-                receberDados()
-
-                runOnUiThread {
-                    Toast.makeText(this, "Conectado ao ZeGuia!", Toast.LENGTH_SHORT).show()
-                    estadoConectadoInicial()
-                    enviarComando("Q")
-                }
-            } catch (e: IOException) {
-                runOnUiThread {
-                    findViewById<SwitchCompat>(R.id.bluetooth).isChecked = false
-                    Toast.makeText(this, "Falha na conexão", Toast.LENGTH_SHORT).show()
-                    estadoDesconectado()
-                }
-                btSocket = null
-            }
-        }.start()
-    }
-
-    private fun desconectarBluetooth() {
-        try {
-            continuarEscutando = false
-            btSocket?.close()
-            btSocket = null
-            modoAtual = ""
-            estrategiaAtual = ""
-            runOnUiThread {
-                Toast.makeText(this, "Desconectado", Toast.LENGTH_SHORT).show()
-                estadoDesconectado()
-                resetarCronometro()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun atualizarCoresSwitch(
-        switchCompat: SwitchCompat,
-        isChecked: Boolean
-    ) {
-        if (isChecked) {
-            switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
-            switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#A066FF"))
-        } else {
-            switchCompat.thumbTintList = ColorStateList.valueOf(Color.parseColor("#A09DA5"))
-            switchCompat.trackTintList = ColorStateList.valueOf(Color.parseColor("#2E1A47"))
-        }
-    }
-
-    private fun receberDados() {
-        Thread {
-            val input = btSocket?.inputStream ?: return@Thread
-            val reader = BufferedReader(InputStreamReader(input))
-
-            while (continuarEscutando) {
-                try {
-                    val mensagem = reader.readLine() ?: break
-
-                    runOnUiThread {
-                        val msgLimpa  = mensagem.trim()
-
-                        if (!msgLimpa.startsWith("BAT") && !msgLimpa.startsWith("S,") && !msgLimpa.startsWith("PARAMS:")) {
-                            txtSerial.append("$mensagem\n")
-                            val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
-                            scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
-                        }
-
-                        when {
-                            msgLimpa.startsWith("PARAMS:") -> {
-                                val parts = msgLimpa.removePrefix("PARAMS:").split("|")
-                                if (parts.size >= 7) {
-                                    val parModo  = parts[0].lowercase()
-                                    val parStrat = parts[1].lowercase()
-                                    val prefix   = "${parModo}_${parStrat}_"
-                                    sharedPreferences.edit().apply {
-                                        putString("${prefix}paramV",      parts[2])
-                                        putString("${prefix}paramKp",     parts[3])
-                                        putString("${prefix}paramKi",     parts[4])
-                                        putString("${prefix}paramKd",     parts[5])
-                                        putString("${prefix}paramMarcas", parts[6])
-                                        apply()
-                                    }
-                                    if (parModo == modoAtual && parStrat == estrategiaAtual) {
-                                        atualizarDisplayParametros()
-                                    }
-                                }
-                            }
-                            msgLimpa.startsWith("BAT") -> {
-                                val valor = msgLimpa.removePrefix("BAT").trim()
-                                val percentual = valor.toIntOrNull()
-                                if (percentual != null) {
-                                    txtBatteryPercent.text = "$percentual%"
-                                    val corAtiva = when {
-                                        percentual > 50 -> Color.parseColor("#00E5FF")
-                                        percentual > 20 -> Color.parseColor("#FFAA00")
-                                        else            -> Color.parseColor("#FF2A55")
-                                    }
-                                    val corInativa = Color.parseColor("#2E1A47")
-                                    txtBatteryPercent.setTextColor(corAtiva)
-                                    val barrasAcesas = Math.ceil((percentual / 100.0) * 6).toInt()
-                                    val layoutBarras = findViewById<LinearLayout>(R.id.layoutBarrasBateria)
-                                    for (i in 0 until 6) {
-                                        layoutBarras.getChildAt(i).setBackgroundColor(
-                                            if (i < barrasAcesas) corAtiva else corInativa
-                                        )
-                                    }
-                                }
-                            }
-
-                            msgLimpa.startsWith("S,") -> {
-                                txtSensoresModal?.text = formatarSensoresBonito(mensagem)
-                            }
-
-                            msgLimpa.startsWith("Estado: ") -> {
-                                val valor = msgLimpa.removePrefix("Estado: ")
-                                txtEstadoRobo.text = valor
-                                when (valor) {
-                                    "Correndo"   -> { txtEstadoRobo.setTextColor(Color.parseColor("#00FF66")); estadoCorrendo(); iniciarCronometro() }
-                                    "Parado"     -> { txtEstadoRobo.setTextColor(Color.parseColor("#FF2A55")); estadoFinalizado(); pararCronometro() }
-                                    "Calibrando" -> { txtEstadoRobo.setTextColor(Color.parseColor("#FFFF00")); estadoCalibrando() }
-                                    "Calibrado"  -> { txtEstadoRobo.setTextColor(Color.parseColor("#9d00ff")); estadoPosCalibracao() }
-                                }
-                            }
-
-                            msgLimpa.startsWith("Modo: ") -> {
-                                val valor = msgLimpa.removePrefix("Modo: ")
-                                modoAtual = valor.lowercase()
-                                txtModoRobo.text = valor
-                                txtModoRobo.setTextColor(if (valor == "Seguidor") Color.parseColor("#00FFFF") else Color.parseColor("#FF007F"))
-                                txtEstrategiaRobo.text = "Aguardando..."
-                                txtEstrategiaRobo.setTextColor(Color.parseColor("#888888"))
-                                estrategiaAtual = ""
-                                modoSelecionado = true
-                                estadoPosModo()
-                                sharedPreferences.edit()
-                                    .putString("lastModoAtual", modoAtual)
-                                    .putString("lastEstrategiaAtual", "")
-                                    .apply()
-                            }
-
-                            msgLimpa.startsWith("Estrategia: ") -> {
-                                val valor = msgLimpa.removePrefix("Estrategia: ")
-                                estrategiaAtual = valor.lowercase()
-                                txtEstrategiaRobo.text = valor
-                                txtEstrategiaRobo.setTextColor(if (valor == "Conservador") Color.parseColor("#3399FF") else Color.parseColor("#FF8800"))
-                                atualizarDisplayParametros()
-                                estadoPosEstrategia()
-                                sharedPreferences.edit()
-                                    .putString("lastEstrategiaAtual", estrategiaAtual)
-                                    .apply()
-                            }
-                        }
-
-                        }
-
-                } catch (e: IOException) {
-                    break
-                }
-            }
-        }.start()
-    }
-
-    private fun formatarSensoresBonito(mensagem: String): String {
-
-            val p = mensagem.trim().split(",").map { it.trim() }
-            if (p.size < 10 || p[0] != "S") return "Aguardando sensores..."
-
-            val pos = p.getOrNull(1) ?: "-"
-
-            // Função interna para garantir que todo número ocupe sempre o exato mesmo espaço visual (4 caracteres)
-            fun pad(valor: String?): String {
-                return (valor ?: "-").padStart(4, ' ')
-            }
-
-            // Pega os índices de 2 a 5 para a primeira linha
-            val linha1 = "${pad(p.getOrNull(2))} | ${pad(p.getOrNull(3))} | ${pad(p.getOrNull(4))} | ${pad(p.getOrNull(5))}"
-
-            // Pega os índices de 6 a 9 para a segunda linha
-            val linha2 = "${pad(p.getOrNull(6))} | ${pad(p.getOrNull(7))} | ${pad(p.getOrNull(8))} | ${pad(p.getOrNull(9))}"
-
-            val dir = pad(p.getOrNull(10))
-            val esq = pad(p.getOrNull(11))
-
-            // Retorna exatamente no formato de 4 linhas que você pediu
-            return "POS: $pos\n$linha1\n$linha2\nESQ: $esq | DIR: $dir"
-
-    }
-
-
-
-    private fun enviarComando(sinal: String) {
-        if (btSocket == null) {
-            Toast.makeText(this, "Não está conectado!", Toast.LENGTH_SHORT).show()
-            return
-        }
-        try {
-            val payload = if (sinal.endsWith("\n")) sinal else "$sinal\n"
-            btSocket?.outputStream?.write(payload.toByteArray())
-        } catch (e: IOException) {
-            Toast.makeText(this, "Erro ao enviar dados", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-
-    private fun abrirModalSensores() {
-        val builder = AlertDialog.Builder(this)
-        val dialogView = layoutInflater.inflate(R.layout.modal_sensores, null)
-        builder.setView(dialogView)
-
-        txtSensoresModal = dialogView.findViewById(R.id.txtValoresSensores)
-
-        val dialog = builder.create()
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        txtSensoresModal?.text = "Aguardando sensores..."
-
-        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharSensores)
-        btnFechar.setOnClickListener {
-            dialog.dismiss()
-        }
-        dialog.setOnDismissListener {
-            enviarComando("l") // desliga stream no firmware
-            txtSensoresModal = null
-        }
-        dialog.show()
-        enviarComando("L") // liga stream no firmware
-    }
-
-    private fun abrirModalExportar() {
-        val builder = AlertDialog.Builder(this)
-        val dialogView = layoutInflater.inflate(R.layout.modal_exportar, null)
-        builder.setView(dialogView)
-        val dialog = builder.create()
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        val txtResumoDados = dialogView.findViewById<TextView>(R.id.txtResumoDados)
-        val editObservacoes = dialogView.findViewById<EditText>(R.id.editObservacoes)
-        val btnCopiarResumo = dialogView.findViewById<Button>(R.id.btnCopiarResumo)
-        val btnFechar = dialogView.findViewById<ImageView>(R.id.btnFecharExportar)
-        val rgStatusCorrida = dialogView.findViewById<android.widget.RadioGroup>(R.id.rgStatusCorrida)
-
-        // 1. Iniciar o botão "Copiar" como DESABILITADO
-        btnCopiarResumo.isEnabled = false
-        btnCopiarResumo.alpha = 0.4f // Deixa o botão meio transparente
-
-        var statusCorridaSelecionado = ""
-
-        // 2. Ouvinte para quando o usuário escolher uma opção (Sim, Parcial, Não)
-        rgStatusCorrida.setOnCheckedChangeListener { _, checkedId ->
-            // Habilita o botão "Copiar"
-            btnCopiarResumo.isEnabled = true
-            btnCopiarResumo.alpha = 1.0f
-
-            // Salva a resposta de acordo com a caixa marcada
-            statusCorridaSelecionado = when (checkedId) {
-                R.id.rbSim -> "Sim (Completa)"
-                R.id.rbParcial -> "Parcialmente"
-                R.id.rbNao -> "Não (Interrompida)"
-                else -> "Indefinido"
-            }
-        }
-
-        // Formatar Data e Hora atual
-        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-        val dataHora = dateFormat.format(java.util.Date())
-
-        val txtTempo = txtCronometro.text.toString() // Pega o que está no visor, ex: "01:59:00"
-        val partesTempo = txtTempo.split(":")
-
-        val tempoFormatadoParaExportar = if (partesTempo.size == 3) {
-            val min = partesTempo[0].filter { it.isDigit() }.toIntOrNull() ?: 0
-            val seg = partesTempo[1].filter { it.isDigit() }.toIntOrNull() ?: 0
-            val cent = partesTempo[2].filter { it.isDigit() }.toIntOrNull() ?: 0
-
-            val totalSegundos = (min * 60.0) + seg + (cent / 100.0)
-            String.format(Locale.US, "%.2fs", totalSegundos)
-        } else {
-            txtTempo
-        }
-        val modo = txtModoRobo.text.toString()
-        val estrategia = txtEstrategiaRobo.text.toString()
-        val kp = txtParamKp.text.toString()
-        val ki = txtParamKi.text.toString()
-        val kd = txtParamKd.text.toString()
-        val exportPrefix = prefKey()
-        val velMax = sharedPreferences.getString("${exportPrefix}paramV", "0")
-        val marcas = sharedPreferences.getString("${exportPrefix}paramMarcas", "0")
-
-
-        // Montar a String formatada apenas visual (sem o status, pois ele será escolhido)
-        val resumoVisual = """
-        [FEEDBACK DE CORRIDA - ZÉ-GUIA]
-        Data/Hora: $dataHora
-        Tempo Final: $tempoFormatadoParaExportar
-        
-        > Configurações:
-        Modo: $modo
-        Estratégia: $estrategia
-        Qtd. Marcas: $marcas
-        
-        > Parâmetros PID:
-        Vel. Máx: $velMax
-        Kp: $kp | Ki: $ki | Kd: $kd
-    """.trimIndent()
-
-        txtResumoDados.text = resumoVisual
-
-        // 3. Ação do Botão Copiar (quando habilitado)
-        btnCopiarResumo.setOnClickListener {
-
-            // Agora nós reconstruímos o texto final inserindo a resposta do Status:
-            val resumoFinal = """
-            [FEEDBACK DE CORRIDA - ZÉ-GUIA]
-            Data/Hora: $dataHora
-            Status: $statusCorridaSelecionado
-            Tempo Final: $tempoFormatadoParaExportar
-            
-            > Configurações:
-            Modo: $modo
-            Estratégia: $estrategia
-            Qtd. Marcas: $marcas
-            
-            > Parâmetros PID:
-            Vel. Máx: $velMax
-            Kp: $kp | Ki: $ki | Kd: $kd
-        """.trimIndent()
-
-            val obs = editObservacoes.text.toString()
-            val textoFinalParaCopiar = if (obs.isNotEmpty()) {
-                "$resumoFinal\n\n> Observações:\n$obs"
-            } else {
-                resumoFinal
-            }
-
-            // Chamar o serviço do Android que copia o texto
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-            val clip = android.content.ClipData.newPlainText("Feedback do Zé-Guia", textoFinalParaCopiar)
-            clipboard.setPrimaryClip(clip)
-
-            Toast.makeText(this, "Feedback copiado com sucesso!", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
-
-        // Ação de fechar no X
-        btnFechar.setOnClickListener { dialog.dismiss() }
-
-        dialog.show()
-    }
-
+    /**
+     * @brief Libera handlers, fecha o socket e descarta o dialog de "Sobre Nós".
+     */
     override fun onDestroy() {
         super.onDestroy()
-        continuarEscutando = false
-        pararCronometro()
-        btSocket?.close()
+        SobreNosHelper.onDestroy()
+        cronometroHelper.resetar()
+        btHelper.fechar()
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────────
+    //  Inicialização
+    // ──────────────────────────────────────────────────────────────────────────────
+
+    /**
+     * @brief Localiza e atribui todos os views do layout às propriedades da classe.
+     */
+    private fun inicializarViews() {
+        txtSerial           = findViewById(R.id.txtSerial)
+        txtEstadoRobo       = findViewById(R.id.txtEstadoRobo)
+        txtModoRobo         = findViewById(R.id.txtModoRobo)
+        txtEstrategiaRobo   = findViewById(R.id.txtEstrategiaRobo)
+        txtCronometro       = findViewById(R.id.txtCronometro)
+        txtBatteryPercent   = findViewById(R.id.txtBatteryPercent)
+        txtEspMac           = findViewById(R.id.txtEspMac)
+        btnAbrirEdicao      = findViewById(R.id.btnAbrirEdicao)
+        iconEditarParams    = findViewById(R.id.iconEditarParams)
+        swBluetooth         = findViewById(R.id.bluetooth)
+
+        txtEspMac.text       = address
+        @Suppress("SetTextI18n")
+        txtCronometro.text   = "0.00"
+    }
+
+    /**
+     * @brief Instancia todos os helpers injetando as dependências necessárias.
+     */
+    private fun inicializarHelpers() {
+        cronometroHelper = CronometroHelper(txtCronometro)
+
+        val btnCalibrar             = findViewById<Button>(R.id.calibrate)
+        val btnStartRun             = findViewById<Button>(R.id.run)
+        val btnStopRun              = findViewById<Button>(R.id.stop)
+        val btnModeFollower         = findViewById<Button>(R.id.follower)
+        val btnModeChase            = findViewById<Button>(R.id.chase)
+        val btnStrategyConservative = findViewById<Button>(R.id.conservative)
+        val btnStrategyRisk         = findViewById<Button>(R.id.risk)
+        val btnLerSensores          = findViewById<Button>(R.id.btnLerSensores)
+        val btnExportar             = findViewById<Button>(R.id.btnExportar)
+
+        uiHelper = UiStateHelper(
+            btnCalibrar, btnStartRun, btnStopRun,
+            btnModeFollower, btnModeChase,
+            btnStrategyConservative, btnStrategyRisk,
+            btnLerSensores, btnExportar
+        )
+
+        iconHelper = BluetoothIconHelper(
+            iconBluetooth = findViewById(R.id.iconBluetooth),
+            cardBluetooth = findViewById(R.id.cardBluetoothToggle),
+            density       = resources.displayMetrics.density
+        )
+
+        val txtParamKp = findViewById<TextView>(R.id.txtParamKp)
+        val txtParamKi = findViewById<TextView>(R.id.txtParamKi)
+        val txtParamKd = findViewById<TextView>(R.id.txtParamKd)
+        val txtParamVR = findViewById<TextView>(R.id.txtParamVR)
+
+        parametrosHelper = ParametrosHelper(
+            activity        = this,
+            sharedPrefs     = sharedPreferences,
+            txtParamKp      = txtParamKp,
+            txtParamKi      = txtParamKi,
+            txtParamKd      = txtParamKd,
+            txtParamVR      = txtParamVR,
+            onEnviarComando = { btHelper.enviarComando(it) }
+        )
+
+        sensoresHelper = SensoresHelper(
+            activity        = this,
+            onEnviarComando = { btHelper.enviarComando(it) }
+        )
+
+        val btAdapter = (getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+
+        btHelper = BluetoothHelper(
+            activity       = this,
+            btAdapter      = btAdapter,
+            uuid           = MY_UUID,
+            swBluetooth    = swBluetooth,
+            sensoresHelper = sensoresHelper,
+            listener       = this
+        ).also { it.setAddress(address) }
+
+        espConfigHelper = EspConfigHelper(
+            activity      = this,
+            sharedPrefs   = sharedPreferences,
+            getAddress    = { address },
+            setAddress    = { mac -> address = mac; btHelper.setAddress(mac) },
+            getSavedMacs  = { savedMacs },
+            isSocketOpen  = { btHelper.btSocket != null },
+            txtEspMac     = txtEspMac,
+            onDesconectar = { swBluetooth.isChecked = false }
+        )
+
+        exportarHelper = ExportarHelper(
+            activity         = this,
+            cronometroHelper = cronometroHelper,
+            parametrosHelper = parametrosHelper,
+            sharedPrefs      = sharedPreferences,
+            txtModoRobo      = txtModoRobo,
+            txtEstrategiaRobo = txtEstrategiaRobo,
+            getAddress       = { address }
+        )
+
+        SobreNosHelper.setup(this)
+
+        // Registra os listeners de clique em cada botão de controle
+        btnCalibrar.setOnClickListener             { btHelper.enviarComando("K") }
+        btnStartRun.setOnClickListener             { btHelper.enviarComando("R") }
+        btnStopRun.setOnClickListener              { btHelper.enviarComando("F") }
+        btnLerSensores.setOnClickListener          { sensoresHelper.abrir() }
+        btnExportar.setOnClickListener             { exportarHelper.abrir() }
+
+        btnModeFollower.setOnClickListener {
+            parametrosHelper.modoAtual       = "seguidor"
+            parametrosHelper.estrategiaAtual = ""
+            atualizarEstadoEdicaoParametros()
+            btHelper.enviarComando("S")
+        }
+        btnModeChase.setOnClickListener {
+            parametrosHelper.modoAtual       = "perseguidor"
+            parametrosHelper.estrategiaAtual = ""
+            atualizarEstadoEdicaoParametros()
+            btHelper.enviarComando("P")
+        }
+        btnStrategyConservative.setOnClickListener {
+            parametrosHelper.estrategiaAtual = "conservador"
+            btHelper.enviarComando("C")
+            parametrosHelper.carregar()
+            atualizarEstadoEdicaoParametros()
+            onRawMessage("→ Estratégia: Conservador")
+        }
+        btnStrategyRisk.setOnClickListener {
+            parametrosHelper.estrategiaAtual = "arriscado"
+            btHelper.enviarComando("A")
+            parametrosHelper.carregar()
+            atualizarEstadoEdicaoParametros()
+            onRawMessage("→ Estratégia: Arriscado")
+        }
+
+        btnAbrirEdicao.setOnClickListener { parametrosHelper.mostrarDialogEdicao() }
+    }
+
+    /**
+     * @brief Registra os listeners de clique dos cards e do switch Bluetooth.
+     */
+    private fun configurarListeners() {
+        swBluetooth.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                iconHelper.setConectando()
+                btHelper.conectar()
+            } else {
+                btHelper.desconectar()
+            }
+        }
+
+        findViewById<View>(R.id.cardBluetoothToggle).setOnClickListener {
+            animarClique(it) { swBluetooth.isChecked = !swBluetooth.isChecked }
+        }
+
+        findViewById<View>(R.id.cardConfigEsp).setOnClickListener {
+            animarClique(it) { espConfigHelper.abrir(txtEstadoRobo.text.toString()) }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────────
+    //  Helpers de UI locais
+    // ──────────────────────────────────────────────────────────────────────────────
+
+    /**
+     * @brief Executa uma animação de "aperto" (scale 78% → 100%) em um view e chama a ação no final.
+     *
+     * @param view  View que recebe a animação.
+     * @param acao  Lambda executado ao fim da animação de retorno.
+     */
+    private fun animarClique(view: View, acao: () -> Unit) {
+        view.animate()
+            .scaleX(0.78f).scaleY(0.78f)
+            .setDuration(90)
+            .withEndAction {
+                view.animate().scaleX(1f).scaleY(1f).setDuration(110)
+                    .withEndAction(acao).start()
+            }
+            .start()
+    }
+
+    /**
+     * @brief Habilita ou desabilita o botão de editar parâmetros conforme a estratégia selecionada.
+     *
+     * O botão (LinearLayout) fica com alpha reduzido e ícone acinzentado quando nenhuma
+     * estratégia está ativa; ícone roxo e alpha cheio quando uma estratégia está selecionada.
+     */
+    private fun atualizarEstadoEdicaoParametros() {
+        val temEstrategia          = parametrosHelper.estrategiaAtual.isNotEmpty()
+        btnAbrirEdicao.isEnabled   = temEstrategia
+        btnAbrirEdicao.isClickable = temEstrategia
+        btnAbrirEdicao.alpha       = if (temEstrategia) 1.0f else 0.55f
+        iconEditarParams.setColorFilter(
+            if (temEstrategia) "#A066FF".toColorInt() else "#5A4470".toColorInt()
+        )
+    }
+
+    /**
+     * @brief Atualiza o percentual e as barras visuais de bateria na tela principal.
+     *
+     * @param percentual Nível de bateria de 0 a 100.
+     */
+    @SuppressLint("SetTextI18n")
+    private fun atualizarBateria(percentual: Int) {
+        val corAtiva = when {
+            percentual > 50 -> "#00E5FF".toColorInt()
+            percentual > 20 -> "#FFAA00".toColorInt()
+            else            -> "#FF2A55".toColorInt()
+        }
+        val corInativa   = "#2E1A47".toColorInt()
+        val barrasAcesas = (percentual / 10.0 + 0.5).toInt().coerceIn(0, 10)
+
+        txtBatteryPercent.text = "$percentual%"
+        txtBatteryPercent.setTextColor(corAtiva)
+
+        val layoutBarras = findViewById<LinearLayout>(R.id.layoutBarrasBateria)
+        for (i in 0 until 10) {
+            layoutBarras?.getChildAt(i)?.setBackgroundColor(
+                if (i < barrasAcesas) corAtiva else corInativa
+            )
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────────────────────
+    //  BluetoothEventListener
+    // ──────────────────────────────────────────────────────────────────────────────
+
+    /**
+     * @brief Conexão estabelecida: atualiza ícone, libera botões e solicita estado atual.
+     */
+    override fun onConnected() {
+        Toast.makeText(this, "Conectado ao ZeGuia!", Toast.LENGTH_SHORT).show()
+        iconHelper.setConectado()
+        uiHelper.estadoConectadoInicial()
+        btHelper.enviarComando("Q")
+    }
+
+    /**
+     * @brief Conexão encerrada: restaura UI para estado desconectado e zera o cronômetro.
+     */
+    override fun onDisconnected() {
+        Toast.makeText(this, "Desconectado", Toast.LENGTH_SHORT).show()
+        iconHelper.setDesconectado()
+        uiHelper.estadoDesconectado()
+        cronometroHelper.resetar()
+        parametrosHelper.modoAtual       = ""
+        parametrosHelper.estrategiaAtual = ""
+        atualizarEstadoEdicaoParametros()
+    }
+
+    /**
+     * @brief Falha de conexão: restaura o switch e a UI para estado desconectado.
+     */
+    override fun onConnectionFailed() {
+        Toast.makeText(this, "Falha na conexão", Toast.LENGTH_SHORT).show()
+        iconHelper.setDesconectado()
+        uiHelper.estadoDesconectado()
+    }
+
+    /**
+     * @brief Mensagem serial genérica: appenda ao monitor serial e faz scroll automático.
+     * @param msg Linha de texto recebida.
+     */
+    override fun onRawMessage(msg: String) {
+        txtSerial.append("$msg\n")
+        val scroll = findViewById<ScrollView>(R.id.scrollMonitor)
+        scroll.post { scroll.fullScroll(View.FOCUS_DOWN) }
+    }
+
+    /**
+     * @brief Atualiza o estado do robô na tela e aciona as transições de UI correspondentes.
+     *
+     * @param valor Estado recebido: "Correndo", "Parado", "Calibrando" ou "Calibrado".
+     */
+    override fun onEstado(valor: String) {
+        txtEstadoRobo.text = valor
+        when (valor) {
+            "Correndo"   -> {
+                txtEstadoRobo.setTextColor("#00FF66".toColorInt())
+                uiHelper.estadoCorrendo()
+                cronometroHelper.iniciar()
+            }
+            "Parado"     -> {
+                txtEstadoRobo.setTextColor("#FF2A55".toColorInt())
+                uiHelper.estadoFinalizado()
+                cronometroHelper.parar()
+            }
+            "Calibrando" -> {
+                txtEstadoRobo.setTextColor("#FFFF00".toColorInt())
+                uiHelper.estadoCalibrando()
+            }
+            "Calibrado"  -> {
+                txtEstadoRobo.setTextColor("#9d00ff".toColorInt())
+                uiHelper.estadoPosCalibracao(modoSelecionado)
+            }
+        }
+    }
+
+    /**
+     * @brief Confirma o modo de operação selecionado e libera as estratégias.
+     *
+     * @param valor Modo recebido: "Seguidor" ou "Perseguidor".
+     */
+    override fun onModo(valor: String) {
+        parametrosHelper.modoAtual       = valor.lowercase()
+        parametrosHelper.estrategiaAtual = ""
+        txtModoRobo.text = valor
+        txtModoRobo.setTextColor(
+            if (valor == "Seguidor") "#00FFFF".toColorInt() else "#FF007F".toColorInt()
+        )
+        @Suppress("SetTextI18n")
+        txtEstrategiaRobo.text = "Aguardando..."
+        txtEstrategiaRobo.setTextColor("#888888".toColorInt())
+        modoSelecionado = true
+        uiHelper.estadoPosModo()
+        atualizarEstadoEdicaoParametros()
+        sharedPreferences.edit {
+            putString("lastModoAtual",       parametrosHelper.modoAtual)
+            putString("lastEstrategiaAtual", "")
+        }
+    }
+
+    /**
+     * @brief Confirma a estratégia de corrida selecionada e libera o botão de iniciar.
+     *
+     * @param valor Estratégia recebida: "Conservador" ou "Arriscado".
+     */
+    override fun onEstrategia(valor: String) {
+        parametrosHelper.estrategiaAtual = valor.lowercase()
+        txtEstrategiaRobo.text = valor
+        txtEstrategiaRobo.setTextColor(
+            if (valor == "Conservador") "#3399FF".toColorInt() else "#FF8800".toColorInt()
+        )
+        parametrosHelper.atualizarDisplay()
+        uiHelper.estadoPosEstrategia()
+        atualizarEstadoEdicaoParametros()
+        sharedPreferences.edit {
+            putString("lastEstrategiaAtual", parametrosHelper.estrategiaAtual)
+        }
+    }
+
+    /**
+     * @brief Atualiza o display de bateria com o percentual recebido.
+     * @param percentual Nível de bateria de 0 a 100.
+     */
+    override fun onBateria(percentual: Int) {
+        atualizarBateria(percentual)
+    }
+
+    /**
+     * @brief Repassa os dados de sensores ao SensoresHelper para atualizar o modal.
+     * @param parts Tokens da mensagem "S,...".
+     */
+    override fun onSensores(parts: List<String>) {
+        sensoresHelper.atualizarSensores(parts)
+    }
+
+    /**
+     * @brief Persiste os parâmetros PID recebidos da ESP32 e atualiza o display se pertinentes.
+     *
+     * @param parts Tokens após "PARAMS:": [0]=modo, [1]=estrategia, [2]=V, [3]=Kp, [4]=Ki, [5]=Kd, [6]=marcas.
+     */
+    override fun onParams(parts: List<String>) {
+        val parModo  = parts[0].lowercase()
+        val parStrat = parts[1].lowercase()
+        val prefix   = "${parModo}_${parStrat}_"
+        sharedPreferences.edit {
+            putString("${prefix}paramV",      parts[2])
+            putString("${prefix}paramKp",     parts[3])
+            putString("${prefix}paramKi",     parts[4])
+            putString("${prefix}paramKd",     parts[5])
+            putString("${prefix}paramMarcas", parts[6])
+        }
+        if (parModo == parametrosHelper.modoAtual && parStrat == parametrosHelper.estrategiaAtual) {
+            parametrosHelper.atualizarDisplay()
+        }
     }
 }

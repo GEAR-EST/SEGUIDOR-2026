@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- PNG logos/QR code in densityless drawable folder — intentional, no density variants needed -->
+    <issue id="IconLocation" severity="ignore"/>
+
+    <!-- LinearLayouts with ImageView+TextView intentionally styled; compound drawable would lose tinting -->
+    <issue id="UseCompoundDrawables" severity="ignore"/>
+
+    <!-- activity_main.xml intentionally dense with status panel + controls + terminal -->
+    <issue id="TooManyViews" severity="ignore"/>
+
+    <!-- Nested weights in alternating card layout in dialog_sobre_nos.xml are load-bearing -->
+    <issue id="NestedWeights" severity="ignore"/>
+
+    <!-- RelativeLayout label/value pairs in modal_exportar.xml sized to avoid overlap at target screen sizes -->
+    <issue id="RelativeOverlap" severity="ignore"/>
+</lint>

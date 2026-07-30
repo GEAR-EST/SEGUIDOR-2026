@@ -1,10 +1,15 @@
 /**
  * @file main.cpp
- * @brief Ponto de entrada do firmware do ZeGuia.
+ * @brief Ponto de entrada do firmware do robô ZeGuia na ESP32.
  *
- * Cria a fila de comandos e inicializa as duas tasks FreeRTOS:
- * - @c ControlsTask  (core 1, prioridade 3): loop de controle PID.
- * - @c CommunicationTask (core 0, prioridade 1): recepção Bluetooth.
+ * Inicializa a fila de comandos FreeRTOS e cria as duas tasks do sistema:
+ * - @ref CommunicationTask (núcleo 0, prioridade 1): gerencia Bluetooth e parsing de mensagens.
+ * - ControlsTask (núcleo 1, prioridade 3): executa a lógica de controle e PID do robô.
+ *
+ * A função loop() permanece vazia pois toda a lógica é executada pelas tasks FreeRTOS.
+ *
+ * @author Gear Robotics
+ * @version 1.0
  */
 
 #include <Arduino.h>
@@ -14,27 +19,30 @@
 #include "commands.h"
 #include "zeGuia.h"
 
-QueueHandle_t commandsQueue; ///< Fila de mensagens entre CommunicationTask e ControlsTask.
-ZeGuia zeGuia;               ///< Instância global do robô.
+/** @brief Fila FreeRTOS que transfere RobotMessage da CommunicationTask para a ControlsTask. */
+QueueHandle_t commandsQueue;
+
+/** @brief Instância global única da lógica principal do robô. */
+ZeGuia zeGuia;
 
 /**
- * @brief Inicialização do sistema.
+ * @brief Inicialização do sistema: cria a fila de comandos e lança as tasks FreeRTOS.
  *
- * Sequência de boot:
- * 1. Abre Serial para depuração a 115200 baud.
- * 2. Cria @c commandsQueue (capacidade: 10 mensagens).
- * 3. Trava em loop infinito se a fila não puder ser alocada.
- * 4. Sobe as tasks de controle e comunicação em cores separados.
+ * Executado uma única vez após o boot da ESP32. Em caso de falha na criação da fila,
+ * entra em loop infinito com mensagem de erro na serial.
  */
 void setup() {
     Serial.begin(115200);
     delay(1500);
     Serial.println("Sistema Iniciando...");
 
-    commandsQueue = xQueueCreate(10, sizeof(RobotMessage));
-    if (commandsQueue == NULL) {
-        Serial.println("Falha ao criar commandsQueue");
-        while (true) { delay(1000); } /* Trava: sem fila não há operação segura. */
+  commandsQueue = xQueueCreate(10, sizeof(RobotMessage));
+  if (commandsQueue == NULL)
+  {
+    Serial.println("Falha ao criar commandsQueue");
+    while (true)
+    {
+      delay(1000);
     }
 
     /* Core 1 — controle PID (maior prioridade para tempo-real). */
