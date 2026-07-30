@@ -1,5 +1,4 @@
-#ifndef SENSORS_H
-#define SENSORS_H
+#pragma once
 
 #include <QTRSensors.h>
 #include <Preferences.h>
@@ -20,10 +19,15 @@
 #define D7_PIN 27
 #define D8_PIN 14
 
-//14, 27, 26, 25, 33, 32, 35, 34
+//34, 35, 32, 33, 25, 26, 27, 14
+
+const uint8_t SensorCount = 8;
 
 extern Preferences preferences;
 extern QTRSensors qtr;
+extern uint16_t sensorValues[SensorCount];
+extern uint16_t readRight;
+extern uint16_t readLeft;
 
 void setup_qtr();
 
@@ -34,5 +38,3 @@ void side_sensors_print();
 void doCalibration();
 
 bool readCalibration();
-
-#endif

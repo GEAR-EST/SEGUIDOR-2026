@@ -1,5 +1,4 @@
-#ifndef PID_H
-#define PID_H
+#pragma once
 
 class PID{
 private:
@@ -18,5 +17,3 @@ public:
     void setTunnings(float _p, float _i, float _d);
 
 };
-
-#endif

@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file communication.h
  * @brief Declarações públicas do módulo de comunicação Bluetooth da ESP32.
@@ -10,11 +11,10 @@
  * @version 1.0
  */
 
-#ifndef COMMUNICATION_H
-#define COMMUNICATION_H
-
 #include <BluetoothSerial.h>
 #include <freertos/semphr.h>
+
+#define BATTERY_PIN 13
 
 /** @brief Instância global do Bluetooth Serial (SPP). Usada por outros módulos para enviar dados ao app. */
 extern BluetoothSerial SerialBT;
@@ -48,5 +48,3 @@ const long bat_interval = 10000;
  * @param pvParameters Parâmetro padrão de task FreeRTOS (não utilizado).
  */
 void CommunicationTask(void* pvParameters);
-
-#endif

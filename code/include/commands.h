@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file commands.h
  * @brief Definição dos comandos e mensagens trocados entre a tarefa de comunicação e a lógica do robô.
@@ -9,9 +10,6 @@
  * @author Gear Robotics
  * @version 1.0
  */
-
-#ifndef COMMANDS_H
-#define COMMANDS_H
 
 /**
  * @enum RobotCommand
@@ -63,5 +61,3 @@ struct RobotMessage
     float kd;              /**< Ganho derivativo do controlador PID. */
     int novasMarcas;       /**< Número de marcas laterais para parada autônoma. */
 };
-
-#endif
