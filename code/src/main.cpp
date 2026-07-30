@@ -50,6 +50,7 @@ void setup() {
 
     /* Core 0 — comunicação Bluetooth (menor prioridade, tolerante a latência). */
     xTaskCreatePinnedToCore(CommunicationTask, "Task_BT",  8192, NULL, 1, NULL, 0);
+  }
 }
 
 /**

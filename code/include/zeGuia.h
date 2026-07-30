@@ -95,6 +95,7 @@ private:
     uint32_t lastSensorSendMs;/**< Timestamp do último envio de sensores (ms). */
     uint32_t lastStopMs;      /**< Timestamp da última parada (ms). */
     int pos_ant = 0;
+    PID pid;
 
     static const uint32_t SENSOR_SEND_INTERVAL_MS = 120; /**< Intervalo entre envios de sensores (ms). */
     static const uint32_t TIME_BACK_STOP = 500;          /**< Tempo de ré ao parar (ms). */
