@@ -44,13 +44,13 @@ void setup() {
     {
       delay(1000);
     }
-
-    /* Core 1 — controle PID (maior prioridade para tempo-real). */
-    xTaskCreatePinnedToCore(ControlsTask,      "Task_PID", 4096, NULL, 3, NULL, 1);
-
-    /* Core 0 — comunicação Bluetooth (menor prioridade, tolerante a latência). */
-    xTaskCreatePinnedToCore(CommunicationTask, "Task_BT",  8192, NULL, 1, NULL, 0);
   }
+  /* Core 1 — controle PID (maior prioridade para tempo-real). */
+  xTaskCreatePinnedToCore(ControlsTask,      "Task_PID", 4096, NULL, 3, NULL, 1);
+
+  /* Core 0 — comunicação Bluetooth (menor prioridade, tolerante a latência). */
+  xTaskCreatePinnedToCore(CommunicationTask, "Task_BT",  8192, NULL, 1, NULL, 0);
+  
 }
 
 /**
