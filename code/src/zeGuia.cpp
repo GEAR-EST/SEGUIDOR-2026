@@ -270,7 +270,7 @@ void ZeGuia::terminarCorrida()
  */
 void ZeGuia::enviarLeituraSensores()
 {
-    uint16_t position = qtr.readLineBlack(sensorValues);
+    uint16_t position = qtr.readLineWhite(sensorValues);
     readRight = digitalRead(RightSensor);
     readLeft = digitalRead(LeftSensor);
 
@@ -345,7 +345,7 @@ void ZeGuia::processarComando(RobotCommand cmd)
 void ZeGuia::lineWhite() {
     int pos = qtr.readLineWhite(sensorValues);
 
-    if (handleDashed(pos)) return;
+    // if (handleDashed(pos)) return;
 
     pos_ant = pos; 
     
@@ -424,7 +424,7 @@ bool ZeGuia::handleDashed(int pos) {
 
         uint32_t tempo = millis() - timeStartDashed;
         if (tempo < 80) {
-            SerialBT.println("Frentee!");
+            // SerialBT.println("Frentee!");
             controlMotors(0.7*VEL_MAX, 0.7*VEL_MAX);
             return true; 
         } else {
