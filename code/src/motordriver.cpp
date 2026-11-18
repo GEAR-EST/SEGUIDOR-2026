@@ -1,6 +1,6 @@
 /**
  * @file motordriver.cpp
- * @brief Controle de baixo nível dos motores via ponte H L298N.
+ * @brief Controle de baixo nível dos motores via ponte TB6612FNG.
  *
  * Abstrai a direção e velocidade dos dois motores (A e B), e provê
  * o fail-safe de linha perdida.
@@ -69,3 +69,4 @@ bool fail_safe() {
     }
     return false;
 }
+
